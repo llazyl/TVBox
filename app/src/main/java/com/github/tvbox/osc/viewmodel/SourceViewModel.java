@@ -107,8 +107,12 @@ public class SourceViewModel extends ViewModel {
             spThreadPool.execute(new Runnable() {
                 @Override
                 public void run() {
-                    Spider sp = ApiConfig.get().getCSP(homeSourceBean);
-                    json(listResult, sp.categoryContent(id, page + "", false, new HashMap<>()), homeSourceBean.getKey());
+                    try {
+                        Spider sp = ApiConfig.get().getCSP(homeSourceBean);
+                        json(listResult, sp.categoryContent(id, page + "", false, new HashMap<>()), homeSourceBean.getKey());
+                    } catch (Throwable th) {
+                        th.printStackTrace();
+                    }
                 }
             });
         } else if (type == 0 || type == 1) {
@@ -157,10 +161,14 @@ public class SourceViewModel extends ViewModel {
             spThreadPool.execute(new Runnable() {
                 @Override
                 public void run() {
-                    Spider sp = ApiConfig.get().getCSP(sourceBean);
-                    List<String> ids = new ArrayList<>();
-                    ids.add(id);
-                    json(detailResult, sp.detailContent(ids), sourceBean.getKey());
+                    try {
+                        Spider sp = ApiConfig.get().getCSP(sourceBean);
+                        List<String> ids = new ArrayList<>();
+                        ids.add(id);
+                        json(detailResult, sp.detailContent(ids), sourceBean.getKey());
+                    } catch (Throwable th) {
+                        th.printStackTrace();
+                    }
                 }
             });
         } else if (type == 0 || type == 1) {
@@ -208,8 +216,12 @@ public class SourceViewModel extends ViewModel {
             spThreadPool.execute(new Runnable() {
                 @Override
                 public void run() {
-                    Spider sp = ApiConfig.get().getCSP(sourceBean);
-                    json(searchResult, sp.searchContent(wd, false), sourceBean.getKey());
+                    try {
+                        Spider sp = ApiConfig.get().getCSP(sourceBean);
+                        json(searchResult, sp.searchContent(wd, false), sourceBean.getKey());
+                    } catch (Throwable th) {
+                        th.printStackTrace();
+                    }
                 }
             });
         } else if (type == 0 || type == 1) {
@@ -257,8 +269,12 @@ public class SourceViewModel extends ViewModel {
             spThreadPool.execute(new Runnable() {
                 @Override
                 public void run() {
-                    Spider sp = ApiConfig.get().getCSP(sourceBean);
-                    json(quickSearchResult, sp.searchContent(wd, true), sourceBean.getKey());
+                    try {
+                        Spider sp = ApiConfig.get().getCSP(sourceBean);
+                        json(quickSearchResult, sp.searchContent(wd, true), sourceBean.getKey());
+                    } catch (Throwable th) {
+                        th.printStackTrace();
+                    }
                 }
             });
         } else if (type == 0 || type == 1) {
