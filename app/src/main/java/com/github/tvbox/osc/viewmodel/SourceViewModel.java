@@ -12,6 +12,7 @@ import com.github.tvbox.osc.bean.AbsXml;
 import com.github.tvbox.osc.bean.Movie;
 import com.github.tvbox.osc.bean.SourceBean;
 import com.github.tvbox.osc.event.RefreshEvent;
+import com.github.tvbox.osc.util.DefaultConfig;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.lzy.okgo.OkGo;
@@ -21,6 +22,7 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
 import org.greenrobot.eventbus.EventBus;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,6 +41,7 @@ public class SourceViewModel extends ViewModel {
     public MutableLiveData<AbsXml> searchResult;
     public MutableLiveData<AbsXml> quickSearchResult;
     public MutableLiveData<AbsXml> detailResult;
+    public MutableLiveData<JSONObject> playResult;
 
     public SourceViewModel() {
         sortResult = new MutableLiveData<>();
@@ -46,6 +49,7 @@ public class SourceViewModel extends ViewModel {
         searchResult = new MutableLiveData<>();
         quickSearchResult = new MutableLiveData<>();
         detailResult = new MutableLiveData<>();
+        playResult = new MutableLiveData<>();
     }
 
     public static final ExecutorService spThreadPool = Executors.newFixedThreadPool(3);
@@ -290,6 +294,51 @@ public class SourceViewModel extends ViewModel {
                             EventBus.getDefault().post(new RefreshEvent(RefreshEvent.TYPE_QUICK_SEARCH_RESULT, null));
                         }
                     });
+        } else {
+            quickSearchResult.postValue(null);
+        }
+    }
+
+    public void getPlay(String sourceKey, String playFlag, String url) {
+        SourceBean sourceBean = ApiConfig.get().getSource(sourceKey);
+        int type = sourceBean.getType();
+        if (type == 3) {
+            spThreadPool.execute(new Runnable() {
+                @Override
+                public void run() {
+                    Spider sp = ApiConfig.get().getCSP(sourceBean);
+                    String json = sp.playerContent(playFlag, url, ApiConfig.get().getVipParseFlags());
+                    try {
+                        JSONObject result = new JSONObject(json);
+                        result.put("key", url);
+                        if (!result.has("flag"))
+                            result.put("flag", playFlag);
+                        playResult.postValue(result);
+                    } catch (Throwable th) {
+                        th.printStackTrace();
+                        playResult.postValue(null);
+                    }
+                }
+            });
+        } else if (type == 0 || type == 1) {
+            JSONObject result = new JSONObject();
+            try {
+                result.put("key", url);
+                String playUrl = sourceBean.getPlayerUrl().trim();
+                if (DefaultConfig.isVideoFormat(url)) {
+                    result.put("parse", 0);
+                    result.put("url", url);
+                } else {
+                    result.put("parse", 1);
+                    result.put("url", url);
+                }
+                result.put("playUrl", playUrl);
+                result.put("flag", playFlag);
+                playResult.postValue(result);
+            } catch (Throwable th) {
+                th.printStackTrace();
+                playResult.postValue(null);
+            }
         } else {
             quickSearchResult.postValue(null);
         }

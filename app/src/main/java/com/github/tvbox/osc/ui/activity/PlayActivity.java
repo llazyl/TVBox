@@ -5,6 +5,9 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.widget.Toast;
 
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+
 import com.dueeeke.videocontroller.component.GestureView;
 import com.dueeeke.videoplayer.player.VideoView;
 import com.github.tvbox.osc.R;
@@ -16,9 +19,11 @@ import com.github.tvbox.osc.player.controller.BoxVodControlView;
 import com.github.tvbox.osc.ui.dialog.ParseDialog;
 import com.github.tvbox.osc.util.HawkConfig;
 import com.github.tvbox.osc.util.PlayerHelper;
+import com.github.tvbox.osc.viewmodel.SourceViewModel;
 import com.orhanobut.hawk.Hawk;
 
 import org.greenrobot.eventbus.EventBus;
+import org.json.JSONObject;
 
 import java.util.Map;
 
@@ -30,6 +35,7 @@ import java.util.Map;
 public class PlayActivity extends BaseActivity {
     private VideoView mVideoView;
     private BoxVideoController controller;
+    private SourceViewModel sourceViewModel;
 
     @Override
     protected int getLayoutResID() {
@@ -39,10 +45,12 @@ public class PlayActivity extends BaseActivity {
     @Override
     protected void init() {
         initView();
+        initViewModel();
         initData();
     }
 
     private void initView() {
+        setLoadSir(findViewById(R.id.rootLayout));
         mVideoView = findViewById(R.id.mVideoView);
         PlayerHelper.updateCfg(mVideoView);
 //        ViewGroup.LayoutParams layoutParams = mVideoView.getLayoutParams();
@@ -94,6 +102,39 @@ public class PlayActivity extends BaseActivity {
         controller.setEnableInNormal(true);
         controller.setGestureEnabled(true);
         mVideoView.setVideoController(controller);
+    }
+
+    private void initViewModel() {
+        sourceViewModel = new ViewModelProvider(this).get(SourceViewModel.class);
+        sourceViewModel.playResult.observe(this, new Observer<JSONObject>() {
+            @Override
+            public void onChanged(JSONObject object) {
+                showSuccess();
+                if (object != null && object.optString("key", "").equals(parseKey)) {
+                    parseDialog.parse(sourceKey, object, new ParseDialog.ParseCallback() {
+                        @Override
+                        public void success(String playUrl, Map<String, String> headers) {
+                            if (mVideoView != null) {
+                                mVideoView.release();
+                                if (headers != null) {
+                                    mVideoView.setUrl(playUrl, headers);
+                                } else {
+                                    mVideoView.setUrl(playUrl);
+                                }
+                                mVideoView.start();
+                            }
+                            tryDismissParse();
+                        }
+
+                        @Override
+                        public void fail() {
+//                            PlayActivity.this.finish();
+//                            tryDismissParse();
+                        }
+                    });
+                }
+            }
+        });
     }
 
     private void initData() {
@@ -216,6 +257,9 @@ public class PlayActivity extends BaseActivity {
         }
     }
 
+
+    private volatile String parseKey = null;
+
     public void play() {
         VodInfo.VodSeries vs = mVodInfo.seriesMap.get(mVodInfo.playFlag).get(mVodInfo.playIndex);
         EventBus.getDefault().post(new RefreshEvent(RefreshEvent.TYPE_REFRESH, mVodInfo.playIndex));
@@ -233,26 +277,8 @@ public class PlayActivity extends BaseActivity {
 
         parseDialog.show();
 
-        parseDialog.parse(sourceKey, mVodInfo.playFlag, vs.url, new ParseDialog.ParseCallback() {
-            @Override
-            public void success(String playUrl, Map<String, String> headers) {
-                if (mVideoView != null) {
-                    mVideoView.release();
-                    if (headers != null) {
-                        mVideoView.setUrl(playUrl, headers);
-                    } else {
-                        mVideoView.setUrl(playUrl);
-                    }
-                    mVideoView.start();
-                }
-                tryDismissParse();
-            }
-
-            @Override
-            public void fail() {
-                PlayActivity.this.finish();
-                tryDismissParse();
-            }
-        });
+        parseKey = vs.url;
+        showLoading();
+        sourceViewModel.getPlay(sourceKey, mVodInfo.playFlag, vs.url);
     }
 }

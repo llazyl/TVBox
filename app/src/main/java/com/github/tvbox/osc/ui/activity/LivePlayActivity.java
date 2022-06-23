@@ -247,6 +247,7 @@ public class LivePlayActivity extends BaseActivity {
                 }
             });
         } else {
+            showSuccess();
             initList(list);
         }
     }

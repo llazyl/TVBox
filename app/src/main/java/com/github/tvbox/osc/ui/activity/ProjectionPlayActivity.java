@@ -113,7 +113,7 @@ public class ProjectionPlayActivity extends BaseActivity {
 
             parseDialog.show();
 
-            parseDialog.parse("", "", html, new ParseDialog.ParseCallback() {
+/*            parseDialog.parse("", "", html, new ParseDialog.ParseCallback() {
                 @Override
                 public void success(String playUrl, Map<String, String> headers) {
                     controller.boxTVRefreshInfo(playUrl);
@@ -130,7 +130,7 @@ public class ProjectionPlayActivity extends BaseActivity {
                     ProjectionPlayActivity.this.finish();
                     tryDismissParse();
                 }
-            });
+            });*/
         }
     }
 
