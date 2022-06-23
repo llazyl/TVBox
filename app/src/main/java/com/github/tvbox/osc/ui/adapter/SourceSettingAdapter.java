@@ -5,11 +5,10 @@ import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
-
-import java.util.ArrayList;
-
 import com.github.tvbox.osc.R;
 import com.github.tvbox.osc.bean.SourceBean;
+
+import java.util.ArrayList;
 
 /**
  * @author pj567
@@ -27,13 +26,6 @@ public class SourceSettingAdapter extends BaseQuickAdapter<SourceBean, BaseViewH
         TextView tvSourceSpeed = helper.getView(R.id.tvSourceSpeed);
         TextView tvSource = helper.getView(R.id.tvSource);
         TextView tvSourceStatus = helper.getView(R.id.tvSourceStatus);
-        if (item == SourceBean.addNewBean) {
-            tvSourceAdd.setVisibility(View.VISIBLE);
-            tvSource.setVisibility(View.GONE);
-            tvSourceStatus.setVisibility(View.GONE);
-            tvSourceSpeed.setVisibility(View.GONE);
-            return;
-        }
         if (item == SourceBean.speedTestBean) {
             tvSourceSpeed.setVisibility(View.VISIBLE);
             tvSource.setVisibility(View.GONE);
@@ -58,8 +50,7 @@ public class SourceSettingAdapter extends BaseQuickAdapter<SourceBean, BaseViewH
             tvSourceStatus.setTextColor(mContext.getResources().getColor(R.color.color_FF0057));
         }
 
-        String status = item.isInternal() ? "△" : "";
-        status += (item.isActive() ? "已启用" + (item.isHome() ? " ☆首页源" : "") : "未启用");
+        String status = (item.isActive() ? "已启用" + (item.isHome() ? " ☆首页源" : "") : "未启用");
         tvSourceStatus.setText(status);
     }
 }

@@ -2,24 +2,18 @@ package com.github.tvbox.osc.api;
 
 import android.app.Activity;
 import android.text.TextUtils;
-import android.util.Base64;
 
 import com.github.tvbox.osc.bean.IJKCode;
 import com.github.tvbox.osc.bean.LiveChannel;
 import com.github.tvbox.osc.bean.ParseBean;
 import com.github.tvbox.osc.bean.SourceBean;
-import com.github.tvbox.osc.cache.LocalLive;
-import com.github.tvbox.osc.cache.LocalParse;
-import com.github.tvbox.osc.cache.LocalSource;
 import com.github.tvbox.osc.cache.RoomDataManger;
 import com.github.tvbox.osc.cache.SourceState;
 import com.github.tvbox.osc.util.AdBlocker;
-import com.github.tvbox.osc.util.DefaultConfig;
 import com.github.tvbox.osc.util.HawkConfig;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.reflect.TypeToken;
 import com.orhanobut.hawk.Hawk;
 
 import java.io.BufferedReader;
@@ -49,6 +43,7 @@ public class ApiConfig {
     private List<ParseBean> parseBeanList;
     private List<String> vipParseFlags;
     private List<IJKCode> ijkCodes;
+    private String spider = null;
 
     private ApiConfig() {
         sourceBeanList = new ArrayList<>();
@@ -105,34 +100,11 @@ public class ApiConfig {
             br.close();
             parseJson(sb.toString());
             callback.success();
-        } catch (IOException e) {
+        } catch (Throwable e) {
             e.printStackTrace();
             callback.error("加载配置失败");
         }
 
-    }
-
-    private void loadConfigLocal1(LoadConfigCallback callback, Activity activity) {
-        try {
-            BufferedReader bf = new BufferedReader(new InputStreamReader(activity.getAssets().open("cfg.json")));
-            String line = bf.readLine();
-            String timestamp = line.substring(line.length() - 13);
-            String infoString = line.substring(0, line.length() - 13);
-            byte[] infoBytes = Base64.decode(infoString, Base64.DEFAULT);
-            for (int i = 0; i < infoBytes.length; i++) {
-                if (i % 2 == 0) {
-                    int idx = i % timestamp.length();
-                    int c = timestamp.charAt(idx);
-                    infoBytes[i] ^= c + 10;
-                }
-            }
-            String finalRemoteJson = decompressGZIP(infoBytes);
-            parseJson(finalRemoteJson);
-            callback.success();
-        } catch (IOException e) {
-            e.printStackTrace();
-            callback.error("加载配置失败");
-        }
     }
 
     public static final int REG_CODE_INVALID = -2;
@@ -140,17 +112,60 @@ public class ApiConfig {
     private void loadConfigServer(LoadConfigCallback callback, Activity activity) {
     }
 
+    private String safeJsonString(JsonObject obj, String key, String defaultVal) {
+        try {
+            if (obj.has(key))
+                return obj.getAsJsonPrimitive(key).getAsString().trim();
+            else
+                return defaultVal;
+        } catch (Throwable th) {
+        }
+        return defaultVal;
+    }
+
+    private int safeJsonInt(JsonObject obj, String key, int defaultVal) {
+        try {
+            if (obj.has(key))
+                return obj.getAsJsonPrimitive(key).getAsInt();
+            else
+                return defaultVal;
+        } catch (Throwable th) {
+        }
+        return defaultVal;
+    }
+
+    private ArrayList<String> safeJsonStringList(JsonObject obj, String key) {
+        ArrayList<String> result = new ArrayList<>();
+        try {
+            if (obj.has(key)) {
+                if (obj.get(key).isJsonObject()) {
+                    result.add(obj.get(key).getAsString());
+                } else {
+                    for (JsonElement opt : obj.getAsJsonArray(key)) {
+                        result.add(opt.getAsString());
+                    }
+                }
+            }
+        } catch (Throwable th) {
+        }
+        return result;
+    }
+
     private void parseJson(String jsonStr) {
         JsonObject infoJson = new Gson().fromJson(jsonStr, JsonObject.class);
         // 远端站点源
-        sourceBeanList = new Gson().fromJson(infoJson.get("sources").toString(), new TypeToken<List<SourceBean>>() {
-        }.getType());
-        // 获取本地站点源
-        List<LocalSource> localSources = RoomDataManger.getAllLocalSource();
-        for (LocalSource sbl : localSources) {
-            SourceBean local = new SourceBean();
-            local.initFromLocal(sbl);
-            sourceBeanList.add(local);
+        for (JsonElement opt : infoJson.get("sites").getAsJsonArray()) {
+            JsonObject obj = (JsonObject) opt;
+            SourceBean sb = new SourceBean();
+            sb.setKey(obj.get("key").getAsString().trim());
+            sb.setName(obj.get("name").getAsString().trim());
+            sb.setType(obj.get("type").getAsInt());
+            sb.setSearchable(safeJsonInt(obj, "searchable", 1));
+            sb.setSearchable(safeJsonInt(obj, "quickSearch", 1));
+            sb.setFilterable(safeJsonInt(obj, "filterable", 1));
+            sb.setPlayerUrl(safeJsonString(obj, "playUrl", ""));
+            sb.setExt(safeJsonString(obj, "ext", ""));
+            sourceBeanList.add(sb);
         }
         if (sourceBeanList != null && sourceBeanList.size() > 0) {
             // 获取启用状态
@@ -166,70 +181,65 @@ public class ApiConfig {
                 setSourceBean(sourceBeanList.get(0));
         }
         // 需要使用vip解析的flag
-        vipParseFlags = new Gson().fromJson(infoJson.get("parseFlag").toString(), new TypeToken<List<String>>() {
-        }.getType());
+        vipParseFlags = safeJsonStringList(infoJson, "flags");
         // 解析地址
-        parseBeanList = new Gson().fromJson(infoJson.get("parseUrl").toString(), new TypeToken<List<ParseBean>>() {
-        }.getType());
-        // 获取本地解析地址
-        List<LocalParse> localParses = RoomDataManger.getAllLocalParse();
-        for (LocalParse lp : localParses) {
-            ParseBean local = new ParseBean();
-            local.initFromLocal(lp);
-            parseBeanList.add(local);
+        for (JsonElement opt : infoJson.get("parses").getAsJsonArray()) {
+            JsonObject obj = (JsonObject) opt;
+            ParseBean pb = new ParseBean();
+            pb.setName(obj.get("name").getAsString().trim());
+            pb.setUrl(obj.get("url").getAsString().trim());
+            pb.setType(safeJsonInt(obj, "type", 0));
+            parseBeanList.add(pb);
         }
-        // 获取启用状态
+        // 获取默认解析
         if (parseBeanList != null && parseBeanList.size() > 0) {
             String defaultParse = Hawk.get(HawkConfig.DEFAULT_PARSE, "");
             if (!TextUtils.isEmpty(defaultParse))
                 for (ParseBean pb : parseBeanList) {
-                    if (pb.getParseName().equals(defaultParse))
+                    if (pb.getName().equals(defaultParse))
                         setDefaultParse(pb);
                 }
             if (mDefaultParse == null)
                 setDefaultParse(parseBeanList.get(0));
         }
         // 直播源
-        channelList = new Gson().fromJson(infoJson.get("live").toString(), new TypeToken<List<LiveChannel>>() {
-        }.getType());
-        // 获取本地解析地址
-        List<LocalLive> localLives = RoomDataManger.getAllLocalLive();
-        for (LocalLive ll : localLives) {
-            LiveChannel lc = new LiveChannel();
-            lc.initFromLocal(ll);
-            channelList.add(lc);
+        try {
+            int lcIdx = 0;
+            for (JsonElement opt : infoJson.get("lives").getAsJsonArray()) {
+                for (JsonElement optChl : ((JsonObject) opt).get("channels").getAsJsonArray()) {
+                    JsonObject obj = (JsonObject) optChl;
+                    LiveChannel lc = new LiveChannel();
+                    lc.setName(obj.get("name").getAsString().trim());
+                    lc.setUrls(safeJsonStringList(obj, "urls"));
+                    // 暂时不考虑分组问题
+                    lc.setChannelNum(lcIdx++);
+                    channelList.add(lc);
+                }
+            }
+        } catch (Throwable th) {
+            th.printStackTrace();
         }
         // 广告地址
         for (JsonElement host : infoJson.getAsJsonArray("ads")) {
             AdBlocker.addAdHost(host.getAsString());
         }
-        // 屏蔽分类
-        List<String> rmBase = new ArrayList<>();
-        List<String> rmAdolescent = new ArrayList<>();
-        for (JsonElement rm : infoJson.get("filter").getAsJsonObject().get("base").getAsJsonArray()) {
-            rmBase.add(rm.getAsString());
-        }
-        DefaultConfig.initRemove(rmBase);
         // IJK解码配置
         boolean foundOldSelect = false;
         String ijkCodec = Hawk.get(HawkConfig.IJK_CODEC, "");
         ijkCodes = new ArrayList<>();
-        LinkedHashMap<String, String> baseOpt = new LinkedHashMap<>();
-        for (JsonElement opt : infoJson.get("ijk").getAsJsonObject().get("option").getAsJsonArray()) {
-            String s = opt.getAsString();
-            baseOpt.put(s.substring(0, s.lastIndexOf("|")), s.substring(s.lastIndexOf("|") + 1));
-        }
-        for (JsonElement cfg : infoJson.get("ijk").getAsJsonObject().get("config").getAsJsonArray()) {
-            String name = cfg.getAsJsonObject().get("name").getAsString();
-            LinkedHashMap<String, String> mergeOpt = new LinkedHashMap<>();
-            mergeOpt.putAll(baseOpt);
-            for (JsonElement opt : cfg.getAsJsonObject().get("option").getAsJsonArray()) {
-                String s = opt.getAsString();
-                mergeOpt.put(s.substring(0, s.lastIndexOf("|")), s.substring(s.lastIndexOf("|") + 1));
+        for (JsonElement opt : infoJson.get("ijk").getAsJsonArray()) {
+            JsonObject obj = (JsonObject) opt;
+            String name = obj.get("group").getAsString();
+            LinkedHashMap<String, String> baseOpt = new LinkedHashMap<>();
+            for (JsonElement cfg : obj.get("options").getAsJsonArray()) {
+                JsonObject cObj = (JsonObject) cfg;
+                String key = cObj.get("category").getAsString() + "|" + cObj.get("name").getAsString();
+                String val = cObj.get("value").getAsString();
+                baseOpt.put(key, val);
             }
             IJKCode codec = new IJKCode();
             codec.setName(name);
-            codec.setOption(mergeOpt);
+            codec.setOption(baseOpt);
             if (name.equals(ijkCodec) || TextUtils.isEmpty(ijkCodec)) {
                 codec.selected(true);
                 ijkCodec = name;
@@ -277,7 +287,7 @@ public class ApiConfig {
         if (this.mDefaultParse != null)
             this.mDefaultParse.setDefault(false);
         this.mDefaultParse = parseBean;
-        Hawk.put(HawkConfig.DEFAULT_PARSE, parseBean.getParseName());
+        Hawk.put(HawkConfig.DEFAULT_PARSE, parseBean.getName());
         parseBean.setDefault(true);
     }
 

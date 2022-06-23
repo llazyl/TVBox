@@ -33,19 +33,6 @@
         android:textSize="18pt" />
 
     <TextView
-        android:id="@+id/tvSrcDel"
-        android:layout_width="300pt"
-        android:layout_height="40pt"
-        android:layout_marginTop="30pt"
-        android:background="@drawable/splash_focus"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:gravity="center"
-        android:text="删除数据源"
-        android:textColor="@android:color/black"
-        android:textSize="18pt" />
-
-    <TextView
         android:id="@+id/tvSrcSort"
         android:layout_width="300pt"
         android:layout_height="40pt"

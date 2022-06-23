@@ -1,13 +1,10 @@
 package com.github.tvbox.osc.bean;
 
-import com.github.tvbox.osc.cache.LocalSource;
 import com.github.tvbox.osc.cache.RoomDataManger;
 import com.github.tvbox.osc.cache.SourceState;
-import com.github.tvbox.osc.spider.Spider;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import java.io.Serializable;
 import java.util.HashMap;
 
 /**
@@ -15,13 +12,10 @@ import java.util.HashMap;
  * @date :2020/12/18
  * @description:
  */
-public class SourceBean implements Serializable {
-    public static SourceBean addNewBean = new SourceBean();
+public class SourceBean {
     public static SourceBean speedTestBean = new SourceBean();
 
     static {
-        addNewBean.key = "_add_new_source";
-        addNewBean.api = "";
         speedTestBean.key = "_source_speed_test";
         speedTestBean.api = "";
     }
@@ -34,10 +28,13 @@ public class SourceBean implements Serializable {
     private String key;
     private String name;
     private String api;
-    private int type;   // 0 xml 1 json
-    private String playerUrl;
+    private int type;   // 0 xml 1 json 3 Spider
+    private int searchable; // 是否可搜索
+    private int quickSearch; // 是否可以快速搜索
+    private int filterable; // 可筛选?
+    private String playerUrl; // 站点解析Url
+    private String ext; // 扩展数据
     private SourceState state;
-    private LocalSource local;
 
     public String getKey() {
         return key;
@@ -69,19 +66,6 @@ public class SourceBean implements Serializable {
 
     public String getPlayerUrl() {
         return playerUrl;
-    }
-
-    public boolean isInternal() {
-        return local == null;
-    }
-
-    public void initFromLocal(LocalSource local) {
-        setKey(local.name);
-        setName(local.name);
-        setApi(local.api);
-        setType(local.type);
-        this.local = local;
-        setPlayerUrl(local.playerUrl);
     }
 
     public void setState(SourceState state) {
@@ -117,11 +101,7 @@ public class SourceBean implements Serializable {
     }
 
     public boolean isAddition() {
-        return this == addNewBean || this == speedTestBean;
-    }
-
-    public LocalSource getLocal() {
-        return local;
+        return this == speedTestBean;
     }
 
     public int getType() {
@@ -140,5 +120,37 @@ public class SourceBean implements Serializable {
     public HashMap<Integer, Integer> getTidSort() {
         return new Gson().fromJson(state.tidSort, new TypeToken<HashMap<Integer, Integer>>() {
         }.getType());
+    }
+
+    public int getSearchable() {
+        return searchable;
+    }
+
+    public void setSearchable(int searchable) {
+        this.searchable = searchable;
+    }
+
+    public int getQuickSearch() {
+        return quickSearch;
+    }
+
+    public void setQuickSearch(int quickSearch) {
+        this.quickSearch = quickSearch;
+    }
+
+    public int getFilterable() {
+        return filterable;
+    }
+
+    public void setFilterable(int filterable) {
+        this.filterable = filterable;
+    }
+
+    public String getExt() {
+        return ext;
+    }
+
+    public void setExt(String ext) {
+        this.ext = ext;
     }
 }

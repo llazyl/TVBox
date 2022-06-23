@@ -205,15 +205,11 @@ public class LivePlayActivity extends BaseActivity {
         String lastChannelName = Hawk.get(HawkConfig.LIVE_CHANNEL, "");
         channelList.clear();
         channelList.addAll(ApiConfig.get().getChannelList());
-        // 刷新本地源频道号
-        int channelNumLocal = 500;
         for (LiveChannel lc : channelList) {
-            if (lc.getChannelName().equals(lastChannelName))
+            if (lc.getName().equals(lastChannelName)) {
                 lastChannel = lc;
-            if (lc.isInternal() || lc.isForAdd())
-                continue;
-            lc.setChannelNum(channelNumLocal);
-            channelNumLocal++;
+                break;
+            }
         }
         if (lastChannel == null)
             lastChannel = channelList.get(0);
@@ -227,7 +223,7 @@ public class LivePlayActivity extends BaseActivity {
     }
 
     private void refreshTextInfo() {
-        tvUrl.setText(currentChannel.getChannelUrl());
+        tvUrl.setText(currentChannel.getUrls());
         tvChannel.setText(String.format("%d", currentChannel.getChannelNum()));
     }
 
@@ -331,9 +327,9 @@ public class LivePlayActivity extends BaseActivity {
         currentChannel.setDefault(true);
         channelAdapter.notifyItemChanged(channelList.indexOf(currentChannel));
         showChannelNum();
-        Hawk.put(HawkConfig.LIVE_CHANNEL, channel.getChannelName());
+        Hawk.put(HawkConfig.LIVE_CHANNEL, channel.getName());
         mVideoView.release();
-        mVideoView.setUrl(channel.getChannelUrl());
+        mVideoView.setUrl(channel.getUrls());
         mVideoView.start();
         return true;
     }

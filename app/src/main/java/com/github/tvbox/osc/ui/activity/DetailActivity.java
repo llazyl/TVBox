@@ -26,7 +26,6 @@ import com.github.tvbox.osc.picasso.RoundTransformation;
 import com.github.tvbox.osc.ui.adapter.SeriesAdapter;
 import com.github.tvbox.osc.ui.adapter.SeriesFlagAdapter;
 import com.github.tvbox.osc.ui.dialog.QuickSearchDialog;
-import com.github.tvbox.osc.util.DefaultConfig;
 import com.github.tvbox.osc.util.FastClickCheckUtil;
 import com.github.tvbox.osc.viewmodel.SourceViewModel;
 import com.google.gson.Gson;
@@ -491,12 +490,10 @@ public class DetailActivity extends BaseActivity {
         if (absXml != null && absXml.movie != null && absXml.movie.videoList != null && absXml.movie.videoList.size() > 0) {
             List<Movie.Video> data = new ArrayList<>();
             for (Movie.Video video : absXml.movie.videoList) {
-                if (!DefaultConfig.isContains(video.type)) {
-                    // 去除当前相同的影片
-                    if (video.sourceKey.equals(sourceKey) && video.id == vodId)
-                        continue;
-                    data.add(video);
-                }
+                // 去除当前相同的影片
+                if (video.sourceKey.equals(sourceKey) && video.id == vodId)
+                    continue;
+                data.add(video);
             }
             quickSearchData.addAll(data);
             EventBus.getDefault().post(new RefreshEvent(RefreshEvent.TYPE_QUICK_SEARCH, data));

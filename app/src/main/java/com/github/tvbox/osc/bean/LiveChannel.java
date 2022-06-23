@@ -1,8 +1,5 @@
 package com.github.tvbox.osc.bean;
 
-import com.github.tvbox.osc.cache.LocalLive;
-
-import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -10,17 +7,7 @@ import java.util.ArrayList;
  * @date :2021/1/12
  * @description:
  */
-public class LiveChannel implements Serializable {
-    public static LiveChannel addNewBean = new LiveChannel();
-
-    static {
-        addNewBean.channelName = "_add_new_live";
-    }
-
-    public boolean isForAdd() {
-        return this == addNewBean;
-    }
-
+public class LiveChannel {
     /**
      * channelNum : 1
      * channelName : CCTV-1 综合
@@ -29,13 +16,10 @@ public class LiveChannel implements Serializable {
      */
 
     private int channelNum;
-    private String channelName;
-    private ArrayList<String> channelUrl;
-    private LocalLive local;
+    private String name;
+    private ArrayList<String> urls;
     private boolean isDefault;
     public int sourceIdx = 0;
-
-    private LocalLive live;
 
     public void setChannelNum(int channelNum) {
         this.channelNum = channelNum;
@@ -45,14 +29,18 @@ public class LiveChannel implements Serializable {
         return channelNum;
     }
 
-    public String getChannelName() {
-        return channelName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getChannelUrl() {
-        if (sourceIdx <= 0 || sourceIdx >= channelUrl.size())
+    public String getName() {
+        return name;
+    }
+
+    public String getUrls() {
+        if (sourceIdx <= 0 || sourceIdx >= urls.size())
             sourceIdx = 0;
-        return channelUrl.get(sourceIdx);
+        return urls.get(sourceIdx);
     }
 
     public boolean isDefault() {
@@ -63,18 +51,7 @@ public class LiveChannel implements Serializable {
         isDefault = b;
     }
 
-    public boolean isInternal() {
-        return local == null;
-    }
-
-    public LocalLive getLocal() {
-        return local;
-    }
-
-    public void initFromLocal(LocalLive ll) {
-        channelName = ll.name;
-        channelUrl = new ArrayList<>();
-        channelUrl.add(ll.url);
-        local = ll;
+    public void setUrls(ArrayList<String> urls) {
+        this.urls = urls;
     }
 }

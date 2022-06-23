@@ -55,17 +55,13 @@ public class SourceSettingFragment extends BaseLazyFragment {
         List<SourceBean> sourceBeans = new ArrayList<>();
         sourceBeans.add(SourceBean.speedTestBean);
         sourceBeans.addAll(ApiConfig.get().getSourceBeanList());
-        sourceBeans.add(SourceBean.addNewBean);
         settingAdapter.setNewData(sourceBeans);
         settingAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 FastClickCheckUtil.check(view);
                 SourceBean sourceBean = settingAdapter.getData().get(position);
-                if (sourceBean == SourceBean.addNewBean) {
-                    RemoteDialog dialog = new RemoteDialog().build(mContext);
-                    dialog.show();
-                } else if (sourceBean == SourceBean.speedTestBean) {
+                if (sourceBean == SourceBean.speedTestBean) {
                     SpeedTestDialog dialog = new SpeedTestDialog().build(mContext);
                     dialog.show();
                 } else {

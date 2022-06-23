@@ -7,6 +7,13 @@ import android.view.animation.BounceInterpolator;
 import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.github.tvbox.osc.R;
+import com.github.tvbox.osc.base.BaseActivity;
+import com.github.tvbox.osc.bean.VodInfo;
+import com.github.tvbox.osc.cache.RoomDataManger;
+import com.github.tvbox.osc.event.RefreshEvent;
+import com.github.tvbox.osc.ui.adapter.HistoryAdapter;
+import com.github.tvbox.osc.util.FastClickCheckUtil;
 import com.owen.tvrecyclerview.widget.TvRecyclerView;
 import com.owen.tvrecyclerview.widget.V7GridLayoutManager;
 
@@ -16,15 +23,6 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import com.github.tvbox.osc.R;
-import com.github.tvbox.osc.base.BaseActivity;
-import com.github.tvbox.osc.bean.VodInfo;
-import com.github.tvbox.osc.cache.RoomDataManger;
-import com.github.tvbox.osc.event.RefreshEvent;
-import com.github.tvbox.osc.ui.adapter.HistoryAdapter;
-import com.github.tvbox.osc.util.DefaultConfig;
-import com.github.tvbox.osc.util.FastClickCheckUtil;
 
 /**
  * @author pj567
@@ -147,9 +145,7 @@ public class HistoryActivity extends BaseActivity {
         List<VodInfo> allVodRecord = RoomDataManger.getAllVodRecord();
         List<VodInfo> vodInfoList = new ArrayList<>();
         for (VodInfo vodInfo : allVodRecord) {
-            if (!DefaultConfig.isContains(vodInfo.type)) {
-                vodInfoList.add(vodInfo);
-            }
+            vodInfoList.add(vodInfo);
         }
         historyAdapter.setNewData(vodInfoList);
     }

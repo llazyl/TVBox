@@ -12,7 +12,6 @@ import androidx.annotation.IdRes;
 import com.github.tvbox.osc.R;
 import com.github.tvbox.osc.api.ApiConfig;
 import com.github.tvbox.osc.bean.SourceBean;
-import com.github.tvbox.osc.cache.LocalSource;
 import com.github.tvbox.osc.cache.RoomDataManger;
 import com.github.tvbox.osc.cache.SourceState;
 import com.github.tvbox.osc.ui.fragment.SourceSettingFragment;
@@ -48,7 +47,6 @@ public class SourceSetDialog {
     void refreshView() {
         TextView tvActive = findViewById(R.id.tvSrcActive);
         TextView tvSrcHome = findViewById(R.id.tvSrcHome);
-        TextView tvSrcDel = findViewById(R.id.tvSrcDel);
         TextView tvSrcSort = findViewById(R.id.tvSrcSort);
         tvActive.setText(source.isActive() ? "禁用" : "启用");
         if (source.isActive()) {
@@ -60,11 +58,6 @@ public class SourceSetDialog {
         }
         if (source.isHome()) {
             tvActive.setTextColor(Color.GRAY);
-            tvSrcDel.setTextColor(Color.GRAY);
-            tvSrcDel.setText("首页数据源不可删除");
-        } else {
-            tvSrcDel.setTextColor(source.isInternal() ? Color.GRAY : Color.BLACK);
-            tvSrcDel.setText(source.isInternal() ? "内置源不可删除" : "删除此数据源");
         }
         tvSrcSort.setTextColor(source.isActive() ? Color.BLACK : Color.GRAY);
         tvActive.setOnClickListener(new View.OnClickListener() {
@@ -92,29 +85,6 @@ public class SourceSetDialog {
                     dismiss();
                 } else {
                     Toast.makeText(mFragment.getContext(), "请先启用数据源!", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-        tvSrcDel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FastClickCheckUtil.check(v);
-                if (source.isHome()) {
-                    Toast.makeText(mFragment.getContext(), "首页数据源不可删除!", Toast.LENGTH_SHORT).show();
-                } else if (source.isInternal()) {
-                    Toast.makeText(mFragment.getContext(), "内置数据源不可删除!", Toast.LENGTH_SHORT).show();
-                } else {
-                    String removeKey = source.getKey();
-                    LocalSource ls = source.getLocal();
-                    if (ls != null)
-                        RoomDataManger.delLocalSource(ls);
-                    // 删除状态
-                    SourceState ss = source.getState();
-                    if (ss != null)
-                        RoomDataManger.delSourceState(ss);
-                    srcSetChange.onDelete();
-                    ApiConfig.get().getSourceBeanList().remove(source);
-                    dismiss();
                 }
             }
         });

@@ -25,7 +25,7 @@ public class LiveChannelAdapter extends BaseQuickAdapter<LiveChannel, BaseViewHo
         TextView tvChannelNum = helper.getView(R.id.tvChannelNum);
         TextView tvChannel = helper.getView(R.id.tvChannel);
         tvChannelNum.setText(String.format("%s", item.getChannelNum()));
-        tvChannel.setText(String.format("%s", item.getChannelName()));
+        tvChannel.setText(String.format("%s", item.getName()));
         if (item.isDefault()) {
             tvChannelNum.setTextColor(mContext.getResources().getColor(R.color.color_02F8E1));
             tvChannel.setTextColor(mContext.getResources().getColor(R.color.color_02F8E1));

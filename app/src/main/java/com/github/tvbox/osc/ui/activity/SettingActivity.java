@@ -16,9 +16,7 @@ import com.github.tvbox.osc.base.BaseActivity;
 import com.github.tvbox.osc.base.BaseLazyFragment;
 import com.github.tvbox.osc.ui.adapter.SettingPageAdapter;
 import com.github.tvbox.osc.ui.adapter.SettingSortAdapter;
-import com.github.tvbox.osc.ui.fragment.LiveFragment;
 import com.github.tvbox.osc.ui.fragment.ModelSettingFragment;
-import com.github.tvbox.osc.ui.fragment.ParseFragment;
 import com.github.tvbox.osc.ui.fragment.SourceSettingFragment;
 import com.github.tvbox.osc.util.AppManager;
 import com.github.tvbox.osc.util.HawkConfig;
@@ -114,8 +112,6 @@ public class SettingActivity extends BaseActivity {
         sourceMode = Hawk.get(HawkConfig.SOURCE_MODE_LOCAL, true);
         List<String> sortList = new ArrayList<>();
         sortList.add("站点数据源");
-        sortList.add("解析线路");
-        sortList.add("直播源");
         sortList.add("设置其他");
         sortAdapter.setNewData(sortList);
         initViewPager();
@@ -123,8 +119,6 @@ public class SettingActivity extends BaseActivity {
 
     private void initViewPager() {
         fragments.add(SourceSettingFragment.newInstance());
-        fragments.add(ParseFragment.newInstance());
-        fragments.add(LiveFragment.newInstance());
         fragments.add(ModelSettingFragment.newInstance());
         pageAdapter = new SettingPageAdapter(getSupportFragmentManager(), fragments);
         mViewPager.setAdapter(pageAdapter);

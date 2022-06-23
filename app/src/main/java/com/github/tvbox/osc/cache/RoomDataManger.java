@@ -106,18 +106,6 @@ public class RoomDataManger {
         return vodInfoList;
     }
 
-    public static List<LocalSource> getAllLocalSource() {
-        return AppDataManager.get().getLocalSourceDao().getAll();
-    }
-
-    public static void addLocalSource(LocalSource source) {
-        AppDataManager.get().getLocalSourceDao().insert(source);
-    }
-
-    public static void delLocalSource(LocalSource source) {
-        AppDataManager.get().getLocalSourceDao().delete(source);
-    }
-
     public static HashMap<String, SourceState> getAllSourceState() {
         HashMap<String, SourceState> result = new HashMap<>();
         for (SourceState state : AppDataManager.get().getSourceStateDao().getAll()) {
@@ -132,31 +120,6 @@ public class RoomDataManger {
 
     public static void delSourceState(SourceState ss) {
         AppDataManager.get().getSourceStateDao().delete(ss);
-    }
-
-
-    public static List<LocalParse> getAllLocalParse() {
-        return AppDataManager.get().getLocalParseDao().getAll();
-    }
-
-    public static void addLocalParse(LocalParse parse) {
-        AppDataManager.get().getLocalParseDao().insert(parse);
-    }
-
-    public static void delLocalParse(LocalParse parse) {
-        AppDataManager.get().getLocalParseDao().delete(parse);
-    }
-
-    public static List<LocalLive> getAllLocalLive() {
-        return AppDataManager.get().getLocalLiveDao().getAll();
-    }
-
-    public static void addLocalLive(LocalLive ss) {
-        AppDataManager.get().getLocalLiveDao().insert(ss);
-    }
-
-    public static void delLocalLive(LocalLive ss) {
-        AppDataManager.get().getLocalLiveDao().delete(ss);
     }
 
 }

@@ -30,34 +30,14 @@ public class DefaultConfig {
         for (MovieSort.SortData sortData : list) {
             // 默认排序 是 tid + 1000
             sortData.sort = sortData.id + 1000;
-            if (!isContains(sortData.name)) {
-                if (tidSort != null && tidSort.containsKey(sortData.id))
-                    sortData.sort = tidSort.get(sortData.id);
-                data.add(sortData);
-            }
+            if (tidSort != null && tidSort.containsKey(sortData.id))
+                sortData.sort = tidSort.get(sortData.id);
+            data.add(sortData);
         }
         if (withMy)
             data.add(0, new MovieSort.SortData(0, "我的"));
         Collections.sort(data);
         return data;
-    }
-
-    public static boolean isContains(String s) {
-        boolean contains = false;
-        for (String temp : rmBase) {
-            if (s.contains(temp)) {
-                contains = true;
-                break;
-            }
-        }
-        return contains;
-    }
-
-    private static List<String> rmBase = new ArrayList<>();
-
-    public static void initRemove(List<String> base) {
-        rmBase.clear();
-        rmBase.addAll(base);
     }
 
     public static int getAppVersionCode(Context mContext) {

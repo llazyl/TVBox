@@ -24,7 +24,6 @@ import com.github.tvbox.osc.event.ServerEvent;
 import com.github.tvbox.osc.server.RemoteServer;
 import com.github.tvbox.osc.ui.adapter.SearchAdapter;
 import com.github.tvbox.osc.ui.tv.QRCodeGen;
-import com.github.tvbox.osc.util.DefaultConfig;
 import com.github.tvbox.osc.util.FastClickCheckUtil;
 import com.github.tvbox.osc.viewmodel.SourceViewModel;
 import com.lzy.okgo.OkGo;
@@ -223,9 +222,7 @@ public class SearchActivity extends BaseActivity {
         if (absXml != null && absXml.movie != null && absXml.movie.videoList != null && absXml.movie.videoList.size() > 0) {
             List<Movie.Video> data = new ArrayList<>();
             for (Movie.Video video : absXml.movie.videoList) {
-                if (!DefaultConfig.isContains(video.type)) {
-                    data.add(video);
-                }
+                data.add(video);
             }
             if (searchAdapter.getData().size() > 0) {
                 searchAdapter.addData(data);

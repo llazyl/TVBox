@@ -31,6 +31,6 @@ public class ParseDialogAdapter extends BaseQuickAdapter<ParseBean, BaseViewHold
         } else {
             tvParse.setTextColor(Color.WHITE);
         }
-        tvParse.setText(item.getParseName());
+        tvParse.setText(item.getName());
     }
 }

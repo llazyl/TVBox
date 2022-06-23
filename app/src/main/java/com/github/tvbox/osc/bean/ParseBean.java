@@ -1,48 +1,32 @@
 package com.github.tvbox.osc.bean;
 
-import java.io.Serializable;
-
-import com.github.tvbox.osc.cache.LocalParse;
-
 /**
  * @author pj567
  * @date :2021/3/8
  * @description:
  */
-public class ParseBean implements Serializable {
-    public static ParseBean addNewBean = new ParseBean();
+public class ParseBean {
 
-    static {
-        addNewBean.parseName = "_add_new_parse";
-    }
-
-    private String parseName;
-    private String parseUrl;
+    private String name;
+    private String url;
+    private int type;   // 0 普通嗅探 1 json 2 Json扩展 3 聚合
 
     private boolean isDefault = false;
 
-    private LocalParse local;
-
-    public String getParseName() {
-        return parseName;
+    public String getName() {
+        return name;
     }
 
-    public void setParseName(String parseName) {
-        this.parseName = parseName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getParseUrl() {
-        return parseUrl;
+    public String getUrl() {
+        return url;
     }
 
-    public void setParseUrl(String parseUrl) {
-        this.parseUrl = parseUrl;
-    }
-
-    public void initFromLocal(LocalParse lp) {
-        setParseName(lp.name);
-        setParseUrl(lp.url);
-        local = lp;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public boolean isDefault() {
@@ -52,17 +36,13 @@ public class ParseBean implements Serializable {
     public void setDefault(boolean b) {
         isDefault = b;
     }
-    
-    public boolean isInternal() {
-        return local == null;
+
+
+    public int getType() {
+        return type;
     }
 
-    public LocalParse getLocal() {
-        return local;
-    }
-
-
-    public boolean isForAdd() {
-        return this == addNewBean;
+    public void setType(int type) {
+        this.type = type;
     }
 }

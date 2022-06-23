@@ -58,35 +58,39 @@ public class SourceViewModel extends ViewModel {
     public void getSort(String sourceKey) {
         SourceBean sourceBean = ApiConfig.get().getSource(sourceKey);
         int type = sourceBean.getType();
-        OkGo.<String>get(sourceBean.getApi())
-                .tag(sourceBean.getKey() + "_sort")
-                .execute(new AbsCallback<String>() {
-                    @Override
-                    public String convertResponse(okhttp3.Response response) throws Throwable {
-                        if (response.body() != null) {
-                            return response.body().string();
-                        } else {
-                            throw new IllegalStateException("网络请求错误");
+        if(type == 3) {
+            sortResult.postValue(null);
+        }else {
+            OkGo.<String>get(sourceBean.getApi())
+                    .tag(sourceBean.getKey() + "_sort")
+                    .execute(new AbsCallback<String>() {
+                        @Override
+                        public String convertResponse(okhttp3.Response response) throws Throwable {
+                            if (response.body() != null) {
+                                return response.body().string();
+                            } else {
+                                throw new IllegalStateException("网络请求错误");
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onSuccess(Response<String> response) {
-                        if (type == 0) {
-                            String xml = response.body();
-                            sortXml(sortResult, xml);
-                        } else if (type == 1) {
-                            String json = response.body();
-                            sortJson(sortResult, json);
+                        @Override
+                        public void onSuccess(Response<String> response) {
+                            if (type == 0) {
+                                String xml = response.body();
+                                sortXml(sortResult, xml);
+                            } else if (type == 1) {
+                                String json = response.body();
+                                sortJson(sortResult, json);
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onError(Response<String> response) {
-                        super.onError(response);
-                        sortResult.postValue(null);
-                    }
-                });
+                        @Override
+                        public void onError(Response<String> response) {
+                            super.onError(response);
+                            sortResult.postValue(null);
+                        }
+                    });
+        }
     }
 
     public void getList(int id, int page) {

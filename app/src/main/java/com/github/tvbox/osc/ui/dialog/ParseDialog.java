@@ -253,7 +253,7 @@ public class ParseDialog {
                     ApiConfig.get().setDefaultParse(parseBean);
                     parseAdapter.notifyItemChanged(position);
                     loadFound = false;
-                    loadUrl(parseBean.getParseUrl() + url, callback);
+                    loadUrl(parseBean.getUrl() + url, callback);
                 }
             });
             mGridView.setOnInBorderKeyEventListener(new TvRecyclerView.OnInBorderKeyEventListener() {
@@ -269,7 +269,7 @@ public class ParseDialog {
         if (ApiConfig.get().getVipParseFlags().contains(flag) || TextUtils.isEmpty(flag)) {
             parseBeans.addAll(ApiConfig.get().getParseBeanList());
             ParseBean parseBean = ApiConfig.get().getDefaultParse();
-            parseUrl = parseBean.getParseUrl();
+            parseUrl = parseBean.getUrl();
             focusParseIdx = parseBeans.indexOf(parseBean);
         } else {
             parseUrl = sb == null ? "" : sb.getPlayerUrl();
