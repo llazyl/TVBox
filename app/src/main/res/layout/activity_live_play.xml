@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.dueeeke.videoplayer.player.VideoView
+        android:id="@+id/mVideoView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <com.owen.tvrecyclerview.widget.TvRecyclerView
+        android:id="@+id/mGridView"
+        android:layout_width="220pt"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="-220pt"
+        android:background="@color/color_66000000"
+        android:paddingLeft="10pt"
+        android:paddingTop="20pt"
+        android:paddingRight="10pt"
+        android:paddingBottom="20pt"
+        android:visibility="gone"
+        app:tv_selectedItemIsCentered="true"
+        app:tv_verticalSpacingWithMargins="20pt" />
+
+    <TextView
+        android:id="@+id/tvChannel"
+        android:layout_width="100pt"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:layout_marginTop="30pt"
+        android:layout_marginRight="60pt"
+        android:background="@drawable/channel_num_shape"
+        android:gravity="center"
+        android:paddingTop="5pt"
+        android:paddingBottom="5pt"
+        android:textColor="@android:color/white"
+        android:textSize="36pt"
+        android:textStyle="bold"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/tvUrl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|bottom"
+        android:layout_marginRight="30pt"
+        android:layout_marginBottom="90pt"
+        android:background="@drawable/channel_num_shape"
+        android:gravity="center"
+        android:paddingLeft="10pt"
+        android:paddingTop="5pt"
+        android:paddingRight="10pt"
+        android:paddingBottom="5pt"
+        android:singleLine="true"
+        android:text="http://"
+        android:textColor="@android:color/white"
+        android:textSize="24pt" />
+
+    <TextView
+        android:id="@+id/tvHint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|bottom"
+        android:layout_marginRight="30pt"
+        android:layout_marginBottom="30pt"
+        android:background="@drawable/channel_num_shape"
+        android:gravity="center"
+        android:paddingLeft="10pt"
+        android:paddingTop="5pt"
+        android:paddingRight="10pt"
+        android:paddingBottom="5pt"
+        android:text="上下键换台,数字键跳台,左右键切换播放源"
+        android:textColor="@android:color/white"
+        android:textSize="24pt"
+        android:textStyle="bold" />
+</FrameLayout>

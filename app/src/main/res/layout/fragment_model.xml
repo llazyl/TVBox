@@ -1,0 +1,422 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center_horizontal"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|center_horizontal"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/llTest"
+                android:layout_width="match_parent"
+                android:layout_height="50pt"
+                android:layout_marginLeft="30pt"
+                android:layout_marginTop="20pt"
+                android:layout_marginRight="30pt"
+                android:background="@drawable/setting_model_focus"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="20pt"
+                android:paddingRight="20pt"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="测试渠道"
+                    android:textColor="@android:color/white"
+                    android:textSize="24pt" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:id="@+id/tvTestChannel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="关"
+                    android:textColor="@android:color/white"
+                    android:textSize="24pt" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10pt"
+                    android:paddingBottom="5pt"
+                    android:text=">"
+                    android:textColor="@android:color/white"
+                    android:textSize="30pt" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llDebug"
+                android:layout_width="match_parent"
+                android:layout_height="50pt"
+                android:layout_marginLeft="30pt"
+                android:layout_marginTop="20pt"
+                android:layout_marginRight="30pt"
+                android:background="@drawable/setting_model_focus"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="20pt"
+                android:paddingRight="20pt"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="调试模式"
+                    android:textColor="@android:color/white"
+                    android:textSize="24pt" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:id="@+id/tvDebugOpen"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="关"
+                    android:textColor="@android:color/white"
+                    android:textSize="24pt" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10pt"
+                    android:paddingBottom="5pt"
+                    android:text=">"
+                    android:textColor="@android:color/white"
+                    android:textSize="30pt" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llSourceMode"
+                android:layout_width="match_parent"
+                android:layout_height="50pt"
+                android:layout_marginLeft="30pt"
+                android:layout_marginTop="20pt"
+                android:layout_marginRight="30pt"
+                android:background="@drawable/setting_model_focus"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="20pt"
+                android:paddingRight="20pt"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="数据源模式"
+                    android:textColor="@android:color/white"
+                    android:textSize="24pt" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:id="@+id/tvSourceMode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="本地"
+                    android:textColor="@android:color/white"
+                    android:textSize="24pt" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10pt"
+                    android:paddingBottom="5pt"
+                    android:text=">"
+                    android:textColor="@android:color/white"
+                    android:textSize="30pt" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llPlay"
+                android:layout_width="match_parent"
+                android:layout_height="50pt"
+                android:layout_marginLeft="30pt"
+                android:layout_marginTop="20pt"
+                android:layout_marginRight="30pt"
+                android:background="@drawable/setting_model_focus"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="20pt"
+                android:paddingRight="20pt">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="播放器"
+                    android:textColor="@android:color/white"
+                    android:textSize="24pt" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:id="@+id/tvPlay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/white"
+                    android:textSize="24pt" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10pt"
+                    android:paddingBottom="5pt"
+                    android:text=">"
+                    android:textColor="@android:color/white"
+                    android:textSize="30pt" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llMediaCodec"
+                android:layout_width="match_parent"
+                android:layout_height="50pt"
+                android:layout_marginLeft="30pt"
+                android:layout_marginTop="20pt"
+                android:layout_marginRight="30pt"
+                android:background="@drawable/setting_model_focus"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="20pt"
+                android:paddingRight="20pt">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="IJK解码方式"
+                    android:textColor="@android:color/white"
+                    android:textSize="24pt" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:id="@+id/tvMediaCodec"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/white"
+                    android:textSize="24pt" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10pt"
+                    android:paddingBottom="5pt"
+                    android:text=">"
+                    android:textColor="@android:color/white"
+                    android:textSize="30pt" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llRender"
+                android:layout_width="match_parent"
+                android:layout_height="50pt"
+                android:layout_marginLeft="30pt"
+                android:layout_marginTop="20pt"
+                android:layout_marginRight="30pt"
+                android:background="@drawable/setting_model_focus"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="20pt"
+                android:paddingRight="20pt">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="渲染方式"
+                    android:textColor="@android:color/white"
+                    android:textSize="24pt" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:id="@+id/tvRenderType"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/white"
+                    android:textSize="24pt" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10pt"
+                    android:paddingBottom="5pt"
+                    android:text=">"
+                    android:textColor="@android:color/white"
+                    android:textSize="30pt" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llParseWebVew"
+                android:layout_width="match_parent"
+                android:layout_height="50pt"
+                android:layout_marginLeft="30pt"
+                android:layout_marginTop="20pt"
+                android:layout_marginRight="30pt"
+                android:background="@drawable/setting_model_focus"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="20pt"
+                android:paddingRight="20pt">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="资源解析WebView"
+                    android:textColor="@android:color/white"
+                    android:textSize="24pt" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:id="@+id/tvParseWebView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="系统自带"
+                    android:textColor="@android:color/white"
+                    android:textSize="24pt" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10pt"
+                    android:paddingBottom="5pt"
+                    android:text=">"
+                    android:textColor="@android:color/white"
+                    android:textSize="30pt" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llXWalkCore"
+                android:layout_width="match_parent"
+                android:layout_height="50pt"
+                android:layout_marginLeft="30pt"
+                android:layout_marginTop="20pt"
+                android:layout_marginRight="30pt"
+                android:background="@drawable/setting_model_focus"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="20pt"
+                android:paddingRight="20pt">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="XWalkView组件"
+                    android:textColor="@android:color/white"
+                    android:textSize="24pt" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:id="@+id/tvXWalkDown"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/white"
+                    android:textSize="24pt" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10pt"
+                    android:paddingBottom="5pt"
+                    android:text=">"
+                    android:textColor="@android:color/white"
+                    android:textSize="30pt" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llAbout"
+                android:layout_width="match_parent"
+                android:layout_height="50pt"
+                android:layout_marginLeft="30pt"
+                android:layout_marginTop="20pt"
+                android:layout_marginRight="30pt"
+                android:background="@drawable/setting_model_focus"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="20pt"
+                android:paddingRight="20pt">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="关于"
+                    android:textColor="@android:color/white"
+                    android:textSize="24pt" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10pt"
+                    android:paddingBottom="5pt"
+                    android:text=">"
+                    android:textColor="@android:color/white"
+                    android:textSize="30pt" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>

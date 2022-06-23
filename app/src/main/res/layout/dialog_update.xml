@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:background="@drawable/model_dialog_bg"
+    android:orientation="vertical"
+    android:padding="30pt">
+
+    <TextView
+        android:id="@+id/updateInfo"
+        android:layout_width="240pt"
+        android:layout_height="100pt"
+        android:gravity="center"
+        android:lineSpacingMultiplier="1.2"
+        android:textColor="@android:color/white"
+        android:textSize="18pt" />
+
+</LinearLayout>

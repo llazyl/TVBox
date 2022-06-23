@@ -1,0 +1,233 @@
+{
+  "sources": [
+    {
+      "key": "快播云",
+      "name": "快播云",
+      "type": 0,
+      "api": "http://www.kuaibozy.com/api.php/provide/vod/at/xml/",
+      "playerUrl": ""
+    }
+  ],
+  "live": [
+    {
+      "channelNum": 1,
+      "channelName": "CCTV-1",
+      "channelUrl": [
+        "http://111.12.102.68:6610/PLTV/77777777/224/3221225674/index.m3u8?",
+        "http://111.12.102.68:6610/PLTV/77777777/224/3221225654/index.m3u8?",
+        "http://111.12.102.68:6610/PLTV/77777777/224/3221225772/index.m3u8?"
+      ]
+    }
+  ],
+  "parseFlag": [
+    "youku",
+    "qq",
+    "iqiyi",
+    "qiyi",
+    "letv",
+    "sohu",
+    "tudou",
+    "pptv",
+    "mgtv",
+    "wasu"
+  ],
+  "parseUrl": [
+    {
+      "parseName": "解析1",
+      "parseUrl": "https://jx.kuluni.cn/?url="
+    },
+    {
+      "parseName": "解析2",
+      "parseUrl": "https://dm.lby.pet/m3u8.php?url="
+    },
+    {
+      "parseName": "解析3",
+      "parseUrl": "http://api.baiyug.vip/index.php?url="
+    },
+    {
+      "parseName": "解析4",
+      "parseUrl": "http://playx.top/?url="
+    },
+    {
+      "parseName": "解析5",
+      "parseUrl": "http://play1.online/?url="
+    },
+    {
+      "parseName": "解析6",
+      "parseUrl": "http://api.baiyug.vip/?url="
+    },
+    {
+      "parseName": "解析7",
+      "parseUrl": "http://bofang.online/?url="
+    },
+    {
+      "parseName": "解析8",
+      "parseUrl": "http://607p.com/?url="
+    },
+    {
+      "parseName": "解析9",
+      "parseUrl": "http://pangujx.cc/?url="
+    },
+    {
+      "parseName": "解析10",
+      "parseUrl": "http://jx.quanmingjiexi.com/?url="
+    },
+    {
+      "parseName": "解析11",
+      "parseUrl": "https://okjx.cc?url="
+    },
+    {
+      "parseName": "解析12",
+      "parseUrl": "http://jqaaa.com/jx.php?url="
+    },
+    {
+      "parseName": "解析13",
+      "parseUrl": "https://www.qianyicp.com/jiexi/index.php?url="
+    },
+    {
+      "parseName": "解析14",
+      "parseUrl": "https://www.xymav.com/?url="
+    },
+    {
+      "parseName": "解析15",
+      "parseUrl": "https://www.1717yun.com/jx/ty.php?url="
+    },
+    {
+      "parseName": "解析16",
+      "parseUrl": "https://jx.mw0.cc/?url="
+    },
+    {
+      "parseName": "解析17",
+      "parseUrl": "https://jx.618g.com/?url="
+    },
+    {
+      "parseName": "解析18",
+      "parseUrl": "https://plamgtvcache.ccyjjd.com/play.php?url="
+    },
+    {
+      "parseName": "解析19",
+      "parseUrl": "https://pay.520yk.cn/256/?url="
+    }
+  ],
+  "filter": {
+    "base": [
+      "电视剧",
+      "连续剧",
+      "电影",
+      "剧集"
+    ]
+  },
+  "ijk": {
+    "option_bak": [
+      "4|opensles|0",
+      "4|overlay-format|842225234",
+      "4|framedrop|1",
+      "4|start-on-prepared|1",
+      "1|http-detect-range-support|0",
+      "2|skip_loop_filter|48",
+      "4|reconnect|1",
+      "4|enable-accurate-seek|1"
+    ],
+    "option": [
+      "4|opensles|0",
+      "4|overlay-format|842225234",
+      "4|framedrop|1",
+      "4|soundtouch|1",
+      "4|start-on-prepared|1",
+      "1|http-detect-range-support|0",
+      "1|fflags|fastseek",
+      "2|skip_loop_filter|48",
+      "4|reconnect|1",
+      "4|max-buffer-size|5242880",
+      "4|enable-accurate-seek|0"
+    ],
+    "config": [
+      {
+        "name": "软解码",
+        "option": [
+          "4|mediacodec|0",
+          "4|mediacodec-auto-rotate|0",
+          "4|mediacodec-handle-resolution-change|0",
+          "4|mediacodec-hevc|0"
+        ]
+      },
+      {
+        "name": "硬解码1",
+        "option": [
+          "4|mediacodec|1",
+          "4|mediacodec-auto-rotate|1",
+          "4|mediacodec-handle-resolution-change|1",
+          "4|mediacodec-hevc|1"
+        ]
+      },
+      {
+        "name": "硬解码2",
+        "option": [
+          "4|mediacodec|1",
+          "4|mediacodec-auto-rotate|1",
+          "4|mediacodec-handle-resolution-change|1",
+          "4|mediacodec-hevc|0"
+        ]
+      }
+    ]
+  },
+  "ads": [
+    "mimg.0c1q0l.cn",
+    "www.googletagmanager.com",
+    "www.google-analytics.com",
+    "mc.usihnbcq.cn",
+    "mg.g1mm3d.cn",
+    "mscs.svaeuzh.cn",
+    "cnzz.hhttm.top",
+    "tp.vinuxhome.com",
+    "cnzz.mmstat.com",
+    "www.baihuillq.com",
+    "s23.cnzz.com",
+    "z3.cnzz.com",
+    "c.cnzz.com",
+    "stj.v1vo.top",
+    "z12.cnzz.com",
+    "img.mosflower.cn",
+    "tips.gamevvip.com",
+    "ehwe.yhdtns.com",
+    "xdn.cqqc3.com",
+    "www.jixunkyy.cn",
+    "sp.chemacid.cn",
+    "hm.baidu.com",
+    "s9.cnzz.com",
+    "z6.cnzz.com",
+    "um.cavuc.com",
+    "mav.mavuz.com",
+    "wofwk.aoidf3.com",
+    "z5.cnzz.com",
+    "xc.hubeijieshikj.cn",
+    "tj.tianwenhu.com",
+    "xg.gars57.cn",
+    "k.jinxiuzhilv.com",
+    "cdn.bootcss.com",
+    "ppl.xunzhuo123.com",
+    "xomk.jiangjunmh.top",
+    "img.xunzhuo123.com",
+    "z1.cnzz.com",
+    "s13.cnzz.com",
+    "xg.huataisangao.cn",
+    "z7.cnzz.com",
+    "xg.huataisangao.cn",
+    "z2.cnzz.com",
+    "s96.cnzz.com",
+    "q11.cnzz.com",
+    "thy.dacedsfa.cn",
+    "xg.whsbpw.cn",
+    "s19.cnzz.com",
+    "z8.cnzz.com",
+    "s4.cnzz.com",
+    "f5w.as12df.top",
+    "ae01.alicdn.com",
+    "www.92424.cn",
+    "k.wudejia.com",
+    "vivovip.mmszxc.top",
+    "qiu.xixiqiu.com",
+    "cdnjs.hnfenxun.com",
+    "cms.qdwght.com"
+  ]
+}

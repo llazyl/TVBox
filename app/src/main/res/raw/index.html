@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+	<title>TVBox</title>
+	<meta name="layoutmode" content="standard">
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+	<div class="container">
+		<div class="keys" data-tab="controls">
+			<div id="direction-btns" class="direction-btns">
+				<div class="otherbtn home-btn" id="home-btn" data-key='3' data-bp='-586px -315px'></div>
+				<div class="otherbtn vol-btn" id="vol-btn" data-key='164' data-bp='-711px -315px'></div>
+				<div class="direction left-btn" id="left-btn" data-key='21' data-bp='-1px -247px'></div>
+				<div class="direction top-btn" id="top-btn" data-key='19' data-bp='-247px -1px'></div>
+				<div class="direction right-btn" id="right-btn" data-key='22' data-bp='-493px -1px'></div>
+				<div class="direction bottom-btn" id="bottom-btn" data-key='20' data-bp='-247px -247px'></div>
+				<div class="direction center-btn" id="center-btn" data-key='23' data-bp='-740px -1px'></div>
+				<div class="otherbtn back-btn" id="back-btn" data-key='4' data-bp='-586px -251px'></div>
+				<div class="otherbtn menu-btn" id="menu-btn" data-key='82' data-bp='-711px -251px'></div>
+				<div class="otherbtn vol1-btn" id="vol1-btn" data-key='24' data-bp='-711px -379px'></div>
+				<div class="otherbtn vol2-btn" id="vol2-btn" data-key='25' data-bp='-711px -379px'></div>
+			</div>
+		</div>
+		<div class="flex-box">
+			<div class="main-wrapper flex-10" data-tab="controls">
+				<div class="inputTitle-wrapper">
+					<input id="inputTitle" rows="1" placeholder="输入搜索内容" type="text"/>
+				</div>
+			</div>
+			<div class="main-wrapper flex-2 seach" data-tab="controls">
+				<div id="confirm" class="btn-nowd btn-wd">搜索</div>
+			</div>
+		</div>
+		<div class="flex-box" style="margin-top:10px;">
+			<div class="main-wrapper flex-10" data-tab="controls">
+				<div class="inputTitle-wrapper">
+					<input id="inputHtml" rows="1" placeholder="输入网页视频地址" type="text"/>
+				</div>
+			</div>
+			<div class="main-wrapper flex-2 seach" data-tab="controls">
+				<div id="confirmHtml" class="btn-nowd btn-wd">投屏</div>
+			</div>
+		</div>
+		<div class="flex-box" style="margin-top:10px;">说明：网页投屏是指的可以将第三方平台视频播放网页地址投送到电视端解析播放</div>
+
+		<hr>
+		<div class="flex-box" style="margin-top:10px;">
+			<div class="main-wrapper flex-12" data-tab="controls">
+				<div class="inputTitle-wrapper">
+					<input id="inputSourceApi" rows="1" placeholder="输入数据源地址（必须）" type="text"/>
+				</div>
+			</div>
+		</div>
+		<div class="flex-box" style="margin-top:10px;">
+			<div class="main-wrapper flex-12" data-tab="controls">
+				<div class="inputTitle-wrapper">
+					<input id="inputSourcePlay" rows="1" placeholder="输入数据源播放地址（非必须）,如果需要就输入" type="text"/>
+				</div>
+			</div>
+		</div>
+		<div class="flex-box" style="margin-top:10px;">
+			<div class="main-wrapper flex-12" data-tab="controls">
+				数据源格式 &nbsp;&nbsp;
+				<input type="radio" name="inputSourceType" value="0" checked />
+				<label>xml</label>
+				<input type="radio" name="inputSourceType" value="1" />
+				<label>json</label>
+			</div>
+		</div>
+		<div class="flex-box" style="margin-top:10px;">
+			<div class="main-wrapper flex-10" data-tab="controls">
+				<div class="inputTitle-wrapper">
+					<input id="inputSourceName" rows="1" placeholder="输入数据源名（必须）,不能和已有数据源重复" type="text"/>
+				</div>
+			</div>
+			<div class="main-wrapper flex-2 seach" data-tab="controls">
+				<div id="confirmSource" class="btn-nowd btn-wd">添加</div>
+			</div>
+		</div>
+		<div class="flex-box" style="margin-top:10px;">数据源地址支持json和xml格式，具体可百度采集资源<br/>例如：605资源采集网 数据源地址为：http://www.605zy.co/inc/api.php 数据源名称：605资源 添加即可</div>
+
+		<hr>
+		<div class="flex-box" style="margin-top:10px;">
+			<div class="main-wrapper flex-12" data-tab="controls">
+				<div class="inputTitle-wrapper">
+					<input id="inputLiveUrl" rows="1" placeholder="直播源地址（必须）" type="text"/>
+				</div>
+			</div>
+		</div>
+		<div class="flex-box" style="margin-top:10px;">
+			<div class="main-wrapper flex-10" data-tab="controls">
+				<div class="inputTitle-wrapper">
+					<input id="inputLiveName" rows="1" placeholder="频道名（必须）,不能和已有频道名重复" type="text"/>
+				</div>
+			</div>
+			<div class="main-wrapper flex-2 seach" data-tab="controls">
+				<div id="confirmLive" class="btn-nowd btn-wd">添加</div>
+			</div>
+		</div>
+		<div class="flex-box" style="margin-top:10px;">例如：例如增加一个北京文艺 频道名填 北京文艺, 直播源地址填 http://ivi.bupt.edu.cn/hls/btv2hd.m3u8</div>
+
+		<hr>
+		<div class="flex-box" style="margin-top:10px;">
+			<div class="main-wrapper flex-12" data-tab="controls">
+				<div class="inputTitle-wrapper">
+					<input id="inputParseUrl" rows="1" placeholder="解析地址（必须）" type="text"/>
+				</div>
+			</div>
+		</div>
+		<div class="flex-box" style="margin-top:10px;">
+			<div class="main-wrapper flex-10" data-tab="controls">
+				<div class="inputTitle-wrapper">
+					<input id="inputParseName" rows="1" placeholder="解析名（必须）,不能和已有解析名重复" type="text"/>
+				</div>
+			</div>
+			<div class="main-wrapper flex-2 seach" data-tab="controls">
+				<div id="confirmParse" class="btn-nowd btn-wd">添加</div>
+			</div>
+		</div>
+		<div class="flex-box" style="margin-top:10px;">说明：VIP视频解析地址</div>
+
+
+	</div>
+	<script src="/jquery_min.js"></script>
+	<script src="/ime_core.js"></script>
+</body>
+</html>

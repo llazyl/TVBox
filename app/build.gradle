@@ -1,0 +1,98 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 29
+    buildToolsVersion '29.0.2'
+
+    defaultConfig {
+        applicationId 'com.github.tvbox.osc'
+        minSdkVersion 16
+        targetSdkVersion 29
+        versionCode 33
+        versionName '4.3.3'
+        multiDexEnabled true
+        //设置room的Schema的位置
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
+    }
+
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+    }
+
+    buildTypes {
+        debug {
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            minifyEnabled false
+
+            ndk {
+                abiFilters 'armeabi-v7a'
+            }
+        }
+        release {
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            minifyEnabled true
+
+            ndk {
+                abiFilters 'armeabi-v7a'
+            }
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+    dexOptions {
+        javaMaxHeapSize "4g"
+        additionalParameters += '--multi-dex'
+        additionalParameters += '--set-max-idx-number=48000'
+        additionalParameters += '--minimal-main-dex'
+    }
+}
+
+dependencies {
+    api fileTree(dir: "libs", include: ["*.jar"])
+
+
+    implementation 'org.nanohttpd:nanohttpd:2.3.1'
+    implementation 'com.google.zxing:core:3.4.1'
+    implementation 'androidx.appcompat:appcompat:1.3.0'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+
+    annotationProcessor 'androidx.room:room-compiler:2.3.0'
+    implementation 'androidx.room:room-runtime:2.3.0'
+    implementation 'androidx.multidex:multidex:2.0.1'
+    implementation 'com.squareup.okhttp3:okhttp:3.12.1'
+    implementation 'com.squareup.okio:okio:2.6.0'
+    implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.45-androidx'
+    implementation 'com.kingja.loadsir:loadsir:1.3.8'
+    implementation 'com.google.code.gson:gson:2.8.7'
+    implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation 'me.jessyan:autosize:1.2.1'
+    implementation('com.thoughtworks.xstream:xstream:1.4.15') {
+        exclude group: 'xmlpull', module: 'xmlpull'
+    }
+    implementation 'org.greenrobot:eventbus:3.2.0'
+    implementation 'com.orhanobut:hawk:2.0.1'
+
+    implementation('org.xwalk:xwalk_shared_library:23.53.589.4') {
+        exclude group: 'com.android.support'
+    }
+    implementation 'com.lzy.net:okgo:3.0.4'
+    // implementation 'com.tencent.bugly:crashreport_upgrade:latest.release'
+    implementation 'com.github.dueeeke.dkplayer:dkplayer-java:3.2.6'
+    implementation 'com.github.dueeeke.dkplayer:dkplayer-ui:3.2.6'
+    implementation 'com.github.dueeeke.dkplayer:player-exo:3.2.6'
+    implementation 'com.github.dueeeke.dkplayer:player-ijk:3.2.6'
+    implementation 'com.owen:tv-recyclerview:3.0.0'
+}

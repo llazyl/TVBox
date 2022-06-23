@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.owen.tvrecyclerview.widget.TvRecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mGridView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:paddingLeft="30pt"
+    android:paddingTop="60pt"
+    android:paddingRight="30pt"
+    app:tv_horizontalSpacingWithMargins="10pt"
+    app:tv_selectedItemIsCentered="true"
+    app:tv_verticalSpacingWithMargins="10pt" />

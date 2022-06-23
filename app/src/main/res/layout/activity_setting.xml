@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <LinearLayout
+        android:layout_width="200pt"
+        android:layout_height="match_parent"
+        android:background="@color/color_6632364E"
+        android:orientation="vertical"
+        android:paddingTop="30pt">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="60pt"
+            android:drawableLeft="@drawable/search_line"
+            android:drawablePadding="10pt"
+            android:gravity="center"
+            android:text="设置"
+            android:textColor="@android:color/white"
+            android:textSize="24pt"
+            android:textStyle="bold" />
+
+        <com.owen.tvrecyclerview.widget.TvRecyclerView
+            android:id="@+id/mGridView"
+            android:layout_width="170pt"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_marginTop="20pt" />
+    </LinearLayout>
+
+    <com.github.tvbox.osc.ui.tv.widget.NoScrollViewPager
+        android:id="@+id/mViewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>

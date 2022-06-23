@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.owen.tvrecyclerview.widget.TvRecyclerView
+        android:id="@+id/mGridView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:paddingLeft="30pt"
+        android:paddingTop="20pt"
+        android:paddingRight="30pt"
+        android:paddingBottom="20pt" />
+</FrameLayout>

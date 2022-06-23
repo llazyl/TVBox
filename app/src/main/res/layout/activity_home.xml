@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/topLayout"
+        android:layout_width="match_parent"
+        android:layout_height="60pt"
+        android:layout_marginTop="10pt"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="50pt"
+        android:paddingRight="50pt">
+
+        <TextView
+            android:id="@+id/tvName"
+            android:layout_width="140pt"
+            android:layout_height="44pt"
+            android:layout_gravity="left|center_vertical"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:gravity="center"
+            android:text="@string/app_name"
+            android:textColor="@android:color/white"
+            android:textSize="32pt"
+            android:textStyle="bold" />
+
+        <com.github.tvbox.osc.ui.tv.widget.MarqueeTextView
+            android:id="@+id/tvNote"
+            android:layout_width="0pt"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20pt"
+            android:layout_marginRight="20pt"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:gravity="center_vertical"
+            android:textColor="@android:color/white"
+            android:textSize="28pt"
+            android:visibility="gone" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/tvDate"
+            android:layout_width="240pt"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right|center_vertical"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:textSize="28pt" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/contentLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:orientation="vertical">
+
+        <com.owen.tvrecyclerview.widget.TvRecyclerView
+            android:id="@+id/mGridView"
+            android:layout_width="match_parent"
+            android:layout_height="45pt"
+            android:layout_marginTop="80pt"
+            android:layout_marginBottom="20pt"
+            android:paddingLeft="60pt"
+            android:paddingRight="60pt"
+            app:tv_selectedItemIsCentered="true" />
+
+        <com.github.tvbox.osc.ui.tv.widget.NoScrollViewPager
+            android:id="@+id/mViewPager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+</FrameLayout>

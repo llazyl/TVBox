@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/rootLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="invisible">
+
+        <TextView
+            android:layout_width="300pt"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="100pt"
+            android:gravity="center_horizontal"
+            android:text="初始密码为:00000000"
+            android:textColor="@android:color/white"
+            android:textSize="24pt" />
+
+        <EditText
+            android:id="@+id/etPassword"
+            android:layout_width="300pt"
+            android:layout_height="40pt"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20pt"
+            android:background="@drawable/password_shape"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:gravity="center_vertical"
+            android:hint="请输入8位密码"
+            android:inputType="textPassword"
+            android:maxLength="8"
+            android:paddingLeft="10pt"
+            android:paddingRight="10pt"
+            android:textColor="@android:color/black"
+            android:textSize="20pt" />
+
+        <EditText
+            android:id="@+id/etConfirmPassword"
+            android:layout_width="300pt"
+            android:layout_height="40pt"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20pt"
+            android:background="@drawable/password_shape"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:gravity="center_vertical"
+            android:hint="再次请输入8位密码"
+            android:inputType="textPassword"
+            android:maxLength="8"
+            android:paddingLeft="10pt"
+            android:paddingRight="10pt"
+            android:textColor="@android:color/black"
+            android:textSize="20pt" />
+
+        <LinearLayout
+            android:layout_width="300pt"
+            android:layout_height="40pt"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20pt"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvConfirm"
+                android:layout_width="120pt"
+                android:layout_height="40pt"
+                android:background="@drawable/splash_focus"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:gravity="center"
+                android:text="确定"
+                android:textColor="@android:color/black"
+                android:textSize="18pt" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/tvJump"
+                android:layout_width="120pt"
+                android:layout_height="40pt"
+                android:background="@drawable/splash_focus"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:gravity="center"
+                android:text="跳过"
+                android:textColor="@android:color/black"
+                android:textSize="18pt" />
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>
