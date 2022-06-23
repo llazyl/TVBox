@@ -160,6 +160,7 @@ public class ApiConfig {
             sb.setKey(obj.get("key").getAsString().trim());
             sb.setName(obj.get("name").getAsString().trim());
             sb.setType(obj.get("type").getAsInt());
+            sb.setApi(obj.get("api").getAsString().trim());
             sb.setSearchable(safeJsonInt(obj, "searchable", 1));
             sb.setSearchable(safeJsonInt(obj, "quickSearch", 1));
             sb.setFilterable(safeJsonInt(obj, "filterable", 1));
