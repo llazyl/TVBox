@@ -7,15 +7,15 @@ import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
+import com.github.tvbox.osc.R;
+import com.github.tvbox.osc.bean.Movie;
+import com.github.tvbox.osc.picasso.RoundTransformation;
+import com.github.tvbox.osc.util.MD5;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 import me.jessyan.autosize.utils.AutoSizeUtils;
-import com.github.tvbox.osc.R;
-import com.github.tvbox.osc.bean.Movie;
-import com.github.tvbox.osc.picasso.RoundTransformation;
-import com.github.tvbox.osc.util.MD5;
 
 /**
  * @author pj567

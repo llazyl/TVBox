@@ -25,7 +25,7 @@ public class AbsSortJson implements Serializable {
     }
 
     public class AbsJsonClass implements Serializable {
-        public int type_id;
+        public String type_id;
         public String type_name;
     }
 

@@ -24,20 +24,6 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.dueeeke.videoplayer.util.L;
-import com.owen.tvrecyclerview.widget.TvRecyclerView;
-import com.owen.tvrecyclerview.widget.V7LinearLayoutManager;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
-import java.lang.reflect.Field;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import me.jessyan.autosize.utils.AutoSizeUtils;
 import com.github.tvbox.osc.R;
 import com.github.tvbox.osc.api.ApiConfig;
 import com.github.tvbox.osc.base.BaseActivity;
@@ -60,6 +46,20 @@ import com.github.tvbox.osc.util.DefaultConfig;
 import com.github.tvbox.osc.util.FastClickCheckUtil;
 import com.github.tvbox.osc.util.LOG;
 import com.github.tvbox.osc.viewmodel.SourceViewModel;
+import com.owen.tvrecyclerview.widget.TvRecyclerView;
+import com.owen.tvrecyclerview.widget.V7LinearLayoutManager;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import me.jessyan.autosize.utils.AutoSizeUtils;
 
 public class HomeActivity extends BaseActivity {
     private LinearLayout topLayout;
@@ -211,9 +211,10 @@ public class HomeActivity extends BaseActivity {
     }
 
     private boolean dataInitOk = false;
+    private boolean jarInitOk = false;
 
     private void initData() {
-        if (dataInitOk) {
+        if (dataInitOk && jarInitOk) {
             ControlManager.get().startServer();
             showLoading();
             sourceViewModel.getSort(ApiConfig.get().getHomeSourceBean().getKey());
@@ -225,6 +226,33 @@ public class HomeActivity extends BaseActivity {
             return;
         }
         showLoading();
+        if (dataInitOk) {
+            if (!ApiConfig.get().getSpider().isEmpty()) {
+
+                ApiConfig.get().loadJar(HomeActivity.this, ApiConfig.get().getSpider(), new ApiConfig.LoadConfigCallback() {
+                    @Override
+                    public void success() {
+                        jarInitOk = true;
+                        mHandler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                initData();
+                            }
+                        }, 50);
+                    }
+
+                    @Override
+                    public void retry() {
+
+                    }
+
+                    @Override
+                    public void error(String msg) {
+                    }
+                });
+            }
+            return;
+        }
         ApiConfig.get().loadConfig(new ApiConfig.LoadConfigCallback() {
             AlertDialog dialog = null;
 
@@ -241,6 +269,9 @@ public class HomeActivity extends BaseActivity {
             @Override
             public void success() {
                 dataInitOk = true;
+                if (ApiConfig.get().getSpider().isEmpty()) {
+                    jarInitOk = true;
+                }
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -278,7 +309,7 @@ public class HomeActivity extends BaseActivity {
     private void initViewPager() {
         if (sortAdapter.getData().size() > 0) {
             for (MovieSort.SortData data : sortAdapter.getData()) {
-                if (data.id == 0) {
+                if (data.id.equals("my0")) {
                     fragments.add(UserFragment.newInstance());
                 } else {
                     fragments.add(GridFragment.newInstance(data.id));

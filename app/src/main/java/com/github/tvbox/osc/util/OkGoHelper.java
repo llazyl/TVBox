@@ -9,6 +9,7 @@ import android.webkit.WebViewClient;
 
 import androidx.annotation.NonNull;
 
+import com.github.tvbox.osc.util.SSL.SSLSocketFactoryCompat;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.https.HttpsUtils;
 import com.lzy.okgo.interceptor.HttpLoggingInterceptor;
@@ -30,7 +31,6 @@ import java.util.logging.Level;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.X509TrustManager;
 
-import com.github.tvbox.osc.util.SSL.SSLSocketFactoryCompat;
 import okhttp3.CacheControl;
 import okhttp3.Cookie;
 import okhttp3.CookieJar;

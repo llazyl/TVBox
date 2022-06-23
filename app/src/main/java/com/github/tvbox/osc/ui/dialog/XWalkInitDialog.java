@@ -11,16 +11,15 @@ import android.widget.Toast;
 
 import androidx.annotation.IdRes;
 
+import com.github.tvbox.osc.R;
+import com.github.tvbox.osc.util.FastClickCheckUtil;
+import com.github.tvbox.osc.util.XWalkUtils;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.FileCallback;
 import com.lzy.okgo.model.Progress;
 import com.lzy.okgo.model.Response;
 
 import java.io.File;
-
-import com.github.tvbox.osc.R;
-import com.github.tvbox.osc.util.FastClickCheckUtil;
-import com.github.tvbox.osc.util.XWalkUtils;
 
 /**
  * @author pj567

@@ -4,12 +4,11 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.dueeeke.videoplayer.ijk.IjkPlayer;
+import com.github.tvbox.osc.api.ApiConfig;
+import com.github.tvbox.osc.bean.IJKCode;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import com.github.tvbox.osc.api.ApiConfig;
-import com.github.tvbox.osc.bean.IJKCode;
 
 public class IjkMediaPlayer extends IjkPlayer {
 

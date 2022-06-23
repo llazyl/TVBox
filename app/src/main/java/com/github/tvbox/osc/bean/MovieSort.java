@@ -23,7 +23,7 @@ public class MovieSort implements Serializable {
     @XStreamConverter(value = ToAttributedValueConverter.class, strings = {"name"})
     public static class SortData implements Serializable, Comparable<SortData> {
         @XStreamAsAttribute
-        public int id;
+        public String id;
         public String name;
         public int sort = -1;
         public boolean select = false;
@@ -31,7 +31,7 @@ public class MovieSort implements Serializable {
         public SortData() {
         }
 
-        public SortData(int id, String name) {
+        public SortData(String id, String name) {
             this.id = id;
             this.name = name;
         }

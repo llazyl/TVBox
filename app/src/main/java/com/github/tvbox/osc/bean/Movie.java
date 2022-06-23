@@ -39,8 +39,8 @@ public class Movie implements Serializable {
         public String name;
         @XStreamAlias("type")//类型名称
         public String type;
-        @XStreamAlias("dt")//视频分类 zuidam3u8,zuidall
-        public String dt;
+        /*@XStreamAlias("dt")//视频分类 zuidam3u8,zuidall
+        public String dt;*/
         @XStreamAlias("pic")//图片
         public String pic;
         @XStreamAlias("lang")//语言

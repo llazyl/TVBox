@@ -10,6 +10,9 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.PermissionChecker;
 
+import com.github.tvbox.osc.callback.EmptyCallback;
+import com.github.tvbox.osc.callback.LoadingCallback;
+import com.github.tvbox.osc.util.AppManager;
 import com.kingja.loadsir.callback.Callback;
 import com.kingja.loadsir.core.LoadService;
 import com.kingja.loadsir.core.LoadSir;
@@ -17,10 +20,6 @@ import com.kingja.loadsir.core.LoadSir;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-
-import com.github.tvbox.osc.callback.EmptyCallback;
-import com.github.tvbox.osc.callback.LoadingCallback;
-import com.github.tvbox.osc.util.AppManager;
 
 /**
  * @author pj567

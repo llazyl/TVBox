@@ -1,8 +1,7 @@
 package com.github.tvbox.osc.callback;
 
-import com.kingja.loadsir.callback.Callback;
-
 import com.github.tvbox.osc.R;
+import com.kingja.loadsir.callback.Callback;
 
 /**
  * @author pj567

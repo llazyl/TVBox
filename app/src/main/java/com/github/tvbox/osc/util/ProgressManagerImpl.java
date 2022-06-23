@@ -1,7 +1,6 @@
 package com.github.tvbox.osc.util;
 
 import com.dueeeke.videoplayer.player.ProgressManager;
-
 import com.github.tvbox.osc.cache.CacheManager;
 
 /**

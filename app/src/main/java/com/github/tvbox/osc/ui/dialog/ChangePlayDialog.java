@@ -8,11 +8,10 @@ import android.widget.TextView;
 
 import androidx.annotation.IdRes;
 
-import com.orhanobut.hawk.Hawk;
-
 import com.github.tvbox.osc.R;
 import com.github.tvbox.osc.util.FastClickCheckUtil;
 import com.github.tvbox.osc.util.HawkConfig;
+import com.orhanobut.hawk.Hawk;
 
 /**
  * @author pj567

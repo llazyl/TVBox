@@ -7,13 +7,13 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 
-import java.io.IOException;
-
 import com.github.tvbox.osc.receiver.CustomWebReceiver;
 import com.github.tvbox.osc.receiver.ProjectionReceiver;
 import com.github.tvbox.osc.receiver.SearchReceiver;
 import com.github.tvbox.osc.ui.activity.HomeActivity;
 import com.github.tvbox.osc.util.AppManager;
+
+import java.io.IOException;
 
 import static com.github.tvbox.osc.server.RequestProcess.KEY_ACTION_DOWN;
 import static com.github.tvbox.osc.server.RequestProcess.KEY_ACTION_PRESSED;

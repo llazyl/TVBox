@@ -1,11 +1,11 @@
 package com.github.tvbox.osc.cache;
 
+import com.github.tvbox.osc.data.AppDataManager;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-
-import com.github.tvbox.osc.data.AppDataManager;
 
 /**
  * 类描述:

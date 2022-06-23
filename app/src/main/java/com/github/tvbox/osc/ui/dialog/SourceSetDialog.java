@@ -12,8 +12,6 @@ import androidx.annotation.IdRes;
 import com.github.tvbox.osc.R;
 import com.github.tvbox.osc.api.ApiConfig;
 import com.github.tvbox.osc.bean.SourceBean;
-import com.github.tvbox.osc.cache.RoomDataManger;
-import com.github.tvbox.osc.cache.SourceState;
 import com.github.tvbox.osc.ui.fragment.SourceSettingFragment;
 import com.github.tvbox.osc.util.FastClickCheckUtil;
 

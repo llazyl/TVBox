@@ -1,8 +1,11 @@
 package com.github.tvbox.osc.api;
 
 import android.app.Activity;
+import android.content.Context;
 import android.text.TextUtils;
 
+import com.github.catvod.crawler.JarLoader;
+import com.github.catvod.crawler.Spider;
 import com.github.tvbox.osc.bean.IJKCode;
 import com.github.tvbox.osc.bean.LiveChannel;
 import com.github.tvbox.osc.bean.ParseBean;
@@ -14,12 +17,12 @@ import com.github.tvbox.osc.util.HawkConfig;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.lzy.okgo.OkGo;
+import com.lzy.okgo.callback.AbsCallback;
+import com.lzy.okgo.model.Response;
 import com.orhanobut.hawk.Hawk;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -27,7 +30,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.GZIPInputStream;
 
 /**
  * @author pj567
@@ -44,6 +46,9 @@ public class ApiConfig {
     private List<String> vipParseFlags;
     private List<IJKCode> ijkCodes;
     private String spider = null;
+
+    private JarLoader jarLoader = new JarLoader();
+
 
     private ApiConfig() {
         sourceBeanList = new ArrayList<>();
@@ -62,30 +67,41 @@ public class ApiConfig {
         return instance;
     }
 
-    private String decompressGZIP(byte[] src) throws IOException {
-        // 创建一个新的输出流
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        // 创建一个 ByteArrayInputStream，使用 buf 作为其缓冲区数组
-        ByteArrayInputStream in = new ByteArrayInputStream(src);
-        // 使用默认缓冲区大小创建新的输入流
-        GZIPInputStream gzip = new GZIPInputStream(in);
-        byte[] buffer = new byte[256];
-        int n = 0;
-        // 将未压缩数据读入字节数组
-        while ((n = gzip.read(buffer)) >= 0) {
-            out.write(buffer, 0, n);
-        }
-        // 使用指定的 charsetName，通过解码字节将缓冲区内容转换为字符串
-        return out.toString("utf-8");
-    }
-
     public void loadConfig(LoadConfigCallback callback, Activity activity) {
-        boolean isSourceModeLocal = Hawk.get(HawkConfig.SOURCE_MODE_LOCAL, true);
+        /*boolean isSourceModeLocal = Hawk.get(HawkConfig.SOURCE_MODE_LOCAL, false);
         if (isSourceModeLocal) {
             loadConfigLocal(callback, activity);
         } else {
             loadConfigServer(callback, activity);
-        }
+        }*/
+        loadConfigServer(callback, activity);
+    }
+
+
+    public void loadJar(Context context, String spider, LoadConfigCallback callback) {
+        OkGo.<byte[]>get(spider).execute(new AbsCallback<byte[]>() {
+            @Override
+            public byte[] convertResponse(okhttp3.Response response) {
+                try {
+                    return response.body().bytes();
+                } catch (Throwable th) {
+                    return null;
+                }
+            }
+
+            @Override
+            public void onFinish() {
+                super.onFinish();
+                callback.success();
+            }
+
+            @Override
+            public void onSuccess(Response<byte[]> response) {
+                if (response != null && response.body() != null) {
+                    jarLoader.load(context, response.body());
+                }
+            }
+        });
     }
 
     private void loadConfigLocal(LoadConfigCallback callback, Activity activity) {
@@ -107,9 +123,36 @@ public class ApiConfig {
 
     }
 
-    public static final int REG_CODE_INVALID = -2;
-
     private void loadConfigServer(LoadConfigCallback callback, Activity activity) {
+        OkGo.<String>get("http://10.80.8.70:8890/baddychen/baddychen.json")
+                .execute(new AbsCallback<String>() {
+                    @Override
+                    public void onSuccess(Response<String> response) {
+                        try {
+                            parseJson(response.body());
+                            callback.success();
+                        } catch (Throwable th) {
+                            th.printStackTrace();
+                            callback.error("解析配置失败");
+                        }
+                    }
+
+                    @Override
+                    public void onError(Response<String> response) {
+                        super.onError(response);
+                        callback.error("拉取配置失败");
+                    }
+
+                    public String convertResponse(okhttp3.Response response) throws Throwable {
+                        String result = "";
+                        if (response.body() == null) {
+                            result = "";
+                        } else {
+                            result = response.body().string();
+                        }
+                        return result;
+                    }
+                });
     }
 
     private String safeJsonString(JsonObject obj, String key, String defaultVal) {
@@ -153,6 +196,8 @@ public class ApiConfig {
 
     private void parseJson(String jsonStr) {
         JsonObject infoJson = new Gson().fromJson(jsonStr, JsonObject.class);
+        // spider
+        spider = safeJsonString(infoJson, "spider", "");
         // 远端站点源
         for (JsonElement opt : infoJson.get("sites").getAsJsonArray()) {
             JsonObject obj = (JsonObject) opt;
@@ -253,6 +298,14 @@ public class ApiConfig {
         if (!foundOldSelect && ijkCodes.size() > 0) {
             ijkCodes.get(0).selected(true);
         }
+    }
+
+    public String getSpider() {
+        return spider;
+    }
+
+    public Spider getCSP(SourceBean sourceBean) {
+        return jarLoader.getSpider(sourceBean.getApi(), sourceBean.getExt());
     }
 
     public interface LoadConfigCallback {

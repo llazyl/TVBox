@@ -112,13 +112,13 @@ public class SourceBean {
         this.type = type;
     }
 
-    public void setTidSort(HashMap<Integer, Integer> tidSort) {
+    public void setTidSort(HashMap<String, Integer> tidSort) {
         getState().tidSort = new Gson().toJson(tidSort);
         RoomDataManger.addSourceState(getState());
     }
 
-    public HashMap<Integer, Integer> getTidSort() {
-        return new Gson().fromJson(state.tidSort, new TypeToken<HashMap<Integer, Integer>>() {
+    public HashMap<String, Integer> getTidSort() {
+        return new Gson().fromJson(state.tidSort, new TypeToken<HashMap<String, Integer>>() {
         }.getType());
     }
 

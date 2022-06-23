@@ -15,10 +15,9 @@ import androidx.annotation.Nullable;
 import com.dueeeke.videoplayer.controller.GestureVideoController;
 import com.dueeeke.videoplayer.controller.IControlComponent;
 import com.dueeeke.videoplayer.player.VideoView;
+import com.github.tvbox.osc.R;
 
 import java.util.Map;
-
-import com.github.tvbox.osc.R;
 
 /**
  * 直播/点播控制器

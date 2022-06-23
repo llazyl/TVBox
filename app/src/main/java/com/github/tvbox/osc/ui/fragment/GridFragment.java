@@ -8,11 +8,6 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.owen.tvrecyclerview.widget.TvRecyclerView;
-import com.owen.tvrecyclerview.widget.V7GridLayoutManager;
-
-import org.greenrobot.eventbus.EventBus;
-
 import com.github.tvbox.osc.R;
 import com.github.tvbox.osc.base.BaseLazyFragment;
 import com.github.tvbox.osc.bean.AbsXml;
@@ -23,6 +18,10 @@ import com.github.tvbox.osc.ui.adapter.GridAdapter;
 import com.github.tvbox.osc.ui.tv.widget.LoadMoreView;
 import com.github.tvbox.osc.util.FastClickCheckUtil;
 import com.github.tvbox.osc.viewmodel.SourceViewModel;
+import com.owen.tvrecyclerview.widget.TvRecyclerView;
+import com.owen.tvrecyclerview.widget.V7GridLayoutManager;
+
+import org.greenrobot.eventbus.EventBus;
 
 /**
  * @author pj567
@@ -30,7 +29,7 @@ import com.github.tvbox.osc.viewmodel.SourceViewModel;
  * @description:
  */
 public class GridFragment extends BaseLazyFragment {
-    private int sortId = 0;
+    private String sortId = "";
     private TvRecyclerView mGridView;
     private SourceViewModel sourceViewModel;
     private GridAdapter gridAdapter;
@@ -39,11 +38,11 @@ public class GridFragment extends BaseLazyFragment {
     private boolean isLoad = false;
     private boolean isTop = true;
 
-    public static GridFragment newInstance(int id) {
+    public static GridFragment newInstance(String id) {
         return new GridFragment().setArguments(id);
     }
 
-    public GridFragment setArguments(int id) {
+    public GridFragment setArguments(String id) {
         sortId = id;
         return this;
     }

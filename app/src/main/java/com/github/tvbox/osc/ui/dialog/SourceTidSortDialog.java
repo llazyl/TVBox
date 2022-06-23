@@ -11,16 +11,6 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.kingja.loadsir.callback.Callback;
-import com.kingja.loadsir.core.LoadService;
-import com.kingja.loadsir.core.LoadSir;
-import com.owen.tvrecyclerview.widget.TvRecyclerView;
-import com.owen.tvrecyclerview.widget.V7GridLayoutManager;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import com.github.tvbox.osc.R;
 import com.github.tvbox.osc.bean.AbsSortXml;
 import com.github.tvbox.osc.bean.MovieSort;
@@ -31,6 +21,15 @@ import com.github.tvbox.osc.ui.adapter.SourceTidSortAdapter;
 import com.github.tvbox.osc.ui.fragment.SourceSettingFragment;
 import com.github.tvbox.osc.util.DefaultConfig;
 import com.github.tvbox.osc.viewmodel.SourceViewModel;
+import com.kingja.loadsir.callback.Callback;
+import com.kingja.loadsir.core.LoadService;
+import com.kingja.loadsir.core.LoadSir;
+import com.owen.tvrecyclerview.widget.TvRecyclerView;
+import com.owen.tvrecyclerview.widget.V7GridLayoutManager;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * @author pj567
@@ -79,7 +78,7 @@ public class SourceTidSortDialog {
             @Override
             public void onDismiss(DialogInterface dialog) {
                 // 保存
-                HashMap<Integer, Integer> sorts = new HashMap<Integer, Integer>();
+                HashMap<String, Integer> sorts = new HashMap<String, Integer>();
                 for (int i = 0; i < sortDataList.size(); i++) {
                     sorts.put(sortDataList.get(i).id, i + 1);
                 }

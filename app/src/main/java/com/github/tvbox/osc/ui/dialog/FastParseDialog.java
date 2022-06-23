@@ -6,9 +6,8 @@ import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import com.lzy.okgo.OkGo;
-
 import com.github.tvbox.osc.R;
+import com.lzy.okgo.OkGo;
 
 /**
  * 描述

@@ -112,7 +112,7 @@ public class AbsJson implements Serializable {
             video.tid = type_id;
             video.name = vod_name;
             video.type = type_name;
-            video.dt = vod_play_from.replace("$$$", ",");
+            // video.dt = vod_play_from == null ? "" : vod_play_from.replace("$$$", ",");
             video.pic = vod_pic;
             video.lang = vod_lang;
             video.area = vod_area;
@@ -126,19 +126,21 @@ public class AbsJson implements Serializable {
             video.actor = vod_actor;
             video.director = vod_director;
             Movie.Video.UrlBean urlBean = new Movie.Video.UrlBean();
-            String[] playFlags = vod_play_from.split("\\$\\$\\$");
-            String[] playUrls = vod_play_url.split("\\$\\$\\$");
-            List<Movie.Video.UrlBean.UrlInfo> infoList = new ArrayList<>();
-            for (int i = 0; i < playFlags.length; i++) {
-                Movie.Video.UrlBean.UrlInfo urlInfo = new Movie.Video.UrlBean.UrlInfo();
-                urlInfo.flag = playFlags[i];
-                if (i < playUrls.length)
-                    urlInfo.urls = playUrls[i];
-                else
-                    urlInfo.urls = "";
-                infoList.add(urlInfo);
+            if(vod_play_from != null) {
+                String[] playFlags = vod_play_from.split("\\$\\$\\$");
+                String[] playUrls = vod_play_url.split("\\$\\$\\$");
+                List<Movie.Video.UrlBean.UrlInfo> infoList = new ArrayList<>();
+                for (int i = 0; i < playFlags.length; i++) {
+                    Movie.Video.UrlBean.UrlInfo urlInfo = new Movie.Video.UrlBean.UrlInfo();
+                    urlInfo.flag = playFlags[i];
+                    if (i < playUrls.length)
+                        urlInfo.urls = playUrls[i];
+                    else
+                        urlInfo.urls = "";
+                    infoList.add(urlInfo);
+                }
+                urlBean.infoList = infoList;
             }
-            urlBean.infoList = infoList;
             video.urlBean = urlBean;
             video.des = vod_content;// <![CDATA[权来]
             return video;

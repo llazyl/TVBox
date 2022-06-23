@@ -1,12 +1,12 @@
 package com.github.tvbox.osc.util;
 
+import com.github.tvbox.osc.base.App;
+
 import java.io.DataInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Random;
-
-import com.github.tvbox.osc.base.App;
 
 public class UA {
     /*

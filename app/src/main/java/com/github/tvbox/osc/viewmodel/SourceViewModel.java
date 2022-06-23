@@ -3,6 +3,7 @@ package com.github.tvbox.osc.viewmodel;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.github.catvod.crawler.Spider;
 import com.github.tvbox.osc.api.ApiConfig;
 import com.github.tvbox.osc.bean.AbsJson;
 import com.github.tvbox.osc.bean.AbsSortJson;
@@ -22,6 +23,7 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -46,21 +48,20 @@ public class SourceViewModel extends ViewModel {
         detailResult = new MutableLiveData<>();
     }
 
-
-    public static final ExecutorService SpiderThreadPool = Executors.newFixedThreadPool(3);
-
-    public interface SpiderCallback {
-        void onSuccess(String body);
-
-        void onError(String msg);
-    }
+    public static final ExecutorService spThreadPool = Executors.newFixedThreadPool(3);
 
     public void getSort(String sourceKey) {
         SourceBean sourceBean = ApiConfig.get().getSource(sourceKey);
         int type = sourceBean.getType();
-        if(type == 3) {
-            sortResult.postValue(null);
-        }else {
+        if (type == 3) {
+            spThreadPool.execute(new Runnable() {
+                @Override
+                public void run() {
+                    Spider sp = ApiConfig.get().getCSP(sourceBean);
+                    sortJson(sortResult, sp.homeContent(false));
+                }
+            });
+        } else if (type == 0 || type == 1) {
             OkGo.<String>get(sourceBean.getApi())
                     .tag(sourceBean.getKey() + "_sort")
                     .execute(new AbsCallback<String>() {
@@ -90,158 +91,208 @@ public class SourceViewModel extends ViewModel {
                             sortResult.postValue(null);
                         }
                     });
+        } else {
+            sortResult.postValue(null);
         }
     }
 
-    public void getList(int id, int page) {
+    public void getList(String id, int page) {
         SourceBean homeSourceBean = ApiConfig.get().getHomeSourceBean();
         int type = homeSourceBean.getType();
+        if (type == 3) {
+            spThreadPool.execute(new Runnable() {
+                @Override
+                public void run() {
+                    Spider sp = ApiConfig.get().getCSP(homeSourceBean);
+                    json(listResult, sp.categoryContent(id, page + "", false, new HashMap<>()), homeSourceBean.getKey());
+                }
+            });
+        } else if (type == 0 || type == 1) {
+            OkGo.<String>get(homeSourceBean.getApi())
+                    .tag(homeSourceBean.getApi())
+                    .params("ac", type == 0 ? "videolist" : "detail")
+                    .params("t", id)
+                    .params("pg", page)
+                    .execute(new AbsCallback<String>() {
 
-        OkGo.<String>get(homeSourceBean.getApi())
-                .tag(homeSourceBean.getApi())
-                .params("ac", type == 0 ? "videolist" : "detail")
-                .params("t", id)
-                .params("pg", page)
-                .execute(new AbsCallback<String>() {
-
-                    @Override
-                    public String convertResponse(okhttp3.Response response) throws Throwable {
-                        if (response.body() != null) {
-                            return response.body().string();
-                        } else {
-                            throw new IllegalStateException("网络请求错误");
+                        @Override
+                        public String convertResponse(okhttp3.Response response) throws Throwable {
+                            if (response.body() != null) {
+                                return response.body().string();
+                            } else {
+                                throw new IllegalStateException("网络请求错误");
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onSuccess(Response<String> response) {
-                        if (type == 0) {
-                            String xml = response.body();
-                            xml(listResult, xml, homeSourceBean.getKey());
-                        } else {
-                            String json = response.body();
-                            json(listResult, json, homeSourceBean.getKey());
+                        @Override
+                        public void onSuccess(Response<String> response) {
+                            if (type == 0) {
+                                String xml = response.body();
+                                xml(listResult, xml, homeSourceBean.getKey());
+                            } else {
+                                String json = response.body();
+                                json(listResult, json, homeSourceBean.getKey());
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onError(Response<String> response) {
-                        super.onError(response);
-                        listResult.postValue(null);
-                    }
-                });
+                        @Override
+                        public void onError(Response<String> response) {
+                            super.onError(response);
+                            listResult.postValue(null);
+                        }
+                    });
+        } else {
+            listResult.postValue(null);
+        }
     }
 
     public void getDetail(String sourceKey, String id) {
         SourceBean sourceBean = ApiConfig.get().getSource(sourceKey);
         int type = sourceBean.getType();
+        if (type == 3) {
+            spThreadPool.execute(new Runnable() {
+                @Override
+                public void run() {
+                    Spider sp = ApiConfig.get().getCSP(sourceBean);
+                    List<String> ids = new ArrayList<>();
+                    ids.add(id);
+                    json(detailResult, sp.detailContent(ids), sourceBean.getKey());
+                }
+            });
+        } else if (type == 0 || type == 1) {
+            OkGo.<String>get(sourceBean.getApi())
+                    .tag("detail")
+                    .params("ac", type == 0 ? "videolist" : "detail")
+                    .params("ids", id)
+                    .execute(new AbsCallback<String>() {
 
-        OkGo.<String>get(sourceBean.getApi())
-                .tag("detail")
-                .params("ac", type == 0 ? "videolist" : "detail")
-                .params("ids", id)
-                .execute(new AbsCallback<String>() {
-
-                    @Override
-                    public String convertResponse(okhttp3.Response response) throws Throwable {
-                        if (response.body() != null) {
-                            return response.body().string();
-                        } else {
-                            throw new IllegalStateException("网络请求错误");
+                        @Override
+                        public String convertResponse(okhttp3.Response response) throws Throwable {
+                            if (response.body() != null) {
+                                return response.body().string();
+                            } else {
+                                throw new IllegalStateException("网络请求错误");
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onSuccess(Response<String> response) {
-                        if (type == 0) {
-                            String xml = response.body();
-                            xml(detailResult, xml, sourceBean.getKey());
-                        } else {
-                            String json = response.body();
-                            json(detailResult, json, sourceBean.getKey());
+                        @Override
+                        public void onSuccess(Response<String> response) {
+                            if (type == 0) {
+                                String xml = response.body();
+                                xml(detailResult, xml, sourceBean.getKey());
+                            } else {
+                                String json = response.body();
+                                json(detailResult, json, sourceBean.getKey());
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onError(Response<String> response) {
-                        super.onError(response);
-                        detailResult.postValue(null);
-                    }
-                });
+                        @Override
+                        public void onError(Response<String> response) {
+                            super.onError(response);
+                            detailResult.postValue(null);
+                        }
+                    });
+        } else {
+            detailResult.postValue(null);
+        }
     }
 
     public void getSearch(String sourceKey, String wd) {
         SourceBean sourceBean = ApiConfig.get().getSource(sourceKey);
         int type = sourceBean.getType();
-        OkGo.<String>get(sourceBean.getApi())
-                .params("wd", wd)
-                .params(type == 1 ? "ac" : null, type == 1 ? "detail" : null)
-                .tag("search")
-                .execute(new AbsCallback<String>() {
-                    @Override
-                    public String convertResponse(okhttp3.Response response) throws Throwable {
-                        if (response.body() != null) {
-                            return response.body().string();
-                        } else {
-                            throw new IllegalStateException("网络请求错误");
+        if (type == 3) {
+            spThreadPool.execute(new Runnable() {
+                @Override
+                public void run() {
+                    Spider sp = ApiConfig.get().getCSP(sourceBean);
+                    json(searchResult, sp.searchContent(wd, false), sourceBean.getKey());
+                }
+            });
+        } else if (type == 0 || type == 1) {
+            OkGo.<String>get(sourceBean.getApi())
+                    .params("wd", wd)
+                    .params(type == 1 ? "ac" : null, type == 1 ? "detail" : null)
+                    .tag("search")
+                    .execute(new AbsCallback<String>() {
+                        @Override
+                        public String convertResponse(okhttp3.Response response) throws Throwable {
+                            if (response.body() != null) {
+                                return response.body().string();
+                            } else {
+                                throw new IllegalStateException("网络请求错误");
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onSuccess(Response<String> response) {
-                        if (type == 0) {
-                            String xml = response.body();
-                            xml(searchResult, xml, sourceBean.getKey());
-                        } else {
-                            String json = response.body();
-                            json(searchResult, json, sourceBean.getKey());
+                        @Override
+                        public void onSuccess(Response<String> response) {
+                            if (type == 0) {
+                                String xml = response.body();
+                                xml(searchResult, xml, sourceBean.getKey());
+                            } else {
+                                String json = response.body();
+                                json(searchResult, json, sourceBean.getKey());
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onError(Response<String> response) {
-                        super.onError(response);
-                        // searchResult.postValue(null);
-                        EventBus.getDefault().post(new RefreshEvent(RefreshEvent.TYPE_SEARCH_RESULT, null));
-                    }
-                });
+                        @Override
+                        public void onError(Response<String> response) {
+                            super.onError(response);
+                            // searchResult.postValue(null);
+                            EventBus.getDefault().post(new RefreshEvent(RefreshEvent.TYPE_SEARCH_RESULT, null));
+                        }
+                    });
+        } else {
+            searchResult.postValue(null);
+        }
     }
 
     public void getQuickSearch(String sourceKey, String wd) {
         SourceBean sourceBean = ApiConfig.get().getSource(sourceKey);
         int type = sourceBean.getType();
-        OkGo.<String>get(sourceBean.getApi())
-                .params("wd", wd)
-                .params(type == 1 ? "ac" : null, type == 1 ? "detail" : null)
-                .tag("quick_search")
-                .execute(new AbsCallback<String>() {
-                    @Override
-                    public String convertResponse(okhttp3.Response response) throws Throwable {
-                        if (response.body() != null) {
-                            return response.body().string();
-                        } else {
-                            throw new IllegalStateException("网络请求错误");
+        if (type == 3) {
+            spThreadPool.execute(new Runnable() {
+                @Override
+                public void run() {
+                    Spider sp = ApiConfig.get().getCSP(sourceBean);
+                    json(quickSearchResult, sp.searchContent(wd, true), sourceBean.getKey());
+                }
+            });
+        } else if (type == 0 || type == 1) {
+            OkGo.<String>get(sourceBean.getApi())
+                    .params("wd", wd)
+                    .params(type == 1 ? "ac" : null, type == 1 ? "detail" : null)
+                    .tag("quick_search")
+                    .execute(new AbsCallback<String>() {
+                        @Override
+                        public String convertResponse(okhttp3.Response response) throws Throwable {
+                            if (response.body() != null) {
+                                return response.body().string();
+                            } else {
+                                throw new IllegalStateException("网络请求错误");
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onSuccess(Response<String> response) {
-                        if (type == 0) {
-                            String xml = response.body();
-                            xml(quickSearchResult, xml, sourceBean.getKey());
-                        } else {
-                            String json = response.body();
-                            json(quickSearchResult, json, sourceBean.getKey());
+                        @Override
+                        public void onSuccess(Response<String> response) {
+                            if (type == 0) {
+                                String xml = response.body();
+                                xml(quickSearchResult, xml, sourceBean.getKey());
+                            } else {
+                                String json = response.body();
+                                json(quickSearchResult, json, sourceBean.getKey());
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onError(Response<String> response) {
-                        super.onError(response);
-                        // quickSearchResult.postValue(null);
-                        EventBus.getDefault().post(new RefreshEvent(RefreshEvent.TYPE_QUICK_SEARCH_RESULT, null));
-                    }
-                });
+                        @Override
+                        public void onError(Response<String> response) {
+                            super.onError(response);
+                            // quickSearchResult.postValue(null);
+                            EventBus.getDefault().post(new RefreshEvent(RefreshEvent.TYPE_QUICK_SEARCH_RESULT, null));
+                        }
+                    });
+        } else {
+            quickSearchResult.postValue(null);
+        }
     }
 
     private void sortJson(MutableLiveData<AbsSortXml> result, String json) {

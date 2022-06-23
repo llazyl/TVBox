@@ -7,22 +7,20 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.owen.tvrecyclerview.widget.TvRecyclerView;
-import com.owen.tvrecyclerview.widget.V7GridLayoutManager;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import com.github.tvbox.osc.R;
 import com.github.tvbox.osc.api.ApiConfig;
 import com.github.tvbox.osc.base.BaseLazyFragment;
 import com.github.tvbox.osc.bean.SourceBean;
 import com.github.tvbox.osc.receiver.CustomWebReceiver;
 import com.github.tvbox.osc.ui.adapter.SourceSettingAdapter;
-import com.github.tvbox.osc.ui.dialog.RemoteDialog;
 import com.github.tvbox.osc.ui.dialog.SourceSetDialog;
 import com.github.tvbox.osc.ui.dialog.SpeedTestDialog;
 import com.github.tvbox.osc.util.FastClickCheckUtil;
+import com.owen.tvrecyclerview.widget.TvRecyclerView;
+import com.owen.tvrecyclerview.widget.V7GridLayoutManager;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author pj567

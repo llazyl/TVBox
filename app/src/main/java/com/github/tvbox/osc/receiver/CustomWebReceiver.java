@@ -3,13 +3,6 @@ package com.github.tvbox.osc.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.widget.Toast;
-
-import com.github.tvbox.osc.api.ApiConfig;
-import com.github.tvbox.osc.bean.LiveChannel;
-import com.github.tvbox.osc.bean.ParseBean;
-import com.github.tvbox.osc.cache.RoomDataManger;
-import com.github.tvbox.osc.util.LOG;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,6 +1,6 @@
 package com.github.tvbox.osc.bean;
 
-import com.orhanobut.hawk.Hawk;
+import com.github.tvbox.osc.api.ApiConfig;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -8,9 +8,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
-
-import com.github.tvbox.osc.api.ApiConfig;
-import com.github.tvbox.osc.util.HawkConfig;
 
 /**
  * @author pj567
@@ -57,7 +54,7 @@ public class VodInfo implements Serializable {
         tid = video.tid;
         name = video.name;
         type = video.type;
-        dt = video.dt;
+        // dt = video.dt;
         pic = video.pic;
         lang = video.lang;
         area = video.area;

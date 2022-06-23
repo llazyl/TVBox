@@ -2,6 +2,10 @@ package com.github.tvbox.osc.cache;
 
 import android.text.TextUtils;
 
+import com.github.tvbox.osc.api.ApiConfig;
+import com.github.tvbox.osc.bean.SourceBean;
+import com.github.tvbox.osc.bean.VodInfo;
+import com.github.tvbox.osc.data.AppDataManager;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
@@ -11,11 +15,6 @@ import com.google.gson.reflect.TypeToken;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import com.github.tvbox.osc.api.ApiConfig;
-import com.github.tvbox.osc.bean.SourceBean;
-import com.github.tvbox.osc.bean.VodInfo;
-import com.github.tvbox.osc.data.AppDataManager;
 
 /**
  * @author pj567

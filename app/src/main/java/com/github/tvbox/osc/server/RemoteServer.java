@@ -4,6 +4,9 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.wifi.WifiManager;
 
+import com.github.tvbox.osc.R;
+import com.github.tvbox.osc.event.ServerEvent;
+
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
@@ -17,8 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import fi.iki.elonen.NanoHTTPD;
-import com.github.tvbox.osc.R;
-import com.github.tvbox.osc.event.ServerEvent;
 
 /**
  * @author pj567

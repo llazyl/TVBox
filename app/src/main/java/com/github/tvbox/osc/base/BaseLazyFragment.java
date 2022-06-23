@@ -14,14 +14,13 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.github.tvbox.osc.callback.EmptyCallback;
+import com.github.tvbox.osc.callback.LoadingCallback;
 import com.kingja.loadsir.callback.Callback;
 import com.kingja.loadsir.core.LoadService;
 import com.kingja.loadsir.core.LoadSir;
 
 import java.util.List;
-
-import com.github.tvbox.osc.callback.EmptyCallback;
-import com.github.tvbox.osc.callback.LoadingCallback;
 
 /**
  * Fragment的基类(懒加载)

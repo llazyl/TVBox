@@ -2,12 +2,11 @@ package com.github.tvbox.osc.ui.adapter;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
-
-import java.util.ArrayList;
-
 import com.github.tvbox.osc.R;
 import com.github.tvbox.osc.api.ApiConfig;
 import com.github.tvbox.osc.bean.Movie;
+
+import java.util.ArrayList;
 
 /**
  * @author pj567

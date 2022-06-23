@@ -9,6 +9,11 @@ import android.view.View;
 import androidx.annotation.IdRes;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.github.tvbox.osc.R;
+import com.github.tvbox.osc.bean.Movie;
+import com.github.tvbox.osc.event.RefreshEvent;
+import com.github.tvbox.osc.ui.adapter.SearchAdapter;
+import com.github.tvbox.osc.ui.adapter.SearchWordAdapter;
 import com.owen.tvrecyclerview.widget.TvRecyclerView;
 import com.owen.tvrecyclerview.widget.V7LinearLayoutManager;
 
@@ -18,12 +23,6 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import com.github.tvbox.osc.R;
-import com.github.tvbox.osc.bean.Movie;
-import com.github.tvbox.osc.event.RefreshEvent;
-import com.github.tvbox.osc.ui.adapter.SearchAdapter;
-import com.github.tvbox.osc.ui.adapter.SearchWordAdapter;
 
 /**
  * @author pj567
