@@ -229,7 +229,7 @@ public class HomeActivity extends BaseActivity {
         if (dataInitOk) {
             if (!ApiConfig.get().getSpider().isEmpty()) {
 
-                ApiConfig.get().loadJar(HomeActivity.this, ApiConfig.get().getSpider(), new ApiConfig.LoadConfigCallback() {
+                ApiConfig.get().loadJar(ApiConfig.get().getSpider(), new ApiConfig.LoadConfigCallback() {
                     @Override
                     public void success() {
                         jarInitOk = true;

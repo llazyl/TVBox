@@ -24,9 +24,17 @@ import com.github.tvbox.osc.bean.LiveChannel;
 import com.github.tvbox.osc.player.controller.BoxVideoController;
 import com.github.tvbox.osc.ui.adapter.LiveChannelAdapter;
 import com.github.tvbox.osc.ui.tv.widget.ViewObj;
+import com.github.tvbox.osc.util.DefaultConfig;
 import com.github.tvbox.osc.util.FastClickCheckUtil;
 import com.github.tvbox.osc.util.HawkConfig;
 import com.github.tvbox.osc.util.PlayerHelper;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.lzy.okgo.OkGo;
+import com.lzy.okgo.callback.AbsCallback;
+import com.lzy.okgo.model.Response;
 import com.orhanobut.hawk.Hawk;
 import com.owen.tvrecyclerview.widget.TvRecyclerView;
 import com.owen.tvrecyclerview.widget.V7LinearLayoutManager;
@@ -55,6 +63,7 @@ public class LivePlayActivity extends BaseActivity {
 
     @Override
     protected void init() {
+        setLoadSir(findViewById(R.id.live_root));
         mVideoView = findViewById(R.id.mVideoView);
         PlayerHelper.updateCfg(mVideoView);
 //        ViewGroup.LayoutParams layoutParams = mVideoView.getLayoutParams();
@@ -201,10 +210,52 @@ public class LivePlayActivity extends BaseActivity {
                 }
             }
         });
+        List<LiveChannel> list = ApiConfig.get().getChannelList();
+        if (list.size() > 0 && list.get(0).getUrls().startsWith("proxy://")) {
+            showLoading();
+            String url = DefaultConfig.checkReplaceProxy(list.get(0).getUrls());
+            OkGo.<String>get(url).execute(new AbsCallback<String>() {
+
+                @Override
+                public String convertResponse(okhttp3.Response response) throws Throwable {
+                    return response.body().string();
+                }
+
+                @Override
+                public void onSuccess(Response<String> response) {
+                    List<LiveChannel> list = new ArrayList<>();
+                    JsonArray lives = new Gson().fromJson(response.body(), JsonArray.class);
+                    int lcIdx = 0;
+                    for (JsonElement opt : lives) {
+                        for (JsonElement optChl : ((JsonObject) opt).get("channels").getAsJsonArray()) {
+                            JsonObject obj = (JsonObject) optChl;
+                            LiveChannel lc = new LiveChannel();
+                            lc.setName(obj.get("name").getAsString().trim());
+                            lc.setUrls(DefaultConfig.safeJsonStringList(obj, "urls"));
+                            // 暂时不考虑分组问题
+                            lc.setChannelNum(lcIdx++);
+                            list.add(lc);
+                        }
+                    }
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            LivePlayActivity.this.showSuccess();
+                            initList(list);
+                        }
+                    });
+                }
+            });
+        } else {
+            initList(list);
+        }
+    }
+
+    private void initList(List<LiveChannel> list) {
         LiveChannel lastChannel = null;
         String lastChannelName = Hawk.get(HawkConfig.LIVE_CHANNEL, "");
         channelList.clear();
-        channelList.addAll(ApiConfig.get().getChannelList());
+        channelList.addAll(list);
         for (LiveChannel lc : channelList) {
             if (lc.getName().equals(lastChannelName)) {
                 lastChannel = lc;

@@ -5,11 +5,13 @@ import android.content.Context;
 import android.net.wifi.WifiManager;
 
 import com.github.tvbox.osc.R;
+import com.github.tvbox.osc.api.ApiConfig;
 import com.github.tvbox.osc.event.ServerEvent;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -79,6 +81,25 @@ public class RemoteServer extends NanoHTTPD {
                 for (RequestProcess process : getRequestList) {
                     if (process.isRequest(session, fileName)) {
                         return process.doResponse(session, fileName, session.getParms(), null);
+                    }
+                }
+                if (fileName.equals("/proxy")) {
+                    Map<String, String> params = session.getParms();
+                    if (params.containsKey("do")) {
+                        Object[] rs = ApiConfig.get().proxyLocal(params);
+                        try {
+                            int code = (int) rs[0];
+                            String mime = (String) rs[1];
+                            InputStream stream = rs[2] != null ? (InputStream) rs[2] : null;
+                            Response response = NanoHTTPD.newChunkedResponse(
+                                    NanoHTTPD.Response.Status.lookup(code),
+                                    mime,
+                                    stream
+                            );
+                            return response;
+                        } catch (Throwable th) {
+                            return NanoHTTPD.newFixedLengthResponse(NanoHTTPD.Response.Status.INTERNAL_ERROR, NanoHTTPD.MIME_PLAINTEXT, "500");
+                        }
                     }
                 }
             } else if (session.getMethod() == Method.POST) {

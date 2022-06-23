@@ -1,7 +1,6 @@
 package com.github.tvbox.osc.api;
 
 import android.app.Activity;
-import android.content.Context;
 import android.text.TextUtils;
 
 import com.github.catvod.crawler.JarLoader;
@@ -13,6 +12,7 @@ import com.github.tvbox.osc.bean.SourceBean;
 import com.github.tvbox.osc.cache.RoomDataManger;
 import com.github.tvbox.osc.cache.SourceState;
 import com.github.tvbox.osc.util.AdBlocker;
+import com.github.tvbox.osc.util.DefaultConfig;
 import com.github.tvbox.osc.util.HawkConfig;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -78,7 +78,7 @@ public class ApiConfig {
     }
 
 
-    public void loadJar(Context context, String spider, LoadConfigCallback callback) {
+    public void loadJar(String spider, LoadConfigCallback callback) {
         OkGo.<byte[]>get(spider).execute(new AbsCallback<byte[]>() {
             @Override
             public byte[] convertResponse(okhttp3.Response response) {
@@ -98,7 +98,7 @@ public class ApiConfig {
             @Override
             public void onSuccess(Response<byte[]> response) {
                 if (response != null && response.body() != null) {
-                    jarLoader.load(context, response.body());
+                    jarLoader.load(response.body());
                 }
             }
         });
@@ -155,49 +155,10 @@ public class ApiConfig {
                 });
     }
 
-    private String safeJsonString(JsonObject obj, String key, String defaultVal) {
-        try {
-            if (obj.has(key))
-                return obj.getAsJsonPrimitive(key).getAsString().trim();
-            else
-                return defaultVal;
-        } catch (Throwable th) {
-        }
-        return defaultVal;
-    }
-
-    private int safeJsonInt(JsonObject obj, String key, int defaultVal) {
-        try {
-            if (obj.has(key))
-                return obj.getAsJsonPrimitive(key).getAsInt();
-            else
-                return defaultVal;
-        } catch (Throwable th) {
-        }
-        return defaultVal;
-    }
-
-    private ArrayList<String> safeJsonStringList(JsonObject obj, String key) {
-        ArrayList<String> result = new ArrayList<>();
-        try {
-            if (obj.has(key)) {
-                if (obj.get(key).isJsonObject()) {
-                    result.add(obj.get(key).getAsString());
-                } else {
-                    for (JsonElement opt : obj.getAsJsonArray(key)) {
-                        result.add(opt.getAsString());
-                    }
-                }
-            }
-        } catch (Throwable th) {
-        }
-        return result;
-    }
-
     private void parseJson(String jsonStr) {
         JsonObject infoJson = new Gson().fromJson(jsonStr, JsonObject.class);
         // spider
-        spider = safeJsonString(infoJson, "spider", "");
+        spider = DefaultConfig.safeJsonString(infoJson, "spider", "");
         // 远端站点源
         for (JsonElement opt : infoJson.get("sites").getAsJsonArray()) {
             JsonObject obj = (JsonObject) opt;
@@ -206,11 +167,11 @@ public class ApiConfig {
             sb.setName(obj.get("name").getAsString().trim());
             sb.setType(obj.get("type").getAsInt());
             sb.setApi(obj.get("api").getAsString().trim());
-            sb.setSearchable(safeJsonInt(obj, "searchable", 1));
-            sb.setSearchable(safeJsonInt(obj, "quickSearch", 1));
-            sb.setFilterable(safeJsonInt(obj, "filterable", 1));
-            sb.setPlayerUrl(safeJsonString(obj, "playUrl", ""));
-            sb.setExt(safeJsonString(obj, "ext", ""));
+            sb.setSearchable(DefaultConfig.safeJsonInt(obj, "searchable", 1));
+            sb.setSearchable(DefaultConfig.safeJsonInt(obj, "quickSearch", 1));
+            sb.setFilterable(DefaultConfig.safeJsonInt(obj, "filterable", 1));
+            sb.setPlayerUrl(DefaultConfig.safeJsonString(obj, "playUrl", ""));
+            sb.setExt(DefaultConfig.safeJsonString(obj, "ext", ""));
             sourceBeanList.add(sb);
         }
         if (sourceBeanList != null && sourceBeanList.size() > 0) {
@@ -227,14 +188,14 @@ public class ApiConfig {
                 setSourceBean(sourceBeanList.get(0));
         }
         // 需要使用vip解析的flag
-        vipParseFlags = safeJsonStringList(infoJson, "flags");
+        vipParseFlags = DefaultConfig.safeJsonStringList(infoJson, "flags");
         // 解析地址
         for (JsonElement opt : infoJson.get("parses").getAsJsonArray()) {
             JsonObject obj = (JsonObject) opt;
             ParseBean pb = new ParseBean();
             pb.setName(obj.get("name").getAsString().trim());
             pb.setUrl(obj.get("url").getAsString().trim());
-            pb.setType(safeJsonInt(obj, "type", 0));
+            pb.setType(DefaultConfig.safeJsonInt(obj, "type", 0));
             parseBeanList.add(pb);
         }
         // 获取默认解析
@@ -256,7 +217,7 @@ public class ApiConfig {
                     JsonObject obj = (JsonObject) optChl;
                     LiveChannel lc = new LiveChannel();
                     lc.setName(obj.get("name").getAsString().trim());
-                    lc.setUrls(safeJsonStringList(obj, "urls"));
+                    lc.setUrls(DefaultConfig.safeJsonStringList(obj, "urls"));
                     // 暂时不考虑分组问题
                     lc.setChannelNum(lcIdx++);
                     channelList.add(lc);
@@ -306,6 +267,10 @@ public class ApiConfig {
 
     public Spider getCSP(SourceBean sourceBean) {
         return jarLoader.getSpider(sourceBean.getApi(), sourceBean.getExt());
+    }
+
+    public Object[] proxyLocal(Map param) {
+        return jarLoader.proxyInvoke(param);
     }
 
     public interface LoadConfigCallback {

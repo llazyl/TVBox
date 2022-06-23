@@ -6,8 +6,12 @@ import android.content.pm.PackageManager;
 import android.text.TextUtils;
 
 import com.github.tvbox.osc.api.ApiConfig;
+import com.github.tvbox.osc.base.App;
 import com.github.tvbox.osc.bean.MovieSort;
 import com.github.tvbox.osc.bean.SourceBean;
+import com.github.tvbox.osc.server.RemoteServer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -115,4 +119,50 @@ public class DefaultConfig {
         put(".f4v", Arrays.asList("video/x-f4v"));
         put(".mpeg", Arrays.asList("video/vnd.mpegurl"));
     }};
+
+
+    public static String safeJsonString(JsonObject obj, String key, String defaultVal) {
+        try {
+            if (obj.has(key))
+                return obj.getAsJsonPrimitive(key).getAsString().trim();
+            else
+                return defaultVal;
+        } catch (Throwable th) {
+        }
+        return defaultVal;
+    }
+
+    public static int safeJsonInt(JsonObject obj, String key, int defaultVal) {
+        try {
+            if (obj.has(key))
+                return obj.getAsJsonPrimitive(key).getAsInt();
+            else
+                return defaultVal;
+        } catch (Throwable th) {
+        }
+        return defaultVal;
+    }
+
+    public static ArrayList<String> safeJsonStringList(JsonObject obj, String key) {
+        ArrayList<String> result = new ArrayList<>();
+        try {
+            if (obj.has(key)) {
+                if (obj.get(key).isJsonObject()) {
+                    result.add(obj.get(key).getAsString());
+                } else {
+                    for (JsonElement opt : obj.getAsJsonArray(key)) {
+                        result.add(opt.getAsString());
+                    }
+                }
+            }
+        } catch (Throwable th) {
+        }
+        return result;
+    }
+
+    public static String checkReplaceProxy(String urlOri) {
+        if (urlOri.startsWith("proxy://"))
+            return urlOri.replace("proxy://", RemoteServer.getServerAddress(App.getInstance()) + "proxy?");
+        return urlOri;
+    }
 }
