@@ -160,6 +160,52 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/llApi"
+                android:layout_width="match_parent"
+                android:layout_height="50pt"
+                android:layout_marginLeft="30pt"
+                android:layout_marginTop="20pt"
+                android:layout_marginRight="30pt"
+                android:background="@drawable/setting_model_focus"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="20pt"
+                android:paddingRight="20pt">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="配置地址"
+                    android:textColor="@android:color/white"
+                    android:textSize="24pt" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:id="@+id/tvApi"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="middle"
+                    android:textColor="@android:color/white"
+                    android:textSize="24pt"
+                    android:singleLine="true" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10pt"
+                    android:paddingBottom="5pt"
+                    android:text=">"
+                    android:textColor="@android:color/white"
+                    android:textSize="30pt" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/llPlay"
                 android:layout_width="match_parent"
                 android:layout_height="50pt"

@@ -55,6 +55,10 @@ public class SourceViewModel extends ViewModel {
     public static final ExecutorService spThreadPool = Executors.newFixedThreadPool(3);
 
     public void getSort(String sourceKey) {
+        if (sourceKey == null) {
+            sortResult.postValue(null);
+            return;
+        }
         SourceBean sourceBean = ApiConfig.get().getSource(sourceKey);
         int type = sourceBean.getType();
         if (type == 3) {

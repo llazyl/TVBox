@@ -58,6 +58,7 @@ import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -313,7 +314,7 @@ public class ParseDialog {
                 });
     }
 
-    private void loadUrl(ParseBean pb, String url, ParseCallback callback) {
+    private void loadUrl(ParseBean pb, String flag, String url, ParseCallback callback) {
         if (pb == null || pb.getType() == 0) {
             if (mSysWebClient != null) {
                 mSysWebClient.setCallback(callback);
@@ -333,6 +334,87 @@ public class ParseDialog {
             }
         } else if (pb.getType() == 1) { // json 解析
             doJsonJx(pb.getUrl(), url, callback);
+        } else if (pb.getType() == 2) { // json 扩展
+            LinkedHashMap<String, String> jxs = new LinkedHashMap<>();
+            for (ParseBean p : ApiConfig.get().getParseBeanList()) {
+                if (p.getType() == 1) {
+                    jxs.put(p.getName(), p.mixUrl());
+                }
+            }
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    JSONObject rs = ApiConfig.get().jsonExt(pb.getUrl(), jxs, url);
+                    if (rs == null || !rs.has("url")) {
+                        callback.fail();
+                    } else {
+                        HashMap<String, String> headers = null;
+                        if (rs.has("header")) {
+                            try {
+                                JSONObject hds = rs.getJSONObject("header");
+                                Iterator<String> keys = hds.keys();
+                                while (keys.hasNext()) {
+                                    String key = keys.next();
+                                    if (headers == null) {
+                                        headers = new HashMap<>();
+                                    }
+                                    headers.put(key, hds.getString(key));
+                                }
+                            } catch (Throwable th) {
+
+                            }
+                        }
+                        boolean parseWV = rs.optInt("parse", 0) == 1;
+                        if (parseWV) {
+                            String wvUrl = DefaultConfig.checkReplaceProxy(rs.optString("url", ""));
+                            loadUrl(null, flag, wvUrl, callback);
+                        } else {
+                            callback.success(rs.optString("url", ""), headers);
+                        }
+                    }
+                }
+            }).start();
+        } else if (pb.getType() == 3) { // json 聚合
+            LinkedHashMap<String, HashMap<String, String>> jxs = new LinkedHashMap<>();
+            String extendName = "";
+            for (ParseBean p : ApiConfig.get().getParseBeanList()) {
+                HashMap data = new HashMap<String, String>();
+                data.put("url", p.getUrl());
+                if (p.getUrl().equals(pb.getUrl())) {
+                    extendName = p.getName();
+                }
+                data.put("type", p.getType() + "");
+                data.put("ext", p.getExt());
+                jxs.put(p.getName(), data);
+            }
+            String finalExtendName = extendName;
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    JSONObject rs = ApiConfig.get().jsonExtMix(flag, pb.getUrl(), finalExtendName, jxs, url);
+                    if (rs == null || !rs.has("url")) {
+                        callback.fail();
+                    } else {
+                        HashMap<String, String> headers = null;
+                        if (rs.has("header")) {
+                            try {
+                                JSONObject hds = rs.getJSONObject("header");
+                                Iterator<String> keys = hds.keys();
+                                while (keys.hasNext()) {
+                                    String key = keys.next();
+                                    if (headers == null) {
+                                        headers = new HashMap<>();
+                                    }
+                                    headers.put(key, hds.getString(key));
+                                }
+                            } catch (Throwable th) {
+
+                            }
+                        }
+                        callback.success(rs.optString("url", ""), headers);
+                    }
+                }
+            }).start();
         }
         mHandler.removeCallbacks(mParseTimeOut);
         mHandler.postDelayed(mGridFocus, 200);
@@ -356,7 +438,7 @@ public class ParseDialog {
                     ApiConfig.get().setDefaultParse(parseBean);
                     parseAdapter.notifyItemChanged(position);
                     loadFound = false;
-                    loadUrl(parseBean, url, callback);
+                    loadUrl(parseBean, flag, url, callback);
                 }
             });
             mGridView.setOnInBorderKeyEventListener(new TvRecyclerView.OnInBorderKeyEventListener() {
@@ -386,11 +468,11 @@ public class ParseDialog {
             mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    loadUrl(finalParseBean, url, callback);
+                    loadUrl(finalParseBean, flag, url, callback);
                 }
             }, 3000);
         } else {
-            loadUrl(null, parseUrl + url, callback);
+            loadUrl(null, flag, parseUrl + url, callback);
         }
     }
 

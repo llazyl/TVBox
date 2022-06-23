@@ -43,6 +43,7 @@ public class SettingActivity extends BaseActivity {
     private int sortFocused = 0;
     private Handler mHandler = new Handler();
     private String homeSourceKey;
+    private String currentApi;
     private String homeSourceSort;
     private boolean sourceMode;
 
@@ -105,6 +106,7 @@ public class SettingActivity extends BaseActivity {
     }
 
     private void initData() {
+        currentApi = Hawk.get(HawkConfig.API_URL, "");
         homeSourceKey = ApiConfig.get().getHomeSourceBean().getKey();
         homeSourceSort = ApiConfig.get().getHomeSourceBean().getState().tidSort;
         if (homeSourceSort == null)
@@ -183,7 +185,8 @@ public class SettingActivity extends BaseActivity {
         if (newHomeSourceSort == null)
             newHomeSourceSort = "";
 
-        if (!homeSourceKey.equals(ApiConfig.get().getHomeSourceBean().getKey()) ||
+        if ((homeSourceKey != null && !homeSourceKey.equals(ApiConfig.get().getHomeSourceBean().getKey())) ||
+                !currentApi.equals(Hawk.get(HawkConfig.API_URL, "")) ||
                 !homeSourceSort.equals(newHomeSourceSort) ||
                 sourceMode != Hawk.get(HawkConfig.SOURCE_MODE_LOCAL, true)) {
             AppManager.getInstance().finishAllActivity();

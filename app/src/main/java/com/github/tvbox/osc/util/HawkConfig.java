@@ -6,6 +6,7 @@ package com.github.tvbox.osc.util;
  * @description:
  */
 public class HawkConfig {
+    public static final String API_URL = "api_url";
     public static final String DEFAULT_PARSE = "parse_default";
     public static final String DEBUG_OPEN = "debug_open";
     public static final String PARSE_WEBVIEW = "parse_webview"; // true 系统 false xwalk

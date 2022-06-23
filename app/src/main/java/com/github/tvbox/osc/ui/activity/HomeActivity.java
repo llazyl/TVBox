@@ -287,7 +287,8 @@ public class HomeActivity extends BaseActivity {
                     public void run() {
                         if (dialog == null)
                             dialog = new AlertDialog.Builder(HomeActivity.this).setTitle("提示")
-                                    .setMessage(msg + "\n\n请重试!").setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                    .setMessage(msg + "\n\n请重试!")
+                                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
                                             mHandler.post(new Runnable() {
@@ -296,6 +297,21 @@ public class HomeActivity extends BaseActivity {
                                                     initData();
                                                 }
                                             });
+                                        }
+                                    })
+                                    .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dataInitOk = true;
+                                            jarInitOk = true;
+                                            initData();
+                                        }
+                                    })
+                                    .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                                        @Override
+                                        public void onCancel(DialogInterface dialog) {
+                                            dataInitOk = true;
+                                            jarInitOk = true;
                                         }
                                     }).create();
                         if (!dialog.isShowing())

@@ -22,6 +22,8 @@ import com.lzy.okgo.callback.AbsCallback;
 import com.lzy.okgo.model.Response;
 import com.orhanobut.hawk.Hawk;
 
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -46,6 +48,8 @@ public class ApiConfig {
     private List<String> vipParseFlags;
     private List<IJKCode> ijkCodes;
     private String spider = null;
+
+    private SourceBean emptyHome = new SourceBean();
 
     private JarLoader jarLoader = new JarLoader();
 
@@ -120,11 +124,10 @@ public class ApiConfig {
             e.printStackTrace();
             callback.error("加载配置失败");
         }
-
     }
 
     private void loadConfigServer(LoadConfigCallback callback, Activity activity) {
-        OkGo.<String>get("http://10.80.8.70:8890/baddychen/baddychen.json")
+        OkGo.<String>get(Hawk.get(HawkConfig.API_URL, ""))
                 .execute(new AbsCallback<String>() {
                     @Override
                     public void onSuccess(Response<String> response) {
@@ -159,6 +162,7 @@ public class ApiConfig {
         JsonObject infoJson = new Gson().fromJson(jsonStr, JsonObject.class);
         // spider
         spider = DefaultConfig.safeJsonString(infoJson, "spider", "");
+        spider = spider.split(";md5;")[0];
         // 远端站点源
         for (JsonElement opt : infoJson.get("sites").getAsJsonArray()) {
             JsonObject obj = (JsonObject) opt;
@@ -195,6 +199,8 @@ public class ApiConfig {
             ParseBean pb = new ParseBean();
             pb.setName(obj.get("name").getAsString().trim());
             pb.setUrl(obj.get("url").getAsString().trim());
+            String ext = obj.has("ext") ? obj.get("ext").getAsJsonObject().toString() : "";
+            pb.setExt(ext);
             pb.setType(DefaultConfig.safeJsonInt(obj, "type", 0));
             parseBeanList.add(pb);
         }
@@ -273,6 +279,14 @@ public class ApiConfig {
         return jarLoader.proxyInvoke(param);
     }
 
+    public JSONObject jsonExt(String key, LinkedHashMap<String, String> jxs, String url) {
+        return jarLoader.jsonExt(key, jxs, url);
+    }
+
+    public JSONObject jsonExtMix(String flag, String key, String name, LinkedHashMap<String, HashMap<String, String>> jxs, String url) {
+        return jarLoader.jsonExtMix(flag, key, name, jxs, url);
+    }
+
     public interface LoadConfigCallback {
         void success();
 
@@ -327,7 +341,7 @@ public class ApiConfig {
     }
 
     public SourceBean getHomeSourceBean() {
-        return mHomeSource;
+        return mHomeSource == null ? emptyHome : mHomeSource;
     }
 
     public List<LiveChannel> getChannelList() {
