@@ -362,7 +362,7 @@ public class ApiConfig {
     }
 
     public Spider getCSP(SourceBean sourceBean) {
-        return jarLoader.getSpider(sourceBean.getApi(), sourceBean.getExt());
+        return jarLoader.getSpider(sourceBean.getKey(), sourceBean.getApi(), sourceBean.getExt());
     }
 
     public Object[] proxyLocal(Map param) {
