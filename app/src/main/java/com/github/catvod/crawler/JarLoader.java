@@ -24,7 +24,7 @@ public class JarLoader {
     /**
      * 不要在主线程调用我
      *
-     * @param jarData
+     * @param cache
      */
     public boolean load(String cache) {
         spiders.clear();
