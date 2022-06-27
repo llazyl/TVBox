@@ -47,7 +47,7 @@ import java.util.Map;
  */
 public class ApiConfig {
     private static ApiConfig instance;
-    private HashMap<String, SourceBean> sourceBeanList;
+    private LinkedHashMap<String, SourceBean> sourceBeanList;
     private SourceBean mHomeSource;
     private ParseBean mDefaultParse;
     private List<ChannelGroup> channelGroupList;
@@ -62,7 +62,7 @@ public class ApiConfig {
 
 
     private ApiConfig() {
-        sourceBeanList = new HashMap<>();
+        sourceBeanList = new LinkedHashMap<>();
         channelGroupList = new ArrayList<>();
         parseBeanList = new ArrayList<>();
     }
