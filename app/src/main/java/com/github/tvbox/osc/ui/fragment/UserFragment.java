@@ -12,6 +12,7 @@ import com.github.tvbox.osc.base.BaseLazyFragment;
 import com.github.tvbox.osc.event.ServerEvent;
 import com.github.tvbox.osc.ui.activity.HistoryActivity;
 import com.github.tvbox.osc.ui.activity.LivePlayActivity;
+import com.github.tvbox.osc.ui.activity.PushActivity;
 import com.github.tvbox.osc.ui.activity.SearchActivity;
 import com.github.tvbox.osc.ui.activity.SettingActivity;
 import com.github.tvbox.osc.ui.adapter.HomeHotVodAdapter;
@@ -42,6 +43,7 @@ public class UserFragment extends BaseLazyFragment implements View.OnClickListen
     private LinearLayout tvSearch;
     private LinearLayout tvSetting;
     private LinearLayout tvHistory;
+    private LinearLayout tvPush;
 
     public static UserFragment newInstance() {
         return new UserFragment();
@@ -59,20 +61,23 @@ public class UserFragment extends BaseLazyFragment implements View.OnClickListen
         tvSearch = findViewById(R.id.tvSearch);
         tvSetting = findViewById(R.id.tvSetting);
         tvHistory = findViewById(R.id.tvHistory);
+        tvPush = findViewById(R.id.tvPush);
         tvLive.setOnClickListener(this);
         tvSearch.setOnClickListener(this);
         tvSetting.setOnClickListener(this);
         tvHistory.setOnClickListener(this);
+        tvPush.setOnClickListener(this);
         tvLive.setOnFocusChangeListener(focusChangeListener);
         tvSearch.setOnFocusChangeListener(focusChangeListener);
         tvSetting.setOnFocusChangeListener(focusChangeListener);
         tvHistory.setOnFocusChangeListener(focusChangeListener);
+        tvPush.setOnFocusChangeListener(focusChangeListener);
         TvRecyclerView tvHotList = findViewById(R.id.tvHotList);
         HomeHotVodAdapter adapter = new HomeHotVodAdapter();
         adapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                if(ApiConfig.get().getSourceBeanList().isEmpty())
+                if (ApiConfig.get().getSourceBeanList().isEmpty())
                     return;
                 String title = ((HomeHotVodAdapter.HotVod) adapter.getItem(position)).getName();
                 Intent newIntent = new Intent(mContext, SearchActivity.class);
@@ -172,6 +177,8 @@ public class UserFragment extends BaseLazyFragment implements View.OnClickListen
             jumpActivity(SettingActivity.class);
         } else if (v.getId() == R.id.tvHistory) {
             jumpActivity(HistoryActivity.class);
+        } else if (v.getId() == R.id.tvPush) {
+            jumpActivity(PushActivity.class);
         }
     }
 
