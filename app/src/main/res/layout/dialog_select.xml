@@ -6,10 +6,10 @@
     android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="@dimen/vs_400"
+        android:layout_width="@dimen/vs_440"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="@drawable/remote_dialog_bg">
+        android:background="@drawable/dialog_bg_01">
 
         <TextView
             android:id="@+id/title"
@@ -20,7 +20,7 @@
             android:padding="@dimen/vs_20"
             android:singleLine="true"
             android:text="11111111"
-            android:textColor="@color/color_FFFFFF"
+            android:textColor="@color/color_CC000000"
             android:textSize="@dimen/ts_26"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"

@@ -170,7 +170,7 @@ public class ModelSettingFragment extends BaseLazyFragment {
                 if (sites.size() > 0) {
                     SelectDialog<SourceBean> dialog = new SelectDialog<>(mActivity);
                     dialog.setTip("请选择首页数据源");
-                    SelectDialogAdapter<SourceBean> selectAdapter = new SelectDialogAdapter(new SelectDialogAdapter.SelectDialogInterface<SourceBean>() {
+                    dialog.setAdapter(new SelectDialogAdapter.SelectDialogInterface<SourceBean>() {
                         @Override
                         public void click(SourceBean value, int pos) {
                             ApiConfig.get().setSourceBean(value);
@@ -191,9 +191,7 @@ public class ModelSettingFragment extends BaseLazyFragment {
                         public boolean areContentsTheSame(@NonNull @NotNull SourceBean oldItem, @NonNull @NotNull SourceBean newItem) {
                             return oldItem.getKey().equals(newItem.getKey());
                         }
-                    });
-                    selectAdapter.setData(sites, sites.indexOf(ApiConfig.get().getHomeSourceBean()));
-                    dialog.setAdapter(selectAdapter);
+                    }, sites, sites.indexOf(ApiConfig.get().getHomeSourceBean()));
                     dialog.show();
                 }
             }
@@ -240,9 +238,9 @@ public class ModelSettingFragment extends BaseLazyFragment {
                     }
                 }
 
-                SelectDialog<SourceBean> dialog = new SelectDialog<>(mActivity);
-                dialog.setTip("请选择Ijk解码");
-                SelectDialogAdapter<IJKCode> selectAdapter = new SelectDialogAdapter(new SelectDialogAdapter.SelectDialogInterface<IJKCode>() {
+                SelectDialog<IJKCode> dialog = new SelectDialog<>(mActivity);
+                dialog.setTip("请选择IJK解码");
+                dialog.setAdapter(new SelectDialogAdapter.SelectDialogInterface<IJKCode>() {
                     @Override
                     public void click(IJKCode value, int pos) {
                         value.selected(true);
@@ -263,9 +261,7 @@ public class ModelSettingFragment extends BaseLazyFragment {
                     public boolean areContentsTheSame(@NonNull @NotNull IJKCode oldItem, @NonNull @NotNull IJKCode newItem) {
                         return oldItem.getName().equals(newItem.getName());
                     }
-                });
-                selectAdapter.setData(ijkCodes, defaultPos);
-                dialog.setAdapter(selectAdapter);
+                }, ijkCodes, defaultPos);
                 dialog.show();
             }
         });
@@ -278,9 +274,9 @@ public class ModelSettingFragment extends BaseLazyFragment {
                 players.add(0);
                 players.add(1);
                 players.add(2);
-                SelectDialog<SourceBean> dialog = new SelectDialog<>(mActivity);
+                SelectDialog<Integer> dialog = new SelectDialog<>(mActivity);
                 dialog.setTip("请选择默认播放器");
-                SelectDialogAdapter<Integer> selectAdapter = new SelectDialogAdapter(new SelectDialogAdapter.SelectDialogInterface<Integer>() {
+                dialog.setAdapter(new SelectDialogAdapter.SelectDialogInterface<Integer>() {
                     @Override
                     public void click(Integer value, int pos) {
                         Hawk.put(HawkConfig.PLAY_TYPE, value);
@@ -302,9 +298,7 @@ public class ModelSettingFragment extends BaseLazyFragment {
                     public boolean areContentsTheSame(@NonNull @NotNull Integer oldItem, @NonNull @NotNull Integer newItem) {
                         return oldItem.intValue() == newItem.intValue();
                     }
-                });
-                selectAdapter.setData(players, defaultPos);
-                dialog.setAdapter(selectAdapter);
+                }, players, defaultPos);
                 dialog.show();
             }
         });
@@ -316,9 +310,9 @@ public class ModelSettingFragment extends BaseLazyFragment {
                 ArrayList<Integer> renders = new ArrayList<>();
                 renders.add(0);
                 renders.add(1);
-                SelectDialog<SourceBean> dialog = new SelectDialog<>(mActivity);
+                SelectDialog<Integer> dialog = new SelectDialog<>(mActivity);
                 dialog.setTip("请选择默认渲染方式");
-                SelectDialogAdapter<Integer> selectAdapter = new SelectDialogAdapter(new SelectDialogAdapter.SelectDialogInterface<Integer>() {
+                dialog.setAdapter(new SelectDialogAdapter.SelectDialogInterface<Integer>() {
                     @Override
                     public void click(Integer value, int pos) {
                         Hawk.put(HawkConfig.PLAY_RENDER, value);
@@ -340,9 +334,7 @@ public class ModelSettingFragment extends BaseLazyFragment {
                     public boolean areContentsTheSame(@NonNull @NotNull Integer oldItem, @NonNull @NotNull Integer newItem) {
                         return oldItem.intValue() == newItem.intValue();
                     }
-                });
-                selectAdapter.setData(renders, defaultPos);
-                dialog.setAdapter(selectAdapter);
+                }, renders, defaultPos);
                 dialog.show();
             }
         });
