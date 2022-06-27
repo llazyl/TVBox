@@ -221,6 +221,7 @@ public class ApiConfig {
         // spider
         spider = DefaultConfig.safeJsonString(infoJson, "spider", "");
         // 远端站点源
+        SourceBean firstSite = null;
         for (JsonElement opt : infoJson.get("sites").getAsJsonArray()) {
             JsonObject obj = (JsonObject) opt;
             SourceBean sb = new SourceBean();
@@ -234,13 +235,15 @@ public class ApiConfig {
             sb.setFilterable(DefaultConfig.safeJsonInt(obj, "filterable", 1));
             sb.setPlayerUrl(DefaultConfig.safeJsonString(obj, "playUrl", ""));
             sb.setExt(DefaultConfig.safeJsonString(obj, "ext", ""));
+            if (firstSite == null)
+                firstSite = sb;
             sourceBeanList.put(siteKey, sb);
         }
         if (sourceBeanList != null && sourceBeanList.size() > 0) {
             String home = Hawk.get(HawkConfig.HOME_API, "");
             SourceBean sh = getSource(home);
             if (sh == null)
-                setSourceBean(sourceBeanList.get(0));
+                setSourceBean(firstSite);
             else
                 setSourceBean(sh);
         }
@@ -387,7 +390,7 @@ public class ApiConfig {
     }
 
     public SourceBean getSource(String key) {
-        if(!sourceBeanList.containsKey(key))
+        if (!sourceBeanList.containsKey(key))
             return null;
         return sourceBeanList.get(key);
     }
