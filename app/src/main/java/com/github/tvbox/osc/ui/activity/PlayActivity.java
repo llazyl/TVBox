@@ -204,6 +204,7 @@ public class PlayActivity extends BaseActivity {
                             boolean userJxList = (playUrl.isEmpty() && ApiConfig.get().getVipParseFlags().contains(flag)) || jx;
                             initParse(flag, userJxList, playUrl, url);
                         } else {
+                            controller.showParse(false);
                             playUrl(playUrl + url, headers);
                         }
                     } catch (Throwable th) {
