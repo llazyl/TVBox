@@ -428,10 +428,6 @@ public abstract class BaseController extends BaseVideoController implements Gest
     }
 
     public boolean onKeyEvent(KeyEvent event) {
-        if (!isInPlaybackState() //不处于播放状态
-                || isLocked() //锁住了屏幕
-        )
-            return false;
         return false;
     }
 }

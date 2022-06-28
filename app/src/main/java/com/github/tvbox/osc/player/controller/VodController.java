@@ -191,35 +191,63 @@ public class VodController extends BaseController {
         if (super.onKeyEvent(event)) {
             return true;
         }
-        if (isInPlaybackState()) {
-            int keyCode = event.getKeyCode();
-            int action = event.getAction();
-            if (action == KeyEvent.ACTION_DOWN) {
-                if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT || keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-                    tvSlideStart(keyCode == KeyEvent.KEYCODE_DPAD_RIGHT ? 1 : -1);
-                } else if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE) {
-                    togglePlay();
-                } else if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-                } else if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-                }
-            } else if (action == KeyEvent.ACTION_UP) {
-                if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT || keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-                    tvSlideStop();
-                }
-            }
+        if (mBottomRoot.getVisibility() == VISIBLE) {
             return super.dispatchKeyEvent(event);
         }
-        return false;
+        boolean isInPlayback = isInPlaybackState();
+        int keyCode = event.getKeyCode();
+        int action = event.getAction();
+        if (action == KeyEvent.ACTION_DOWN) {
+            if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT || keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+                if (isInPlayback) {
+                    tvSlideStart(keyCode == KeyEvent.KEYCODE_DPAD_RIGHT ? 1 : -1);
+                    return true;
+                }
+            } else if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE) {
+                if (isInPlayback) {
+                    togglePlay();
+                    return true;
+                }
+            } else if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+            } else if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                if (mBottomRoot.getVisibility() == GONE) {
+                    mHandler.removeMessages(1003);
+                    mHandler.sendEmptyMessage(1002);
+                }
+            }
+        } else if (action == KeyEvent.ACTION_UP) {
+            if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT || keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+                if (isInPlayback) {
+                    tvSlideStop();
+                    return true;
+                }
+            }
+        }
+        return super.dispatchKeyEvent(event);
     }
 
     @Override
     public boolean onSingleTapConfirmed(MotionEvent e) {
-        if (isInPlaybackState()) {
+        if (mBottomRoot.getVisibility() == GONE) {
+            mHandler.removeMessages(1003);
+            mHandler.sendEmptyMessage(1002);
+        } else {
+            mHandler.removeMessages(1002);
             mHandler.sendEmptyMessage(1003);
-            mHandler.removeMessages(1004);
-            mHandler.sendEmptyMessageDelayed(1004, 3000);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        if (super.onBackPressed()) {
             return true;
         }
-        return super.onSingleTapConfirmed(e);
+        if (mBottomRoot.getVisibility() == VISIBLE) {
+            mHandler.removeMessages(1002);
+            mHandler.sendEmptyMessage(1003);
+            return true;
+        }
+        return false;
     }
 }
