@@ -564,39 +564,50 @@ public class PlayActivity extends BaseActivity {
     }
 
     void loadUrl(String url) {
-        if (mXwalkWebView != null) {
-            mXwalkWebView.stopLoading();
-            mXwalkWebView.clearCache(true);
-            mXwalkWebView.loadUrl(url);
-        }
-        if (mSysWebView != null) {
-            mSysWebView.stopLoading();
-            mSysWebView.clearCache(true);
-            mSysWebView.loadUrl(url);
-        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (mXwalkWebView != null) {
+                    mXwalkWebView.stopLoading();
+                    mXwalkWebView.clearCache(true);
+                    mXwalkWebView.loadUrl(url);
+                }
+                if (mSysWebView != null) {
+                    mSysWebView.stopLoading();
+                    mSysWebView.clearCache(true);
+                    mSysWebView.loadUrl(url);
+                }
+            }
+        });
     }
 
     void stopLoadWebView(boolean destroy) {
-        if (mXwalkWebView != null) {
-            mXwalkWebView.stopLoading();
-            mXwalkWebView.clearCache(true);
-            mXwalkWebView.loadUrl("about:blank");
-            if (destroy) {
-                mXwalkWebView.removeAllViews();
-                mXwalkWebView.onDestroy();
-                mXwalkWebView = null;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
+                if (mXwalkWebView != null) {
+                    mXwalkWebView.stopLoading();
+                    mXwalkWebView.clearCache(true);
+                    mXwalkWebView.loadUrl("about:blank");
+                    if (destroy) {
+                        mXwalkWebView.removeAllViews();
+                        mXwalkWebView.onDestroy();
+                        mXwalkWebView = null;
+                    }
+                }
+                if (mSysWebView != null) {
+                    mSysWebView.stopLoading();
+                    mSysWebView.clearCache(true);
+                    mSysWebView.loadUrl("about:blank");
+                    if (destroy) {
+                        mSysWebView.removeAllViews();
+                        mSysWebView.destroy();
+                        mSysWebView = null;
+                    }
+                }
             }
-        }
-        if (mSysWebView != null) {
-            mSysWebView.stopLoading();
-            mSysWebView.clearCache(true);
-            mSysWebView.loadUrl("about:blank");
-            if (destroy) {
-                mSysWebView.removeAllViews();
-                mSysWebView.destroy();
-                mSysWebView = null;
-            }
-        }
+        });
     }
 
     class MyWebView extends WebView {
