@@ -37,6 +37,19 @@
                 android:textSize="@dimen/ts_20" />
 
             <TextView
+                android:id="@+id/play_next"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/vs_5"
+                android:layout_marginRight="@dimen/vs_5"
+                android:background="@drawable/button_dialog_main"
+                android:focusable="true"
+                android:padding="@dimen/vs_10"
+                android:text="下一集"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/ts_20" />
+
+            <TextView
                 android:id="@+id/play_pre"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -50,7 +63,7 @@
                 android:textSize="@dimen/ts_20" />
 
             <TextView
-                android:id="@+id/play_next"
+                android:id="@+id/play_retry"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/vs_5"
@@ -58,7 +71,7 @@
                 android:background="@drawable/button_dialog_main"
                 android:focusable="true"
                 android:padding="@dimen/vs_10"
-                android:text="下一集"
+                android:text="重播本集"
                 android:textColor="@android:color/white"
                 android:textSize="@dimen/ts_20" />
 
@@ -260,6 +273,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:padding="@dimen/vs_20"
             android:text="http://"
             android:textColor="@android:color/white"
             android:textSize="@dimen/ts_24" />
@@ -356,6 +372,7 @@
         android:indeterminateBehavior="repeat"
         android:indeterminateDrawable="@drawable/anim_loading"
         android:indeterminateOnly="true"
-        android:tag="vod_control_loading" />
+        android:tag="vod_control_loading"
+        android:visibility="gone" />
 
 </FrameLayout>

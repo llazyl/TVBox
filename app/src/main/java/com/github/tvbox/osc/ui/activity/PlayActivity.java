@@ -8,6 +8,8 @@ import android.graphics.Color;
 import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +22,9 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -70,15 +75,14 @@ import me.jessyan.autosize.AutoSize;
 import xyz.doikki.videoplayer.player.ProgressManager;
 import xyz.doikki.videoplayer.player.VideoView;
 
-/**
- * @author pj567
- * @date :2020/12/22
- * @description:
- */
 public class PlayActivity extends BaseActivity {
     private VideoView mVideoView;
+    private TextView mPlayLoadTip;
+    private ImageView mPlayLoadErr;
+    private ProgressBar mPlayLoading;
     private VodController mController;
     private SourceViewModel sourceViewModel;
+    private Handler mHandler;
 
     @Override
     protected int getLayoutResID() {
@@ -93,8 +97,22 @@ public class PlayActivity extends BaseActivity {
     }
 
     private void initView() {
-        setLoadSir(findViewById(R.id.rootLayout));
+        mHandler = new Handler(new Handler.Callback() {
+            @Override
+            public boolean handleMessage(@NonNull Message msg) {
+                switch (msg.what) {
+                    case 100:
+                        stopParse();
+                        errorWithRetry("嗅探错误", false);
+                        break;
+                }
+                return false;
+            }
+        });
         mVideoView = findViewById(R.id.mVideoView);
+        mPlayLoadTip = findViewById(R.id.play_load_tip);
+        mPlayLoading = findViewById(R.id.play_loading);
+        mPlayLoadErr = findViewById(R.id.play_load_error);
         mController = new VodController(this);
         mController.setCanChangePosition(true);
         mController.setEnableInNormal(true);
@@ -107,16 +125,20 @@ public class PlayActivity extends BaseActivity {
 
             @Override
             public long getSavedProgress(String url) {
-                if (CacheManager.getCache(MD5.string2MD5(url)) == null) {
-                    int st = 0;
-                    try {
-                        st = mVodPlayerCfg.getInt("st");
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    return st * 1000;
+                int st = 0;
+                try {
+                    st = mVodPlayerCfg.getInt("st");
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-                return (long) CacheManager.getCache(MD5.string2MD5(url));
+                long skip = st * 1000;
+                if (CacheManager.getCache(MD5.string2MD5(url)) == null) {
+                    return skip;
+                }
+                long rec = (long) CacheManager.getCache(MD5.string2MD5(url));
+                if (rec < skip)
+                    return skip;
+                return rec;
             }
         });
         mController.setListener(new VodController.VodControlListener() {
@@ -132,6 +154,7 @@ public class PlayActivity extends BaseActivity {
 
             @Override
             public void changeParse(ParseBean pb) {
+                autoRetryCount = 0;
                 doParse(pb);
             }
 
@@ -143,51 +166,66 @@ public class PlayActivity extends BaseActivity {
 
             @Override
             public void replay() {
+                autoRetryCount = 0;
                 play();
             }
 
             @Override
-            public void autoReplay() {
-
+            public void errReplay() {
+                errorWithRetry("视频播放出错", false);
             }
         });
         mVideoView.setVideoController(mController);
     }
 
-    void getPlayInfoError() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(mContext, "获取播放信息错误", Toast.LENGTH_SHORT).show();
-                finish();
-            }
-        });
+    void setTip(String msg, boolean loading, boolean err) {
+        mPlayLoadTip.setText(msg);
+        mPlayLoadTip.setVisibility(View.VISIBLE);
+        mPlayLoading.setVisibility(loading ? View.VISIBLE : View.GONE);
+        mPlayLoadErr.setVisibility(err ? View.VISIBLE : View.GONE);
     }
 
-    void parseError() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(mContext, "解析错误", Toast.LENGTH_SHORT).show();
-            }
-        });
+    void hideTip() {
+        mPlayLoadTip.setVisibility(View.GONE);
+        mPlayLoading.setVisibility(View.GONE);
+        mPlayLoadErr.setVisibility(View.GONE);
+    }
+
+    void errorWithRetry(String err, boolean finish) {
+        if (!autoRetry()) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (finish) {
+                        Toast.makeText(mContext, err, Toast.LENGTH_SHORT).show();
+                        finish();
+                    } else {
+                        setTip(err, false, true);
+                    }
+                }
+            });
+        }
     }
 
     void playUrl(String url, HashMap<String, String> headers) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                stopParse();
                 if (mVideoView != null) {
                     mVideoView.release();
-                    PlayerHelper.updateCfg(mVideoView, mVodPlayerCfg);
-                    mVideoView.setProgressKey(progressKey);
-                    if (headers != null) {
-                        mVideoView.setUrl(url, headers);
-                    } else {
-                        mVideoView.setUrl(url);
+                    if (url != null) {
+                        hideTip();
+                        PlayerHelper.updateCfg(mVideoView, mVodPlayerCfg);
+                        mVideoView.setProgressKey(progressKey);
+                        if (headers != null) {
+                            mVideoView.setUrl(url, headers);
+                        } else {
+                            mVideoView.setUrl(url);
+                        }
+                        mVideoView.start();
+                        mController.resetSpeed();
                     }
-                    mVideoView.start();
-                    mController.resetSpeed();
                 }
             }
         });
@@ -198,7 +236,6 @@ public class PlayActivity extends BaseActivity {
         sourceViewModel.playResult.observe(this, new Observer<JSONObject>() {
             @Override
             public void onChanged(JSONObject info) {
-                showSuccess();
                 if (info != null) {
                     try {
                         progressKey = info.optString("proKey", null);
@@ -231,10 +268,10 @@ public class PlayActivity extends BaseActivity {
                             playUrl(playUrl + url, headers);
                         }
                     } catch (Throwable th) {
-                        getPlayInfoError();
+                        errorWithRetry("获取播放信息错误", true);
                     }
                 } else {
-                    getPlayInfoError();
+                    errorWithRetry("获取播放信息错误", true);
                 }
             }
         });
@@ -365,11 +402,27 @@ public class PlayActivity extends BaseActivity {
         play();
     }
 
+    private int autoRetryCount = 0;
+
+    boolean autoRetry() {
+        if (autoRetryCount < 3) {
+            autoRetryCount++;
+            play();
+            return true;
+        } else {
+            autoRetryCount = 0;
+            return false;
+        }
+    }
 
     public void play() {
         VodInfo.VodSeries vs = mVodInfo.seriesMap.get(mVodInfo.playFlag).get(mVodInfo.playIndex);
         EventBus.getDefault().post(new RefreshEvent(RefreshEvent.TYPE_REFRESH, mVodInfo.playIndex));
-        showLoading();
+        setTip("正在获取播放信息", true, false);
+        String playTitleInfo = mVodInfo.name + " " + vs.name;
+        mController.setTitle(playTitleInfo);
+
+        playUrl(null, null);
         String progressKey = mVodInfo.sourceKey + mVodInfo.id + mVodInfo.playFlag + mVodInfo.playIndex;
         sourceViewModel.getPlay(sourceKey, mVodInfo.playFlag, progressKey, vs.url);
     }
@@ -420,7 +473,9 @@ public class PlayActivity extends BaseActivity {
     }
 
     void stopParse() {
+        mHandler.removeMessages(100);
         stopLoadWebView(false);
+        loadFound = false;
         OkGo.getInstance().cancelTag("json_jx");
         if (parseThreadPool != null) {
             try {
@@ -437,8 +492,12 @@ public class PlayActivity extends BaseActivity {
     private void doParse(ParseBean pb) {
         stopParse();
         if (pb.getType() == 0) {
+            setTip("正在嗅探播放地址", true, false);
+            mHandler.removeMessages(100);
+            mHandler.sendEmptyMessageDelayed(100, 15 * 1000);
             loadWebView(pb.getUrl() + webUrl);
         } else if (pb.getType() == 1) { // json 解析
+            setTip("正在解析播放地址", true, false);
             OkGo.<String>get(pb.getUrl() + webUrl)
                     .tag("json_jx")
                     .execute(new AbsCallback<String>() {
@@ -475,17 +534,18 @@ public class PlayActivity extends BaseActivity {
                                 playUrl(rs.getString("url"), headers);
                             } catch (JSONException e) {
                                 e.printStackTrace();
-                                parseError();
+                                errorWithRetry("解析错误", false);
                             }
                         }
 
                         @Override
                         public void onError(Response<String> response) {
                             super.onError(response);
-                            parseError();
+                            errorWithRetry("解析错误", false);
                         }
                     });
         } else if (pb.getType() == 2) { // json 扩展
+            setTip("正在解析播放地址", true, false);
             parseThreadPool = Executors.newSingleThreadExecutor();
             LinkedHashMap<String, String> jxs = new LinkedHashMap<>();
             for (ParseBean p : ApiConfig.get().getParseBeanList()) {
@@ -498,7 +558,7 @@ public class PlayActivity extends BaseActivity {
                 public void run() {
                     JSONObject rs = ApiConfig.get().jsonExt(pb.getUrl(), jxs, webUrl);
                     if (rs == null || !rs.has("url")) {
-                        parseError();
+                        errorWithRetry("解析错误", false);
                     } else {
                         HashMap<String, String> headers = null;
                         if (rs.has("header")) {
@@ -527,6 +587,7 @@ public class PlayActivity extends BaseActivity {
                 }
             });
         } else if (pb.getType() == 3) { // json 聚合
+            setTip("正在解析播放地址", true, false);
             parseThreadPool = Executors.newSingleThreadExecutor();
             LinkedHashMap<String, HashMap<String, String>> jxs = new LinkedHashMap<>();
             String extendName = "";
@@ -546,7 +607,7 @@ public class PlayActivity extends BaseActivity {
                 public void run() {
                     JSONObject rs = ApiConfig.get().jsonExtMix(parseFlag, pb.getUrl(), finalExtendName, jxs, webUrl);
                     if (rs == null || !rs.has("url")) {
-                        parseError();
+                        errorWithRetry("解析错误", false);
                     } else {
                         HashMap<String, String> headers = null;
                         if (rs.has("header")) {
@@ -648,9 +709,9 @@ public class PlayActivity extends BaseActivity {
 
                 if (mXwalkWebView != null) {
                     mXwalkWebView.stopLoading();
-                    mXwalkWebView.clearCache(true);
                     mXwalkWebView.loadUrl("about:blank");
                     if (destroy) {
+                        mXwalkWebView.clearCache(true);
                         mXwalkWebView.removeAllViews();
                         mXwalkWebView.onDestroy();
                         mXwalkWebView = null;
@@ -658,9 +719,9 @@ public class PlayActivity extends BaseActivity {
                 }
                 if (mSysWebView != null) {
                     mSysWebView.stopLoading();
-                    mSysWebView.clearCache(true);
                     mSysWebView.loadUrl("about:blank");
                     if (destroy) {
+                        mSysWebView.clearCache(true);
                         mSysWebView.removeAllViews();
                         mSysWebView.destroy();
                         mSysWebView = null;
@@ -792,6 +853,7 @@ public class PlayActivity extends BaseActivity {
 
             if (!ad && !loadFound) {
                 if (DefaultConfig.isVideoFormat(url)) {
+                    mHandler.removeMessages(100);
                     loadFound = true;
                     if (headers != null && !headers.isEmpty()) {
                         playUrl(url, headers);
@@ -947,6 +1009,7 @@ public class PlayActivity extends BaseActivity {
             }
             if (!ad && !loadFound) {
                 if (DefaultConfig.isVideoFormat(url)) {
+                    mHandler.removeMessages(100);
                     loadFound = true;
                     HashMap<String, String> webHeaders = new HashMap<>();
                     try {
