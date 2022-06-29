@@ -433,7 +433,7 @@
                     android:layout_weight="1" />
 
                 <TextView
-                    android:id="@+id/tvDos"
+                    android:id="@+id/tvDns"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@android:color/white"
