@@ -2,21 +2,80 @@ package com.github.tvbox.osc.util;
 
 import android.content.Context;
 
+import com.github.tvbox.osc.api.ApiConfig;
+import com.github.tvbox.osc.bean.IJKCode;
 import com.github.tvbox.osc.player.IjkMediaPlayer;
 import com.github.tvbox.osc.player.render.SurfaceRenderViewFactory;
 import com.orhanobut.hawk.Hawk;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import tv.danmaku.ijk.media.player.IjkLibLoader;
 import xyz.doikki.videoplayer.exo.ExoMediaPlayerFactory;
 import xyz.doikki.videoplayer.player.AndroidMediaPlayerFactory;
 import xyz.doikki.videoplayer.player.PlayerFactory;
 import xyz.doikki.videoplayer.player.VideoView;
-import xyz.doikki.videoplayer.player.VideoViewConfig;
-import xyz.doikki.videoplayer.player.VideoViewManager;
 import xyz.doikki.videoplayer.render.RenderViewFactory;
 import xyz.doikki.videoplayer.render.TextureRenderViewFactory;
 
 public class PlayerHelper {
+    public static void updateCfg(VideoView videoView, JSONObject playerCfg) {
+        int playerType = Hawk.get(HawkConfig.PLAY_TYPE, 0);
+        int renderType = Hawk.get(HawkConfig.PLAY_RENDER, 0);
+        String ijkCode = Hawk.get(HawkConfig.IJK_CODEC, "软解码");
+        int scale = Hawk.get(HawkConfig.PLAY_SCALE, 0);
+        try {
+            playerType = playerCfg.getInt("pl");
+            renderType = playerCfg.getInt("pr");
+            ijkCode = playerCfg.getString("ijk");
+            scale = playerCfg.getInt("sc");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        IJKCode codec = ApiConfig.get().getIJKCodec(ijkCode);
+        PlayerFactory playerFactory;
+        if (playerType == 1) {
+            playerFactory = new PlayerFactory<IjkMediaPlayer>() {
+                @Override
+                public IjkMediaPlayer createPlayer(Context context) {
+                    return new IjkMediaPlayer(context, codec);
+                }
+            };
+            try {
+                tv.danmaku.ijk.media.player.IjkMediaPlayer.loadLibrariesOnce(new IjkLibLoader() {
+                    @Override
+                    public void loadLibrary(String s) throws UnsatisfiedLinkError, SecurityException {
+                        try {
+                            System.loadLibrary(s);
+                        } catch (Throwable th) {
+                            th.printStackTrace();
+                        }
+                    }
+                });
+            } catch (Throwable th) {
+                th.printStackTrace();
+            }
+        } else if (playerType == 2) {
+            playerFactory = ExoMediaPlayerFactory.create();
+        } else {
+            playerFactory = AndroidMediaPlayerFactory.create();
+        }
+        RenderViewFactory renderViewFactory = null;
+        switch (renderType) {
+            case 0:
+            default:
+                renderViewFactory = TextureRenderViewFactory.create();
+                break;
+            case 1:
+                renderViewFactory = SurfaceRenderViewFactory.create();
+                break;
+        }
+        videoView.setPlayerFactory(playerFactory);
+        videoView.setRenderViewFactory(renderViewFactory);
+        videoView.setScreenScaleType(scale);
+    }
+
     public static void updateCfg(VideoView videoView) {
         int playType = Hawk.get(HawkConfig.PLAY_TYPE, 0);
         PlayerFactory playerFactory;
@@ -24,7 +83,7 @@ public class PlayerHelper {
             playerFactory = new PlayerFactory<IjkMediaPlayer>() {
                 @Override
                 public IjkMediaPlayer createPlayer(Context context) {
-                    return new IjkMediaPlayer(context);
+                    return new IjkMediaPlayer(context, null);
                 }
             };
             try {
@@ -63,52 +122,20 @@ public class PlayerHelper {
 
 
     public static void init() {
-        int playType = Hawk.get(HawkConfig.PLAY_TYPE, 0);
-        PlayerFactory playerFactory;
-        if (playType == 1) {
-            playerFactory = new PlayerFactory<IjkMediaPlayer>() {
+        try {
+            tv.danmaku.ijk.media.player.IjkMediaPlayer.loadLibrariesOnce(new IjkLibLoader() {
                 @Override
-                public IjkMediaPlayer createPlayer(Context context) {
-                    return new IjkMediaPlayer(context);
-                }
-            };
-            try {
-                tv.danmaku.ijk.media.player.IjkMediaPlayer.loadLibrariesOnce(new IjkLibLoader() {
-                    @Override
-                    public void loadLibrary(String s) throws UnsatisfiedLinkError, SecurityException {
-                        try {
-                            System.loadLibrary(s);
-                        } catch (Throwable th) {
-                            th.printStackTrace();
-                        }
+                public void loadLibrary(String s) throws UnsatisfiedLinkError, SecurityException {
+                    try {
+                        System.loadLibrary(s);
+                    } catch (Throwable th) {
+                        th.printStackTrace();
                     }
-                });
-            } catch (Throwable th) {
-                th.printStackTrace();
-            }
-        } else if (playType == 2) {
-            playerFactory = ExoMediaPlayerFactory.create();
-        } else {
-            playerFactory = AndroidMediaPlayerFactory.create();
+                }
+            });
+        } catch (Throwable th) {
+            th.printStackTrace();
         }
-        int renderType = Hawk.get(HawkConfig.PLAY_RENDER, 0);
-        RenderViewFactory renderViewFactory = null;
-        switch (renderType) {
-            case 0:
-            default:
-                renderViewFactory = TextureRenderViewFactory.create();
-                break;
-            case 1:
-                renderViewFactory = SurfaceRenderViewFactory.create();
-                break;
-        }
-        //播放器配置，注意：此为全局配置，按需开启
-        VideoViewManager.setConfig(VideoViewConfig.newBuilder()
-                .setLogEnabled(Hawk.get(HawkConfig.DEBUG_OPEN, false))
-                .setScreenScaleType(VideoView.SCREEN_SCALE_DEFAULT)
-                .setPlayerFactory(playerFactory)
-                .setRenderViewFactory(renderViewFactory)
-                .build());
     }
 
     public static String getPlayerName(int playType) {

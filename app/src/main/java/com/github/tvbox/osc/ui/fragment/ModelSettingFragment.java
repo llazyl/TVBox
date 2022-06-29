@@ -42,6 +42,7 @@ public class ModelSettingFragment extends BaseLazyFragment {
     private TextView tvParseWebView;
     private TextView tvPlay;
     private TextView tvRender;
+    private TextView tvScale;
     private TextView tvXWalkDown;
     private TextView tvApi;
     private TextView tvHomeApi;
@@ -66,6 +67,7 @@ public class ModelSettingFragment extends BaseLazyFragment {
         tvMediaCodec = findViewById(R.id.tvMediaCodec);
         tvPlay = findViewById(R.id.tvPlay);
         tvRender = findViewById(R.id.tvRenderType);
+        tvScale = findViewById(R.id.tvScaleType);
         tvXWalkDown = findViewById(R.id.tvXWalkDown);
         tvApi = findViewById(R.id.tvApi);
         tvHomeApi = findViewById(R.id.tvHomeApi);
@@ -75,6 +77,7 @@ public class ModelSettingFragment extends BaseLazyFragment {
         tvXWalkDown.setText(XWalkUtils.xWalkLibExist(mContext) ? "已下载" : "未下载");
         tvApi.setText(Hawk.get(HawkConfig.API_URL, ""));
         tvHomeApi.setText(ApiConfig.get().getHomeSourceBean().getName());
+        tvScale.setText(PlayerHelper.getScaleName(Hawk.get(HawkConfig.PLAY_SCALE, 0)));
         tvPlay.setText(PlayerHelper.getPlayerName(Hawk.get(HawkConfig.PLAY_TYPE, 0)));
         tvRender.setText(PlayerHelper.getRenderName(Hawk.get(HawkConfig.PLAY_RENDER, 0)));
         findViewById(R.id.llXWalkCore).setVisibility(Hawk.get(HawkConfig.PARSE_WEBVIEW, true) ? View.GONE : View.VISIBLE);
@@ -227,6 +230,45 @@ public class ModelSettingFragment extends BaseLazyFragment {
                         return oldItem.getName().equals(newItem.getName());
                     }
                 }, ijkCodes, defaultPos);
+                dialog.show();
+            }
+        });
+        findViewById(R.id.llScale).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FastClickCheckUtil.check(v);
+                int defaultPos = Hawk.get(HawkConfig.PLAY_SCALE, 0);
+                ArrayList<Integer> players = new ArrayList<>();
+                players.add(0);
+                players.add(1);
+                players.add(2);
+                players.add(3);
+                players.add(4);
+                players.add(4);
+                SelectDialog<Integer> dialog = new SelectDialog<>(mActivity);
+                dialog.setTip("请选择默认画面缩放");
+                dialog.setAdapter(new SelectDialogAdapter.SelectDialogInterface<Integer>() {
+                    @Override
+                    public void click(Integer value, int pos) {
+                        Hawk.put(HawkConfig.PLAY_SCALE, value);
+                        tvScale.setText(PlayerHelper.getScaleName(value));
+                    }
+
+                    @Override
+                    public String getDisplay(Integer val) {
+                        return PlayerHelper.getScaleName(val);
+                    }
+                }, new DiffUtil.ItemCallback<Integer>() {
+                    @Override
+                    public boolean areItemsTheSame(@NonNull @NotNull Integer oldItem, @NonNull @NotNull Integer newItem) {
+                        return oldItem.intValue() == newItem.intValue();
+                    }
+
+                    @Override
+                    public boolean areContentsTheSame(@NonNull @NotNull Integer oldItem, @NonNull @NotNull Integer newItem) {
+                        return oldItem.intValue() == newItem.intValue();
+                    }
+                }, players, defaultPos);
                 dialog.show();
             }
         });

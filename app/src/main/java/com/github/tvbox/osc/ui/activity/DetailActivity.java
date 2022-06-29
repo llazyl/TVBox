@@ -43,6 +43,7 @@ import com.squareup.picasso.Picasso;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONObject;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -377,17 +378,24 @@ public class DetailActivity extends BaseActivity {
     public void refresh(RefreshEvent event) {
         if (event.type == RefreshEvent.TYPE_REFRESH) {
             if (event.obj != null) {
-                int index = (int) event.obj;
-                if (index != vodInfo.playIndex) {
-                    seriesAdapter.getData().get(vodInfo.playIndex).selected = false;
-                    seriesAdapter.notifyItemChanged(vodInfo.playIndex);
-                    seriesAdapter.getData().get(index).selected = true;
-                    seriesAdapter.notifyItemChanged(index);
-                    mGridView.setSelection(index);
-                    vodInfo.playIndex = index;
+                if (event.obj instanceof Integer) {
+                    int index = (int) event.obj;
+                    if (index != vodInfo.playIndex) {
+                        seriesAdapter.getData().get(vodInfo.playIndex).selected = false;
+                        seriesAdapter.notifyItemChanged(vodInfo.playIndex);
+                        seriesAdapter.getData().get(index).selected = true;
+                        seriesAdapter.notifyItemChanged(index);
+                        mGridView.setSelection(index);
+                        vodInfo.playIndex = index;
+                        //保存历史
+                        insertVod(sourceKey, vodInfo);
+                    }
+                } else if (event.obj instanceof JSONObject) {
+                    vodInfo.playerCfg = ((JSONObject) event.obj).toString();
                     //保存历史
                     insertVod(sourceKey, vodInfo);
                 }
+
             }
         } else if (event.type == RefreshEvent.TYPE_QUICK_SEARCH_SELECT) {
             if (event.obj != null) {
