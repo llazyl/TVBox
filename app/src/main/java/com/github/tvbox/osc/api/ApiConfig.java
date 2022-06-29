@@ -450,8 +450,12 @@ public class ApiConfig {
 
     public IJKCode getCurrentIJKCode() {
         String codeName = Hawk.get(HawkConfig.IJK_CODEC, "");
+        return getIJKCodec(codeName);
+    }
+
+    public IJKCode getIJKCodec(String name) {
         for (IJKCode code : ijkCodes) {
-            if (code.getName().equals(codeName))
+            if (code.getName().equals(name))
                 return code;
         }
         return ijkCodes.get(0);
