@@ -75,8 +75,8 @@ public class ModelSettingFragment extends BaseLazyFragment {
         tvXWalkDown.setText(XWalkUtils.xWalkLibExist(mContext) ? "已下载" : "未下载");
         tvApi.setText(Hawk.get(HawkConfig.API_URL, ""));
         tvHomeApi.setText(ApiConfig.get().getHomeSourceBean().getName());
-        tvPlay.setText(getPlayerName(Hawk.get(HawkConfig.PLAY_TYPE, 0)));
-        tvRender.setText(getRenderName(Hawk.get(HawkConfig.PLAY_RENDER, 0)));
+        tvPlay.setText(PlayerHelper.getPlayerName(Hawk.get(HawkConfig.PLAY_TYPE, 0)));
+        tvRender.setText(PlayerHelper.getRenderName(Hawk.get(HawkConfig.PLAY_RENDER, 0)));
         findViewById(R.id.llXWalkCore).setVisibility(Hawk.get(HawkConfig.PARSE_WEBVIEW, true) ? View.GONE : View.VISIBLE);
         findViewById(R.id.llDebug).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -180,7 +180,7 @@ public class ModelSettingFragment extends BaseLazyFragment {
                 dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
                     public void onDismiss(DialogInterface dialog) {
-                        ((BaseActivity)mActivity).hideSysBar();
+                        ((BaseActivity) mActivity).hideSysBar();
                     }
                 });
                 dialog.show();
@@ -245,13 +245,13 @@ public class ModelSettingFragment extends BaseLazyFragment {
                     @Override
                     public void click(Integer value, int pos) {
                         Hawk.put(HawkConfig.PLAY_TYPE, value);
-                        tvPlay.setText(getPlayerName(value));
+                        tvPlay.setText(PlayerHelper.getPlayerName(value));
                         PlayerHelper.init();
                     }
 
                     @Override
                     public String getDisplay(Integer val) {
-                        return getPlayerName(val);
+                        return PlayerHelper.getPlayerName(val);
                     }
                 }, new DiffUtil.ItemCallback<Integer>() {
                     @Override
@@ -281,13 +281,13 @@ public class ModelSettingFragment extends BaseLazyFragment {
                     @Override
                     public void click(Integer value, int pos) {
                         Hawk.put(HawkConfig.PLAY_RENDER, value);
-                        tvRender.setText(getRenderName(value));
+                        tvRender.setText(PlayerHelper.getRenderName(value));
                         PlayerHelper.init();
                     }
 
                     @Override
                     public String getDisplay(Integer val) {
-                        return getRenderName(val);
+                        return PlayerHelper.getRenderName(val);
                     }
                 }, new DiffUtil.ItemCallback<Integer>() {
                     @Override
@@ -309,24 +309,6 @@ public class ModelSettingFragment extends BaseLazyFragment {
                 findViewById(R.id.llDebug).setVisibility(View.VISIBLE);
             }
         };
-    }
-
-    private String getPlayerName(int playType) {
-        if (playType == 1) {
-            return "IJK播放器";
-        } else if (playType == 2) {
-            return "Exo播放器";
-        } else {
-            return "系统播放器";
-        }
-    }
-
-    private String getRenderName(int renderType) {
-        if (renderType == 1) {
-            return "SurfaceView";
-        } else {
-            return "TextureView";
-        }
     }
 
     @Override
