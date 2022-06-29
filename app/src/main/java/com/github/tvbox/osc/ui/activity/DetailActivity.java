@@ -71,6 +71,7 @@ public class DetailActivity extends BaseActivity {
     private TextView tvDirector;
     private TextView tvDes;
     private TextView tvPlay;
+    private TextView tvSort;
     private TextView tvQuickSearch;
     private TextView tvCollect;
     private TvRecyclerView mGridViewFlag;
@@ -112,6 +113,7 @@ public class DetailActivity extends BaseActivity {
         tvDirector = findViewById(R.id.tvDirector);
         tvDes = findViewById(R.id.tvDes);
         tvPlay = findViewById(R.id.tvPlay);
+        tvSort = findViewById(R.id.tvSort);
         tvCollect = findViewById(R.id.tvCollect);
         tvQuickSearch = findViewById(R.id.tvQuickSearch);
         mEmptyPlayList = findViewById(R.id.mEmptyPlaylist);
@@ -125,6 +127,17 @@ public class DetailActivity extends BaseActivity {
         mGridViewFlag.setLayoutManager(new V7LinearLayoutManager(this.mContext, 0, false));
         seriesFlagAdapter = new SeriesFlagAdapter();
         mGridViewFlag.setAdapter(seriesFlagAdapter);
+        tvSort.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (vodInfo != null && vodInfo.seriesMap.size() > 0) {
+                    vodInfo.reverseSort = !vodInfo.reverseSort;
+                    vodInfo.reverse();
+                    insertVod(sourceKey, vodInfo);
+                    seriesAdapter.notifyDataSetChanged();
+                }
+            }
+        });
         tvPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -313,10 +326,16 @@ public class DetailActivity extends BaseActivity {
                             vodInfo.playIndex = Math.max(vodInfoRecord.playIndex, 0);
                             vodInfo.playFlag = vodInfoRecord.playFlag;
                             vodInfo.playerCfg = vodInfoRecord.playerCfg;
+                            vodInfo.reverseSort = vodInfoRecord.reverseSort;
                         } else {
                             vodInfo.playIndex = 0;
                             vodInfo.playFlag = null;
                             vodInfo.playerCfg = "";
+                            vodInfo.reverseSort = false;
+                        }
+
+                        if (vodInfo.reverseSort) {
+                            vodInfo.reverse();
                         }
 
                         if (vodInfo.playFlag == null || !vodInfo.seriesMap.containsKey(vodInfo.playFlag))
