@@ -58,6 +58,18 @@ public class VodController extends BaseController {
                         mBottomRoot.setVisibility(GONE);
                         break;
                     }
+                    case 1004: { // 设置速度
+                        if (isInPlaybackState()) {
+                            try {
+                                float speed = (float) mPlayerConfig.getDouble("sp");
+                                mControlWrapper.setSpeed(speed);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        } else
+                            mHandler.sendEmptyMessageDelayed(1004, 100);
+                        break;
+                    }
                 }
             }
         };
@@ -159,12 +171,14 @@ public class VodController extends BaseController {
             @Override
             public void onClick(View view) {
                 listener.playNext();
+                hideBottom();
             }
         });
         mPreBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 listener.playPre();
+                hideBottom();
             }
         });
         mPlayerScaleBtn.setOnClickListener(new OnClickListener() {
@@ -213,6 +227,7 @@ public class VodController extends BaseController {
                     updatePlayerCfgView();
                     listener.updatePlayerCfg();
                     listener.replay();
+                    hideBottom();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -238,6 +253,7 @@ public class VodController extends BaseController {
                     updatePlayerCfgView();
                     listener.updatePlayerCfg();
                     listener.replay();
+                    hideBottom();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -324,6 +340,11 @@ public class VodController extends BaseController {
         }
     }
 
+    public void resetSpeed() {
+        mHandler.removeMessages(1004);
+        mHandler.sendEmptyMessageDelayed(1004, 100);
+    }
+
     public interface VodControlListener {
         void playNext();
 
@@ -334,6 +355,8 @@ public class VodController extends BaseController {
         void updatePlayerCfg();
 
         void replay();
+
+        void autoReplay();
     }
 
     public void setListener(VodControlListener listener) {
@@ -432,6 +455,7 @@ public class VodController extends BaseController {
             case VideoView.STATE_PAUSED:
                 break;
             case VideoView.STATE_ERROR:
+                listener.autoReplay();
                 break;
             case VideoView.STATE_PREPARED:
             case VideoView.STATE_BUFFERED:
@@ -445,12 +469,26 @@ public class VodController extends BaseController {
         }
     }
 
+    boolean isBottomVisible() {
+        return mBottomRoot.getVisibility() == VISIBLE;
+    }
+
+    void showBottom() {
+        mHandler.removeMessages(1003);
+        mHandler.sendEmptyMessage(1002);
+    }
+
+    void hideBottom() {
+        mHandler.removeMessages(1002);
+        mHandler.sendEmptyMessage(1003);
+    }
+
     @Override
     public boolean onKeyEvent(KeyEvent event) {
         if (super.onKeyEvent(event)) {
             return true;
         }
-        if (mBottomRoot.getVisibility() == VISIBLE) {
+        if (isBottomVisible()) {
             return super.dispatchKeyEvent(event);
         }
         boolean isInPlayback = isInPlaybackState();
@@ -469,9 +507,8 @@ public class VodController extends BaseController {
                 }
             } else if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
             } else if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-                if (mBottomRoot.getVisibility() == GONE) {
-                    mHandler.removeMessages(1003);
-                    mHandler.sendEmptyMessage(1002);
+                if (!isBottomVisible()) {
+                    showBottom();
                 }
             }
         } else if (action == KeyEvent.ACTION_UP) {
@@ -487,12 +524,10 @@ public class VodController extends BaseController {
 
     @Override
     public boolean onSingleTapConfirmed(MotionEvent e) {
-        if (mBottomRoot.getVisibility() == GONE) {
-            mHandler.removeMessages(1003);
-            mHandler.sendEmptyMessage(1002);
+        if (!isBottomVisible()) {
+            showBottom();
         } else {
-            mHandler.removeMessages(1002);
-            mHandler.sendEmptyMessage(1003);
+            hideBottom();
         }
         return true;
     }
@@ -502,9 +537,8 @@ public class VodController extends BaseController {
         if (super.onBackPressed()) {
             return true;
         }
-        if (mBottomRoot.getVisibility() == VISIBLE) {
-            mHandler.removeMessages(1002);
-            mHandler.sendEmptyMessage(1003);
+        if (isBottomVisible()) {
+            hideBottom();
             return true;
         }
         return false;
