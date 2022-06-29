@@ -26,6 +26,7 @@ import com.github.tvbox.osc.util.PlayerHelper;
 import com.github.tvbox.osc.util.XWalkUtils;
 import com.orhanobut.hawk.Hawk;
 
+import org.greenrobot.eventbus.EventBus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -173,6 +174,7 @@ public class ModelSettingFragment extends BaseLazyFragment {
             public void onClick(View v) {
                 FastClickCheckUtil.check(v);
                 ApiDialog dialog = new ApiDialog(mActivity);
+                EventBus.getDefault().register(dialog);
                 dialog.setOnListener(new ApiDialog.OnListener() {
                     @Override
                     public void onchange(String api) {
@@ -184,6 +186,7 @@ public class ModelSettingFragment extends BaseLazyFragment {
                     @Override
                     public void onDismiss(DialogInterface dialog) {
                         ((BaseActivity) mActivity).hideSysBar();
+                        EventBus.getDefault().unregister(dialog);
                     }
                 });
                 dialog.show();
