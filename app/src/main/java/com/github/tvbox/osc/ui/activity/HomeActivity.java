@@ -355,7 +355,8 @@ public class HomeActivity extends BaseActivity {
                             vod.id = vodInfo.id;
                             vod.sourceKey = vodInfo.sourceKey;
                             vod.name = vodInfo.name;
-                            vod.note = "上次看到" + vodInfo.playIndex;
+                            vod.pic = vodInfo.pic;
+                            /*vod.note = "最近看过" + vodInfo.playIndex;*/
                             vodList.add(vod);
                         }
                         fragments.add(UserFragment.newInstance(vodList));
