@@ -11,6 +11,8 @@ import com.github.tvbox.osc.R;
 import com.github.tvbox.osc.api.ApiConfig;
 import com.github.tvbox.osc.base.BaseLazyFragment;
 import com.github.tvbox.osc.bean.Movie;
+import com.github.tvbox.osc.bean.VodInfo;
+import com.github.tvbox.osc.cache.RoomDataManger;
 import com.github.tvbox.osc.event.ServerEvent;
 import com.github.tvbox.osc.ui.activity.CollectActivity;
 import com.github.tvbox.osc.ui.activity.DetailActivity;
@@ -53,7 +55,7 @@ public class UserFragment extends BaseLazyFragment implements View.OnClickListen
     private LinearLayout tvCollect;
     private LinearLayout tvPush;
     private HomeHotVodAdapter homeHotVodAdapter;
-    private List<Movie.Video> recVod;
+    private List<Movie.Video> homeSourceRec;
 
     public static UserFragment newInstance() {
         return new UserFragment();
@@ -64,8 +66,28 @@ public class UserFragment extends BaseLazyFragment implements View.OnClickListen
     }
 
     public UserFragment setArguments(List<Movie.Video> recVod) {
-        this.recVod = recVod;
+        this.homeSourceRec = recVod;
         return this;
+    }
+
+    @Override
+    protected void onFragmentResume() {
+        super.onFragmentResume();
+        if (Hawk.get(HawkConfig.HOME_REC, 0) == 2) {
+            List<VodInfo> allVodRecord = RoomDataManger.getAllVodRecord(10);
+            List<Movie.Video> vodList = new ArrayList<>();
+            for (VodInfo vodInfo : allVodRecord) {
+                Movie.Video vod = new Movie.Video();
+                vod.id = vodInfo.id;
+                vod.sourceKey = vodInfo.sourceKey;
+                vod.name = vodInfo.name;
+                vod.pic = vodInfo.pic;
+                if (vodInfo.playNote != null && !vodInfo.playNote.isEmpty())
+                    vod.note = "上次看到" + vodInfo.playNote;
+                vodList.add(vod);
+            }
+            homeHotVodAdapter.setNewData(vodList);
+        }
     }
 
     @Override
@@ -137,10 +159,12 @@ public class UserFragment extends BaseLazyFragment implements View.OnClickListen
     }
 
     private void initHomeHotVod(HomeHotVodAdapter adapter) {
-        if (Hawk.get(HawkConfig.HOME_REC, 0) != 0) {
-            if (recVod != null) {
-                adapter.setNewData(recVod);
+        if (Hawk.get(HawkConfig.HOME_REC, 0) == 1) {
+            if (homeSourceRec != null) {
+                adapter.setNewData(homeSourceRec);
             }
+            return;
+        } else if (Hawk.get(HawkConfig.HOME_REC, 0) == 2) {
             return;
         }
         try {

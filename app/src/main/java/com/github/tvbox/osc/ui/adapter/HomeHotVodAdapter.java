@@ -31,6 +31,7 @@ public class HomeHotVodAdapter extends BaseQuickAdapter<Movie.Video, BaseViewHol
             tvRate.setVisibility(View.GONE);
         } else {
             tvRate.setText(item.note);
+            tvRate.setVisibility(View.VISIBLE);
         }
         helper.setText(R.id.tvName, item.name);
         ImageView ivThumb = helper.getView(R.id.ivThumb);

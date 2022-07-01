@@ -347,19 +347,6 @@ public class HomeActivity extends BaseActivity {
                 if (data.id.equals("my0")) {
                     if (Hawk.get(HawkConfig.HOME_REC, 0) == 1 && absXml.videoList != null && absXml.videoList.size() > 0) {
                         fragments.add(UserFragment.newInstance(absXml.videoList));
-                    } else if (Hawk.get(HawkConfig.HOME_REC, 0) == 2) {
-                        List<VodInfo> allVodRecord = RoomDataManger.getAllVodRecord();
-                        List<Movie.Video> vodList = new ArrayList<>();
-                        for (VodInfo vodInfo : allVodRecord) {
-                            Movie.Video vod = new Movie.Video();
-                            vod.id = vodInfo.id;
-                            vod.sourceKey = vodInfo.sourceKey;
-                            vod.name = vodInfo.name;
-                            vod.pic = vodInfo.pic;
-                            /*vod.note = "最近看过" + vodInfo.playIndex;*/
-                            vodList.add(vod);
-                        }
-                        fragments.add(UserFragment.newInstance(vodList));
                     } else {
                         fragments.add(UserFragment.newInstance(null));
                     }
