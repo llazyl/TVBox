@@ -26,7 +26,7 @@ public class HomeHotVodAdapter extends BaseQuickAdapter<Movie.Video, BaseViewHol
 
     @Override
     protected void convert(BaseViewHolder helper, Movie.Video item) {
-        TextView tvRate = helper.getView(R.id.tvRate);
+        TextView tvRate = helper.getView(R.id.tvNote);
         if (item.note == null || item.note.isEmpty()) {
             tvRate.setVisibility(View.GONE);
         } else {
