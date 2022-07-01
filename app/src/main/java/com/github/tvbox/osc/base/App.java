@@ -52,6 +52,7 @@ public class App extends MultiDexApplication {
         if (!Hawk.contains(HawkConfig.PLAY_TYPE)) {
             Hawk.put(HawkConfig.PLAY_TYPE, 1);
         }
+        Hawk.put(HawkConfig.HOME_REC, 2);
     }
 
     public static App getInstance() {
