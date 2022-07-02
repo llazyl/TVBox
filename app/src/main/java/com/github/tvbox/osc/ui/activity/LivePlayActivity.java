@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.github.tvbox.osc.R;
 import com.github.tvbox.osc.api.ApiConfig;
+import com.github.tvbox.osc.base.App;
 import com.github.tvbox.osc.base.BaseActivity;
 import com.github.tvbox.osc.bean.ChannelGroup;
 import com.github.tvbox.osc.bean.LiveChannel;
@@ -335,7 +337,11 @@ public class LivePlayActivity extends BaseActivity {
                 List<LiveChannel> list = new ArrayList<>();
                 JsonArray livesArray = new Gson().fromJson(response.body(), JsonArray.class);
                 loadLives(livesArray);
-
+                if (channelGroupList == null || channelGroupList.size() == 0) {
+                    Toast.makeText(App.getInstance(), "频道列表为空", Toast.LENGTH_SHORT).show();
+                    finish();
+                    return;
+                }
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -370,8 +376,6 @@ public class LivePlayActivity extends BaseActivity {
     }
 
     private void initLiveState() {
-        if (channelGroupList == null || channelGroupList.size() == 0)
-            return;
         String lastChannelName = Hawk.get(HawkConfig.LIVE_CHANNEL, "");
 
         int groupIndex = 0;
