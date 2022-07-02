@@ -189,7 +189,8 @@ public class LivePlayActivity extends BaseActivity {
 
             @Override
             public void onItemClick(TvRecyclerView parent, View itemView, int position) {
-                if (selectedGroupIndex == currentGroupIndex && position == currentChannelIndex) return;
+                if (selectedGroupIndex == currentGroupIndex && position == currentChannelIndex)
+                    return;
                 if (playChannel(position, false)) {
                     mHandler.post(mHideChannelListRun);
                 }
@@ -201,7 +202,8 @@ public class LivePlayActivity extends BaseActivity {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 FastClickCheckUtil.check(view);
-                if (selectedGroupIndex == currentGroupIndex && position == currentChannelIndex) return;
+                if (selectedGroupIndex == currentGroupIndex && position == currentChannelIndex)
+                    return;
                 if (playChannel(position, false)) {
                     mHandler.post(mHideChannelListRun);
                 }
@@ -312,8 +314,7 @@ public class LivePlayActivity extends BaseActivity {
         if (list.size() == 1 && list.get(0).getGroupName().startsWith("http://127.0.0.1")) {
             showLoading();
             loadProxyLives(list.get(0).getGroupName());
-        }
-        else {
+        } else {
             channelGroupList.clear();
             channelGroupList.addAll(list);
             showSuccess();
@@ -369,6 +370,8 @@ public class LivePlayActivity extends BaseActivity {
     }
 
     private void initLiveState() {
+        if (channelGroupList == null || channelGroupList.size() == 0)
+            return;
         String lastChannelName = Hawk.get(HawkConfig.LIVE_CHANNEL, "");
 
         int groupIndex = 0;
