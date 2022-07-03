@@ -56,8 +56,6 @@ public class LiveSettingItemAdapter extends BaseQuickAdapter<LiveSettingItem, Ba
             notifyItemChanged(preFocusItemIndex);
         if (this.focusedItemIndex != -1)
             notifyItemChanged(this.focusedItemIndex);
-        else
-            notifyDataSetChanged();
     }
 
     public int getSelectedItemIndex() {
