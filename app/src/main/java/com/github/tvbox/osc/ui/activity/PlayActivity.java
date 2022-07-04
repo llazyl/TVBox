@@ -14,6 +14,8 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.ConsoleMessage;
+import android.webkit.JsPromptResult;
+import android.webkit.JsResult;
 import android.webkit.SslErrorHandler;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
@@ -59,6 +61,7 @@ import com.orhanobut.hawk.Hawk;
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.xwalk.core.XWalkJavascriptResult;
 import org.xwalk.core.XWalkResourceClient;
 import org.xwalk.core.XWalkSettings;
 import org.xwalk.core.XWalkUIClient;
@@ -885,6 +888,21 @@ public class PlayActivity extends BaseActivity {
             public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
                 return false;
             }
+
+            @Override
+            public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
+                return false;
+            }
+
+            @Override
+            public boolean onJsConfirm(WebView view, String url, String message, JsResult result) {
+                return false;
+            }
+
+            @Override
+            public boolean onJsPrompt(WebView view, String url, String message, String defaultValue, JsPromptResult result) {
+                return false;
+            }
         });
         mSysWebClient = new SysWebClient();
         webView.setWebViewClient(mSysWebClient);
@@ -1025,6 +1043,21 @@ public class PlayActivity extends BaseActivity {
         webView.setUIClient(new XWalkUIClient(webView) {
             @Override
             public boolean onConsoleMessage(XWalkView view, String message, int lineNumber, String sourceId, ConsoleMessageType messageType) {
+                return false;
+            }
+
+            @Override
+            public boolean onJsAlert(XWalkView view, String url, String message, XWalkJavascriptResult result) {
+                return false;
+            }
+
+            @Override
+            public boolean onJsConfirm(XWalkView view, String url, String message, XWalkJavascriptResult result) {
+                return false;
+            }
+
+            @Override
+            public boolean onJsPrompt(XWalkView view, String url, String message, String defaultValue, XWalkJavascriptResult result) {
                 return false;
             }
         });
