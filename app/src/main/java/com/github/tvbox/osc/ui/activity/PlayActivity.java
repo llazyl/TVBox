@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
@@ -44,6 +45,7 @@ import com.github.tvbox.osc.bean.VodInfo;
 import com.github.tvbox.osc.cache.CacheManager;
 import com.github.tvbox.osc.event.RefreshEvent;
 import com.github.tvbox.osc.player.controller.VodController;
+import com.github.tvbox.osc.player.thirdparty.MXPlayer;
 import com.github.tvbox.osc.util.AdBlocker;
 import com.github.tvbox.osc.util.DefaultConfig;
 import com.github.tvbox.osc.util.HawkConfig;
@@ -225,6 +227,47 @@ public class PlayActivity extends BaseActivity {
                 if (mVideoView != null) {
                     mVideoView.release();
                     if (url != null) {
+                        try {
+                            int playerType = mVodPlayerCfg.getInt("pl");
+                            if (playerType >= 10) {
+                                VodInfo.VodSeries vs = mVodInfo.seriesMap.get(mVodInfo.playFlag).get(mVodInfo.playIndex);
+                                String playTitle = mVodInfo.name + " " + vs.name;
+                                setTip("调用外部播放器" + PlayerHelper.getPlayerName(playerType) + "进行播放", true, false);
+                                boolean callResult = false;
+                                switch (playerType) {
+                                    case 10: {
+                                        MXPlayer.Media media0 = new MXPlayer.Media(url);
+                                        media0.title = playTitle;
+                                        MXPlayer.Media[] medias = {media0};
+                                        MXPlayer.Subtitle[] subtitles = null;
+                                        Uri[] enabledSubs = null;
+
+                                        if (playSubtitle != null && !playSubtitle.isEmpty()) {
+                                            MXPlayer.Subtitle subtitle0_0 = new MXPlayer.Subtitle(playSubtitle);
+                                            subtitles = new MXPlayer.Subtitle[]{subtitle0_0};
+                                            enabledSubs = new Uri[]{subtitle0_0.uri};
+                                        }
+
+                                        MXPlayer.Options options = new MXPlayer.Options();
+                                        if (headers != null && headers.size() > 0) {
+                                            options.headers = new String[headers.size() * 2];
+                                            int idx = 0;
+                                            for (String hk : headers.keySet()) {
+                                                options.headers[idx] = hk;
+                                                options.headers[idx + 1] = headers.get(hk).trim();
+                                                idx += 2;
+                                            }
+                                        }
+                                        callResult = MXPlayer.run(PlayActivity.this, medias, subtitles, enabledSubs, options, false);
+                                        break;
+                                    }
+                                }
+                                setTip("调用外部播放器" + PlayerHelper.getPlayerName(playerType) + (callResult ? "成功" : "失败"), callResult, !callResult);
+                                return;
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                         hideTip();
                         PlayerHelper.updateCfg(mVideoView, mVodPlayerCfg);
                         mVideoView.setProgressKey(progressKey);
@@ -251,6 +294,7 @@ public class PlayActivity extends BaseActivity {
                         progressKey = info.optString("proKey", null);
                         boolean parse = info.optString("parse", "1").equals("1");
                         boolean jx = info.optString("jx", "0").equals("1");
+                        playSubtitle = info.optString("subt", ""/*https://dash.akamaized.net/akamai/test/caption_test/ElephantsDream/ElephantsDream_en.vtt"*/);
                         String playUrl = info.optString("playUrl", "");
                         String flag = info.optString("flag");
                         String url = info.getString("url");
@@ -439,6 +483,7 @@ public class PlayActivity extends BaseActivity {
         sourceViewModel.getPlay(sourceKey, mVodInfo.playFlag, progressKey, vs.url);
     }
 
+    private String playSubtitle;
     private String progressKey;
     private String parseFlag;
     private String webUrl;
@@ -656,35 +701,49 @@ public class PlayActivity extends BaseActivity {
             parseThreadPool.execute(new Runnable() {
                 @Override
                 public void run() {
-                    JSONObject rs = ApiConfig.get().jsonExtMix(parseFlag, pb.getUrl(), finalExtendName, jxs, webUrl);
+                    JSONObject rs = ApiConfig.get().jsonExtMix(parseFlag + "111", pb.getUrl(), finalExtendName, jxs, webUrl);
                     if (rs == null || !rs.has("url")) {
                         errorWithRetry("解析错误", false);
                     } else {
-                        HashMap<String, String> headers = null;
-                        if (rs.has("header")) {
-                            try {
-                                JSONObject hds = rs.getJSONObject("header");
-                                Iterator<String> keys = hds.keys();
-                                while (keys.hasNext()) {
-                                    String key = keys.next();
-                                    if (headers == null) {
-                                        headers = new HashMap<>();
-                                    }
-                                    headers.put(key, hds.getString(key));
-                                }
-                            } catch (Throwable th) {
-
-                            }
-                        }
-                        if (rs.has("jxFrom")) {
+                        if (rs.has("parse") && rs.optInt("parse", 0) == 1) {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Toast.makeText(mContext, "解析来自:" + rs.optString("jxFrom"), Toast.LENGTH_SHORT).show();
+                                    String mixParseUrl = DefaultConfig.checkReplaceProxy(rs.optString("url", ""));
+                                    stopParse();
+                                    setTip("正在嗅探播放地址", true, false);
+                                    mHandler.removeMessages(100);
+                                    mHandler.sendEmptyMessageDelayed(100, 20 * 1000);
+                                    loadWebView(mixParseUrl);
                                 }
                             });
+                        } else {
+                            HashMap<String, String> headers = null;
+                            if (rs.has("header")) {
+                                try {
+                                    JSONObject hds = rs.getJSONObject("header");
+                                    Iterator<String> keys = hds.keys();
+                                    while (keys.hasNext()) {
+                                        String key = keys.next();
+                                        if (headers == null) {
+                                            headers = new HashMap<>();
+                                        }
+                                        headers.put(key, hds.getString(key));
+                                    }
+                                } catch (Throwable th) {
+
+                                }
+                            }
+                            if (rs.has("jxFrom")) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(mContext, "解析来自:" + rs.optString("jxFrom"), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+                            playUrl(rs.optString("url", ""), headers);
                         }
-                        playUrl(rs.optString("url", ""), headers);
                     }
                 }
             });
@@ -808,7 +867,7 @@ public class PlayActivity extends BaseActivity {
         public void setOverScrollMode(int mode) {
             super.setOverScrollMode(mode);
             if (mContext instanceof Activity)
-                AutoSize.autoConvertDensityOfGlobal((Activity) mContext);
+                AutoSize.autoConvertDensityOfCustomAdapt((Activity) mContext, PlayActivity.this);
         }
 
         @Override
@@ -826,7 +885,7 @@ public class PlayActivity extends BaseActivity {
         public void setOverScrollMode(int mode) {
             super.setOverScrollMode(mode);
             if (mContext instanceof Activity)
-                AutoSize.autoConvertDensityOfGlobal((Activity) mContext);
+                AutoSize.autoConvertDensityOfCustomAdapt((Activity) mContext, PlayActivity.this);
         }
 
         @Override
@@ -891,17 +950,17 @@ public class PlayActivity extends BaseActivity {
 
             @Override
             public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
-                return false;
+                return true;
             }
 
             @Override
             public boolean onJsConfirm(WebView view, String url, String message, JsResult result) {
-                return false;
+                return true;
             }
 
             @Override
             public boolean onJsPrompt(WebView view, String url, String message, String defaultValue, JsPromptResult result) {
-                return false;
+                return true;
             }
         });
         mSysWebClient = new SysWebClient();
@@ -1048,17 +1107,17 @@ public class PlayActivity extends BaseActivity {
 
             @Override
             public boolean onJsAlert(XWalkView view, String url, String message, XWalkJavascriptResult result) {
-                return false;
+                return true;
             }
 
             @Override
             public boolean onJsConfirm(XWalkView view, String url, String message, XWalkJavascriptResult result) {
-                return false;
+                return true;
             }
 
             @Override
             public boolean onJsPrompt(XWalkView view, String url, String message, String defaultValue, XWalkJavascriptResult result) {
-                return false;
+                return true;
             }
         });
         mX5WebClient = new XWalkWebClient(webView);

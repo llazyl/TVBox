@@ -232,8 +232,10 @@ public class VodController extends BaseController {
                 try {
                     int playerType = mPlayerConfig.getInt("pl");
                     playerType++;
-                    if (playerType > 2)
+                    if (playerType > 10)
                         playerType = 0;
+                    if (playerType > 2)
+                        playerType = 10;
                     mPlayerConfig.put("pl", playerType);
                     updatePlayerCfgView();
                     listener.updatePlayerCfg();
