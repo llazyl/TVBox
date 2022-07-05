@@ -24,9 +24,10 @@ import com.github.tvbox.osc.base.App;
 import com.github.tvbox.osc.base.BaseActivity;
 import com.github.tvbox.osc.bean.LiveChannelGroup;
 import com.github.tvbox.osc.bean.LiveChannelItem;
+import com.github.tvbox.osc.bean.LivePlayerManage;
 import com.github.tvbox.osc.bean.LiveSettingGroup;
 import com.github.tvbox.osc.bean.LiveSettingItem;
-import com.github.tvbox.osc.player.controller.LiveVideoController;
+import com.github.tvbox.osc.player.controller.LiveController;
 import com.github.tvbox.osc.ui.adapter.LiveChannelGroupAdapter;
 import com.github.tvbox.osc.ui.adapter.LiveChannelItemAdapter;
 import com.github.tvbox.osc.ui.adapter.LiveSettingGroupAdapter;
@@ -87,6 +88,7 @@ public class LivePlayActivity extends BaseActivity {
     private int currentLiveChannelIndex = 0;
     private int currentLiveChangeSourceTimes = 0;
     private LiveChannelItem currentLiveChannelItem = null;
+    private LivePlayerManage livePlayerManage = new LivePlayerManage();
 
     @Override
     protected int getLayoutResID() {
@@ -97,7 +99,7 @@ public class LivePlayActivity extends BaseActivity {
     protected void init() {
         setLoadSir(findViewById(R.id.live_root));
         mVideoView = findViewById(R.id.mVideoView);
-        getLivePlayer();
+        livePlayerManage.init(mVideoView);
 
         tvLeftChannelListLayout = findViewById(R.id.tvLeftChannnelListLayout);
         mChannelGroupView = findViewById(R.id.mGroupGridView);
@@ -265,11 +267,12 @@ public class LivePlayActivity extends BaseActivity {
     };
 
     private boolean playChannel(boolean changeSource) {
+        mVideoView.release();
         if (!changeSource) {
             currentLiveChannelItem = liveChannelGroupList.get(currentChannelGroupIndex).getLiveChannels().get(currentLiveChannelIndex);
             Hawk.put(HawkConfig.LIVE_CHANNEL, currentLiveChannelItem.getChannelName());
+            livePlayerManage.getLiveChannelPlayer(mVideoView, currentLiveChannelItem.getChannelName());
         }
-        mVideoView.release();
         mVideoView.setUrl(currentLiveChannelItem.getUrl());
         showChannelInfo();
         mVideoView.start();
@@ -303,11 +306,19 @@ public class LivePlayActivity extends BaseActivity {
     }
 
     public void playPreSource() {
+        if (currentLiveChannelItem.getSourceNum() == 1) {
+            showChannelInfo();
+            return;
+        }
         currentLiveChannelItem.preSource();
         playChannel(true);
     }
 
     public void playNextSource() {
+        if (currentLiveChannelItem.getSourceNum() == 1) {
+            showChannelInfo();
+            return;
+        }
         currentLiveChannelItem.nextSource();
         playChannel(true);
     }
@@ -380,20 +391,29 @@ public class LivePlayActivity extends BaseActivity {
     };
 
     private void initVideoView() {
-        LiveVideoController controller = new LiveVideoController(this);
-        controller.setScreenTapListener(new LiveVideoController.OnScreenTapListener() {
+        LiveController controller = new LiveController(this);
+        controller.setListener(new LiveController.LiveControlListener() {
             @Override
-            public void tap() {
-                showChannelList();
+            public boolean singleTap() {
+                if (tvLeftChannelListLayout.getVisibility() == View.VISIBLE) {
+                    mHandler.removeCallbacks(mHideChannelListRun);
+                    mHandler.post(mHideChannelListRun);
+                } else {
+                    showChannelList();
+                }
+                return true;
             }
-        });
-        controller.setScreenLongPressListener(new LiveVideoController.OnScreenLongPressListener() {
+
             @Override
             public void longPress() {
-                showSettingGroup();
+                if (tvRightSettingLayout.getVisibility() == View.VISIBLE) {
+                    mHandler.removeCallbacks(mHideSettingLayoutRun);
+                    mHandler.post(mHideSettingLayoutRun);
+                } else {
+                    showSettingGroup();
+                }
             }
-        });
-        controller.setPlayStateChangedListener(new LiveVideoController.OnPlayStateChangedListener() {
+
             @Override
             public void playStateChanged(int playState) {
                 switch (playState) {
@@ -401,24 +421,35 @@ public class LivePlayActivity extends BaseActivity {
                     case VideoView.STATE_PLAYING:
                     case VideoView.STATE_PAUSED:
                     case VideoView.STATE_PREPARED:
-                    case VideoView.STATE_ERROR:
                     case VideoView.STATE_BUFFERED:
                     case VideoView.STATE_PLAYBACK_COMPLETED:
                         currentLiveChangeSourceTimes = 0;
                         mHandler.removeCallbacks(mConnectTimeoutChangeSourceRun);
                         break;
+                    case VideoView.STATE_ERROR:
+                        currentLiveChangeSourceTimes++;
+                        mHandler.removeCallbacks(mConnectTimeoutChangeSourceRun);
+                        mHandler.post(mConnectTimeoutChangeSourceRun);
+                        break;
                     case VideoView.STATE_PREPARING:
                     case VideoView.STATE_BUFFERING:
-                        currentLiveChangeSourceTimes++;
                         mHandler.postDelayed(mConnectTimeoutChangeSourceRun, (Hawk.get(HawkConfig.LIVE_CONNECT_TIMEOUT, 1) + 1) * 5000);
                         break;
                 }
             }
+
+            @Override
+            public void changeSource(int direction) {
+                if (direction > 0)
+                    playNextSource();
+                else
+                    playPreSource();
+            }
         });
-        controller.addControlComponent(new GestureView(this));
         controller.setCanChangePosition(false);
         controller.setEnableInNormal(true);
         controller.setGestureEnabled(true);
+        controller.setDoubleTapTogglePlayEnabled(false);
         mVideoView.setVideoController(controller);
         mVideoView.setProgressManager(null);
     }
@@ -427,6 +458,7 @@ public class LivePlayActivity extends BaseActivity {
         @Override
         public void run() {
             if (currentLiveChannelItem.getSourceNum() == currentLiveChangeSourceTimes) {
+                currentLiveChangeSourceTimes = 0;
                 if (Hawk.get(HawkConfig.LIVE_CHANNEL_REVERSE, false))
                     playPrevious();
                 else
@@ -464,7 +496,7 @@ public class LivePlayActivity extends BaseActivity {
                 liveChannelGroupAdapter.setFocusedGroupIndex(position);
                 liveChannelItemAdapter.setFocusedChannelIndex(-1);
                 if (position == selectedChannelGroupIndex || position < -1) return;
-                channelGroupClick(position);
+                clickChannelGroup(position);
             }
 
             @Override
@@ -479,7 +511,7 @@ public class LivePlayActivity extends BaseActivity {
                 FastClickCheckUtil.check(view);
                 if (position == selectedChannelGroupIndex) return;
                 liveChannelGroupAdapter.setSelectedGroupIndex(position);
-                channelGroupClick(position);
+                clickChannelGroup(position);
             }
         });
     }
@@ -518,7 +550,7 @@ public class LivePlayActivity extends BaseActivity {
             public void onItemClick(TvRecyclerView parent, View itemView, int position) {
                 if (selectedChannelGroupIndex == currentChannelGroupIndex && position == currentLiveChannelIndex)
                     return;
-                liveChannelClick(position);
+                clickLiveChannel(position);
             }
         });
 
@@ -529,12 +561,12 @@ public class LivePlayActivity extends BaseActivity {
                 FastClickCheckUtil.check(view);
                 if (selectedChannelGroupIndex == currentChannelGroupIndex && position == currentLiveChannelIndex)
                     return;
-                liveChannelClick(position);
+                clickLiveChannel(position);
             }
         });
     }
 
-    private void channelGroupClick(int position) {
+    private void clickChannelGroup(int position) {
         selectedChannelGroupIndex = position;
         liveChannelItemAdapter.setNewData(liveChannelGroupList.get(position).getLiveChannels());
         if (position == currentChannelGroupIndex) {
@@ -549,7 +581,7 @@ public class LivePlayActivity extends BaseActivity {
         mHandler.postDelayed(mHideChannelListRun, 5000);
     }
 
-    private void liveChannelClick(int position) {
+    private void clickLiveChannel(int position) {
         currentChannelGroupIndex = selectedChannelGroupIndex;
         currentLiveChannelIndex = position;
         liveChannelItemAdapter.setSelectedChannelIndex(position);
@@ -585,7 +617,7 @@ public class LivePlayActivity extends BaseActivity {
                 liveSettingItemAdapter.setFocusedItemIndex(-1);
                 if (position == liveSettingGroupAdapter.getSelectedGroupIndex() || position < -1)
                     return;
-                settingGroupClick(position);
+                clickSettingGroup(position);
             }
 
             @Override
@@ -600,7 +632,7 @@ public class LivePlayActivity extends BaseActivity {
                 FastClickCheckUtil.check(view);
                 if (position == liveSettingGroupAdapter.getSelectedGroupIndex())
                     return;
-                settingGroupClick(position);
+                clickSettingGroup(position);
             }
         });
     }
@@ -643,7 +675,7 @@ public class LivePlayActivity extends BaseActivity {
                         return;
                     liveSettingItemAdapter.selectItem(position, true, true);
                 }
-                settingItemClick(settingGroupIndex, position);
+                clickSettingItem(settingGroupIndex, position);
             }
         });
 
@@ -658,16 +690,26 @@ public class LivePlayActivity extends BaseActivity {
                         return;
                     liveSettingItemAdapter.selectItem(position, true, true);
                 }
-                settingItemClick(settingGroupIndex, position);
+                clickSettingItem(settingGroupIndex, position);
             }
         });
     }
 
-    private void settingGroupClick(int position) {
+    private void clickSettingGroup(int position) {
         liveSettingGroupAdapter.setSelectedGroupIndex(position);
         liveSettingItemAdapter.setNewData(liveSettingGroupList.get(position).getLiveSettingItems());
-        if (position == 0)
-            liveSettingItemAdapter.selectItem(currentLiveChannelItem.getSourceIndex(), true, false);
+
+        switch (position) {
+            case 0:
+                liveSettingItemAdapter.selectItem(currentLiveChannelItem.getSourceIndex(), true, false);
+                break;
+            case 1:
+                liveSettingItemAdapter.selectItem(livePlayerManage.getLivePlayerScale(), true, true);
+                break;
+            case 2:
+                liveSettingItemAdapter.selectItem(livePlayerManage.getLivePlayerType(), true, true);
+                break;
+        }
         int scrollToPosition = liveSettingItemAdapter.getSelectedItemIndex();
         if (scrollToPosition < 0) scrollToPosition = 0;
         mSettingItemView.scrollToPosition(scrollToPosition);
@@ -675,19 +717,20 @@ public class LivePlayActivity extends BaseActivity {
         mHandler.postDelayed(mHideSettingLayoutRun, 5000);
     }
 
-    private void settingItemClick(int settingGroupIndex, int position) {
+    private void clickSettingItem(int settingGroupIndex, int position) {
         switch (settingGroupIndex) {
             case 0://线路切换
                 currentLiveChannelItem.setSourceIndex(position);
                 playChannel(true);
                 break;
             case 1://画面比例
-                Hawk.put(HawkConfig.LIVE_PLAYER_SCALE, position);
-                mVideoView.setScreenScaleType(position);
+                livePlayerManage.changeLivePlayerScale(mVideoView, position, currentLiveChannelItem.getChannelName());
                 break;
             case 2://播放解码
-                Hawk.put(HawkConfig.LIVE_PLAYER_TYPE, position);
-                getLivePlayer();
+                mVideoView.release();
+                livePlayerManage.changeLivePlayerType(mVideoView, position, currentLiveChannelItem.getChannelName());
+                mVideoView.setUrl(currentLiveChannelItem.getUrl());
+                mVideoView.start();
                 break;
             case 3://超时换源
                 Hawk.put(HawkConfig.LIVE_CONNECT_TIMEOUT, position);
@@ -836,8 +879,6 @@ public class LivePlayActivity extends BaseActivity {
             liveSettingGroup.setLiveSettingItems(liveSettingItemList);
             liveSettingGroupList.add(liveSettingGroup);
         }
-        liveSettingGroupList.get(1).getLiveSettingItems().get(Hawk.get(HawkConfig.LIVE_PLAYER_SCALE, 0)).setItemSelected(true);
-        liveSettingGroupList.get(2).getLiveSettingItems().get(Hawk.get(HawkConfig.LIVE_PLAYER_TYPE, 1)).setItemSelected(true);
         liveSettingGroupList.get(3).getLiveSettingItems().get(Hawk.get(HawkConfig.LIVE_CONNECT_TIMEOUT, 1)).setItemSelected(true);
         liveSettingGroupList.get(4).getLiveSettingItems().get(0).setItemSelected(Hawk.get(HawkConfig.LIVE_SHOW_TIME, false));
         liveSettingGroupList.get(4).getLiveSettingItems().get(1).setItemSelected(Hawk.get(HawkConfig.LIVE_SHOW_NET_SPEED, false));
@@ -855,42 +896,6 @@ public class LivePlayActivity extends BaseActivity {
             liveSettingItemList.add(liveSettingItem);
         }
         liveSettingGroupList.get(0).setLiveSettingItems(liveSettingItemList);
-    }
-
-    private void getLivePlayer() {
-        if (mVideoView != null) {
-            mVideoView.release();
-            JSONObject mVodPlayerCfg = new JSONObject();
-            try {
-                switch (Hawk.get(HawkConfig.LIVE_PLAYER_TYPE, 1)) {
-                    case 0:
-                        mVodPlayerCfg.put("pl", 0);
-                        mVodPlayerCfg.put("ijk", "软解码");
-                        break;
-                    case 1:
-                        mVodPlayerCfg.put("pl", 1);
-                        mVodPlayerCfg.put("ijk", "硬解码");
-                        break;
-                    case 2:
-                        mVodPlayerCfg.put("pl", 1);
-                        mVodPlayerCfg.put("ijk", "软解码");
-                        break;
-                    case 3:
-                        mVodPlayerCfg.put("pl", 2);
-                        mVodPlayerCfg.put("ijk", "软解码");
-                        break;
-                }
-                mVodPlayerCfg.put("pr", Hawk.get(HawkConfig.PLAY_RENDER, 0));
-                mVodPlayerCfg.put("sc", Hawk.get(HawkConfig.LIVE_PLAYER_SCALE, 0));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            PlayerHelper.updateCfg(mVideoView, mVodPlayerCfg);
-            if (currentLiveChannelItem != null) {
-                mVideoView.setUrl(currentLiveChannelItem.getUrl());
-                mVideoView.start();
-            }
-        }
     }
 
     void showTime() {
