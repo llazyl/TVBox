@@ -36,4 +36,12 @@ public class LiveChannelGroup {
     public void setLiveChannels(ArrayList<LiveChannelItem> liveChannelItems) {
         this.liveChannelItems = liveChannelItems;
     }
+
+    public String getGroupPassword() {
+        return groupPassword;
+    }
+
+    public void setGroupPassword(String groupPassword) {
+        this.groupPassword = groupPassword;
+    }
 }

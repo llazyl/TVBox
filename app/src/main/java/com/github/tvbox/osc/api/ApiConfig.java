@@ -351,7 +351,13 @@ public class ApiConfig {
             LiveChannelGroup liveChannelGroup = new LiveChannelGroup();
             liveChannelGroup.setLiveChannels(new ArrayList<LiveChannelItem>());
             liveChannelGroup.setGroupIndex(groupIndex++);
-            liveChannelGroup.setGroupName(((JsonObject) groupElement).get("group").getAsString().trim());
+            String groupName = ((JsonObject) groupElement).get("group").getAsString().trim();
+            String[] splitGroupName = groupName.split("_", 2);
+            liveChannelGroup.setGroupName(splitGroupName[0]);
+            if (splitGroupName.length > 1)
+                liveChannelGroup.setGroupPassword(splitGroupName[1]);
+            else
+                liveChannelGroup.setGroupPassword("");
             channelIndex = 0;
             for (JsonElement channelElement : ((JsonObject) groupElement).get("channels").getAsJsonArray()) {
                 JsonObject obj = (JsonObject) channelElement;

@@ -16,7 +16,7 @@ import java.util.Objects;
 
 import xyz.doikki.videoplayer.player.VideoView;
 
-public class LivePlayerManage {
+public class LivePlayerManager {
     JSONObject defaultPlayerConfig = new JSONObject();
     JSONObject currentPlayerConfig;
 
@@ -33,7 +33,7 @@ public class LivePlayerManage {
     }
 
     public void getDefaultLiveChannelPlayer(VideoView videoView) {
-        PlayerHelper.updateCfg(videoView);
+        PlayerHelper.updateCfg(videoView, defaultPlayerConfig);
         try {
             currentPlayerConfig = new JSONObject(defaultPlayerConfig.toString());
         } catch (JSONException e) {

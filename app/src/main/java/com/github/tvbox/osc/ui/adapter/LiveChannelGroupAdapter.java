@@ -37,12 +37,17 @@ public class LiveChannelGroupAdapter extends BaseQuickAdapter<LiveChannelGroup, 
     }
 
     public void setSelectedGroupIndex(int selectedGroupIndex) {
+        if (selectedGroupIndex == this.selectedGroupIndex) return;
         int preSelectedGroupIndex = this.selectedGroupIndex;
         this.selectedGroupIndex = selectedGroupIndex;
         if (preSelectedGroupIndex != -1)
             notifyItemChanged(preSelectedGroupIndex);
         if (this.selectedGroupIndex != -1)
             notifyItemChanged(this.selectedGroupIndex);
+    }
+
+    public int getSelectedGroupIndex() {
+        return selectedGroupIndex;
     }
 
     public void setFocusedGroupIndex(int focusedGroupIndex) {
