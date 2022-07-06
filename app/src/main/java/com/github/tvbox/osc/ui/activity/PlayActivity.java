@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
@@ -46,6 +45,7 @@ import com.github.tvbox.osc.cache.CacheManager;
 import com.github.tvbox.osc.event.RefreshEvent;
 import com.github.tvbox.osc.player.controller.VodController;
 import com.github.tvbox.osc.player.thirdparty.MXPlayer;
+import com.github.tvbox.osc.player.thirdparty.ReexPlayer;
 import com.github.tvbox.osc.util.AdBlocker;
 import com.github.tvbox.osc.util.DefaultConfig;
 import com.github.tvbox.osc.util.HawkConfig;
@@ -236,29 +236,11 @@ public class PlayActivity extends BaseActivity {
                                 boolean callResult = false;
                                 switch (playerType) {
                                     case 10: {
-                                        MXPlayer.Media media0 = new MXPlayer.Media(url);
-                                        media0.title = playTitle;
-                                        MXPlayer.Media[] medias = {media0};
-                                        MXPlayer.Subtitle[] subtitles = null;
-                                        Uri[] enabledSubs = null;
-
-                                        if (playSubtitle != null && !playSubtitle.isEmpty()) {
-                                            MXPlayer.Subtitle subtitle0_0 = new MXPlayer.Subtitle(playSubtitle);
-                                            subtitles = new MXPlayer.Subtitle[]{subtitle0_0};
-                                            enabledSubs = new Uri[]{subtitle0_0.uri};
-                                        }
-
-                                        MXPlayer.Options options = new MXPlayer.Options();
-                                        if (headers != null && headers.size() > 0) {
-                                            options.headers = new String[headers.size() * 2];
-                                            int idx = 0;
-                                            for (String hk : headers.keySet()) {
-                                                options.headers[idx] = hk;
-                                                options.headers[idx + 1] = headers.get(hk).trim();
-                                                idx += 2;
-                                            }
-                                        }
-                                        callResult = MXPlayer.run(PlayActivity.this, medias, subtitles, enabledSubs, options, false);
+                                        callResult = MXPlayer.run(PlayActivity.this, url, playTitle, playSubtitle, headers);
+                                        break;
+                                    }
+                                    case 11: {
+                                        callResult = ReexPlayer.run(PlayActivity.this, url, playTitle, playSubtitle, headers);
                                         break;
                                     }
                                 }
@@ -294,7 +276,7 @@ public class PlayActivity extends BaseActivity {
                         progressKey = info.optString("proKey", null);
                         boolean parse = info.optString("parse", "1").equals("1");
                         boolean jx = info.optString("jx", "0").equals("1");
-                        playSubtitle = info.optString("subt", ""/*https://dash.akamaized.net/akamai/test/caption_test/ElephantsDream/ElephantsDream_en.vtt"*/);
+                        playSubtitle = info.optString("subt", /*"https://dash.akamaized.net/akamai/test/caption_test/ElephantsDream/ElephantsDream_en.vtt"*/"");
                         String playUrl = info.optString("playUrl", "");
                         String flag = info.optString("flag");
                         String url = info.getString("url");
