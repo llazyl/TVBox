@@ -97,7 +97,6 @@ public class LivePlayActivity extends BaseActivity {
     protected void init() {
         setLoadSir(findViewById(R.id.live_root));
         mVideoView = findViewById(R.id.mVideoView);
-        livePlayerManager.init(mVideoView);
 
         tvLeftChannelListLayout = findViewById(R.id.tvLeftChannnelListLayout);
         mChannelGroupView = findViewById(R.id.mGroupGridView);
@@ -823,6 +822,7 @@ public class LivePlayActivity extends BaseActivity {
             lastLiveChannelIndex = 0;
         }
 
+        livePlayerManager.init(mVideoView);
         tvLeftChannelListLayout.setVisibility(View.INVISIBLE);
         tvRightSettingLayout.setVisibility(View.INVISIBLE);
 
