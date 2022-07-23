@@ -21,9 +21,8 @@
 
         <TextView
             android:id="@+id/tvName"
-            android:layout_width="@dimen/vs_0"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="1"
             android:focusable="false"
             android:focusableInTouchMode="false"
             android:gravity="left|center_vertical"
