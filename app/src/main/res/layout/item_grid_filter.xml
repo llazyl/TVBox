@@ -17,7 +17,7 @@
         android:layout_marginRight="@dimen/vs_10"
         android:gravity="center"
         android:textAlignment="gravity"
-        android:textColor="@color/color_CC000000"
+        android:textColor="@color/color_FFFFFF"
         android:textSize="@dimen/ts_24"
         tools:text="11111111111" />
 
