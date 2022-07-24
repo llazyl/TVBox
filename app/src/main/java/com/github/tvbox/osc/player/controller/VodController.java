@@ -37,6 +37,7 @@ import xyz.doikki.videoplayer.util.PlayerUtils;
 
 import static xyz.doikki.videoplayer.util.PlayerUtils.stringForTime;
 
+//视频播放页面控件
 public class VodController extends BaseController {
     public VodController(@NonNull @NotNull Context context) {
         super(context);
@@ -283,6 +284,20 @@ public class VodController extends BaseController {
                 }
             }
         });
+//        增加播放页面片头片尾时间重置
+        findViewById(R.id.play_time_reset).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    mPlayerConfig.put("et", 0);
+                    mPlayerConfig.put("st", 0);
+                    updatePlayerCfgView();
+                    listener.updatePlayerCfg();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
         mPlayerTimeStartBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -290,6 +305,7 @@ public class VodController extends BaseController {
                     int step = Hawk.get(HawkConfig.PLAY_TIME_STEP, 5);
                     int st = mPlayerConfig.getInt("st");
                     st += step;
+                    //片头最大跳过时间10分钟
                     if (st > 60 * 10)
                         st = 0;
                     mPlayerConfig.put("st", st);
@@ -307,6 +323,7 @@ public class VodController extends BaseController {
                     int step = Hawk.get(HawkConfig.PLAY_TIME_STEP, 5);
                     int et = mPlayerConfig.getInt("et");
                     et += step;
+                    //片尾最大跳过时间10分钟
                     if (et > 60 * 10)
                         et = 0;
                     mPlayerConfig.put("et", et);
