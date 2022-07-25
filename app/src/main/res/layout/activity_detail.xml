@@ -27,6 +27,12 @@
                 android:layout_height="@dimen/vs_320"
                 android:scaleType="fitXY" />
 
+            <View
+                android:id="@+id/previewPlayerPlace"
+                android:layout_width="@dimen/vs_480"
+                android:layout_height="@dimen/vs_320"
+                android:visibility="gone" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/vs_320"
@@ -39,6 +45,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/vs_5"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:singleLine="true"
                     android:textColor="@android:color/white"
                     android:textSize="@dimen/ts_28" />
 
@@ -256,4 +265,24 @@
             app:tv_selectedItemIsCentered="true"
             app:tv_verticalSpacingWithMargins="@dimen/vs_10" />
     </LinearLayout>
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/previewPlayer"
+        android:layout_width="@dimen/vs_480"
+        android:layout_height="@dimen/vs_320"
+        android:layout_marginStart="@dimen/vs_50"
+        android:layout_marginLeft="@dimen/vs_50"
+        android:layout_marginTop="@dimen/vs_10"
+        android:visibility="gone" />
+
+    <View
+        android:id="@+id/previewPlayerBlock"
+        android:layout_width="@dimen/vs_480"
+        android:layout_height="@dimen/vs_320"
+        android:layout_marginStart="@dimen/vs_50"
+        android:layout_marginLeft="@dimen/vs_50"
+        android:layout_marginTop="@dimen/vs_10"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone" />
 </FrameLayout>
