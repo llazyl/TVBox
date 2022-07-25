@@ -54,6 +54,7 @@ public class VodController extends BaseController {
                     }
                     case 1002: { // 显示底部菜单
                         mBottomRoot.setVisibility(VISIBLE);
+                        mBottomRoot.requestFocus();
                         break;
                     }
                     case 1003: { // 隐藏底部菜单
@@ -278,6 +279,19 @@ public class VodController extends BaseController {
                     listener.updatePlayerCfg();
                     listener.replay();
                     hideBottom();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        findViewById(R.id.play_time_reset).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    mPlayerConfig.put("et", 0);
+                    mPlayerConfig.put("st", 0);
+                    updatePlayerCfgView();
+                    listener.updatePlayerCfg();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -548,6 +562,7 @@ public class VodController extends BaseController {
             } else if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
                 if (!isBottomVisible()) {
                     showBottom();
+                    return true;
                 }
             }
         } else if (action == KeyEvent.ACTION_UP) {
