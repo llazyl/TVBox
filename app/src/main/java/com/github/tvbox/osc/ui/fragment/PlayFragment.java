@@ -179,7 +179,7 @@ public class PlayFragment extends BaseLazyFragment {
             @Override
             public void replay() {
                 autoRetryCount = 0;
-                play();
+                play(true);
             }
 
             @Override
@@ -317,7 +317,7 @@ public class PlayFragment extends BaseLazyFragment {
         sourceKey = bundle.getString("sourceKey");
         sourceBean = ApiConfig.get().getSource(sourceKey);
         initPlayerCfg();
-        play();
+        play(false);
     }
 
     private void initData() {
@@ -435,7 +435,7 @@ public class PlayFragment extends BaseLazyFragment {
             return;
         }
         mVodInfo.playIndex++;
-        play();
+        play(false);
     }
 
     private void playPrevious() {
@@ -450,7 +450,7 @@ public class PlayFragment extends BaseLazyFragment {
             return;
         }
         mVodInfo.playIndex--;
-        play();
+        play(false);
     }
 
     private int autoRetryCount = 0;
@@ -458,7 +458,7 @@ public class PlayFragment extends BaseLazyFragment {
     boolean autoRetry() {
         if (autoRetryCount < 3) {
             autoRetryCount++;
-            play();
+            play(false);
             return true;
         } else {
             autoRetryCount = 0;
@@ -466,7 +466,7 @@ public class PlayFragment extends BaseLazyFragment {
         }
     }
 
-    public void play() {
+    public void play(boolean reset) {
         VodInfo.VodSeries vs = mVodInfo.seriesMap.get(mVodInfo.playFlag).get(mVodInfo.playIndex);
         EventBus.getDefault().post(new RefreshEvent(RefreshEvent.TYPE_REFRESH, mVodInfo.playIndex));
         setTip("正在获取播放信息", true, false);
@@ -475,6 +475,7 @@ public class PlayFragment extends BaseLazyFragment {
 
         playUrl(null, null);
         String progressKey = mVodInfo.sourceKey + mVodInfo.id + mVodInfo.playFlag + mVodInfo.playIndex;
+        if (reset) CacheManager.delete(MD5.string2MD5(progressKey), 0);
         if (Thunder.play(vs.url, new Thunder.ThunderCallback() {
             @Override
             public void status(int code, String info) {
