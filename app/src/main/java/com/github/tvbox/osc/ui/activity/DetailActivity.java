@@ -279,6 +279,7 @@ public class DetailActivity extends BaseActivity {
                     seriesAdapter.getData().get(vodInfo.playIndex).selected = true;
                     seriesAdapter.notifyItemChanged(vodInfo.playIndex);
                     jumpToPlay();
+                    //选集全屏 此处取消注释
 //                    if (showPreview && !fullWindows) toggleFullPreview();
                 }
             }
