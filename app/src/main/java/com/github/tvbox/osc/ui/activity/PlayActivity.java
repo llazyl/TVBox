@@ -180,7 +180,7 @@ public class PlayActivity extends BaseActivity {
             @Override
             public void replay() {
                 autoRetryCount = 0;
-                play();
+                play(true);
             }
 
             @Override
@@ -322,7 +322,7 @@ public class PlayActivity extends BaseActivity {
             sourceKey = bundle.getString("sourceKey");
             sourceBean = ApiConfig.get().getSource(sourceKey);
             initPlayerCfg();
-            play();
+            play(false);
         }
     }
 
@@ -416,26 +416,14 @@ public class PlayActivity extends BaseActivity {
         if (mVodInfo == null || mVodInfo.seriesMap.get(mVodInfo.playFlag) == null) {
             hasNext = false;
         } else {
-//修正倒序排序时上一集与下一集播放顺序相反的问题
-//            hasNext = mVodInfo.playIndex + 1 < mVodInfo.seriesMap.get(mVodInfo.playFlag).size();
-            if (mVodInfo.reverseSort){
-                hasNext = mVodInfo.playIndex - 1 >= 0;
-            } else {
-                hasNext = mVodInfo.playIndex + 1 < mVodInfo.seriesMap.get(mVodInfo.playFlag).size();
-            }
+            hasNext = mVodInfo.playIndex + 1 < mVodInfo.seriesMap.get(mVodInfo.playFlag).size();
         }
         if (!hasNext) {
             Toast.makeText(this, "已经是最后一集了!", Toast.LENGTH_SHORT).show();
             return;
         }
-//修正倒序排序时上一集与下一集播放顺序相反的问题
-//        mVodInfo.playIndex++;
-        if (mVodInfo.reverseSort){
-            mVodInfo.playIndex--;
-        } else {
-            mVodInfo.playIndex++;
-        }
-        play();
+        mVodInfo.playIndex++;
+        play(false);
     }
 
     private void playPrevious() {
@@ -443,26 +431,14 @@ public class PlayActivity extends BaseActivity {
         if (mVodInfo == null || mVodInfo.seriesMap.get(mVodInfo.playFlag) == null) {
             hasPre = false;
         } else {
-//修正倒序排序时上一集与下一集播放顺序相反的问题
-//            hasPre = mVodInfo.playIndex - 1 >= 0;
-            if (mVodInfo.reverseSort){
-                hasPre = mVodInfo.playIndex + 1 < mVodInfo.seriesMap.get(mVodInfo.playFlag).size();
-            } else {
-                hasPre = mVodInfo.playIndex - 1 >= 0;
-            }
+            hasPre = mVodInfo.playIndex - 1 >= 0;
         }
         if (!hasPre) {
             Toast.makeText(this, "已经是第一集了!", Toast.LENGTH_SHORT).show();
             return;
         }
-//修正倒序排序时上一集与下一集播放顺序相反的问题
-//        mVodInfo.playIndex--;
-        if (mVodInfo.reverseSort){
-            mVodInfo.playIndex++;
-        } else {
-            mVodInfo.playIndex--;
-        }
-        play();
+        mVodInfo.playIndex--;
+        play(false);
     }
 
     private int autoRetryCount = 0;
@@ -470,7 +446,7 @@ public class PlayActivity extends BaseActivity {
     boolean autoRetry() {
         if (autoRetryCount < 3) {
             autoRetryCount++;
-            play();
+            play(false);
             return true;
         } else {
             autoRetryCount = 0;
@@ -478,7 +454,7 @@ public class PlayActivity extends BaseActivity {
         }
     }
 
-    public void play() {
+    public void play(boolean reset) {
         VodInfo.VodSeries vs = mVodInfo.seriesMap.get(mVodInfo.playFlag).get(mVodInfo.playIndex);
         EventBus.getDefault().post(new RefreshEvent(RefreshEvent.TYPE_REFRESH, mVodInfo.playIndex));
         setTip("正在获取播放信息", true, false);
@@ -487,6 +463,7 @@ public class PlayActivity extends BaseActivity {
 
         playUrl(null, null);
         String progressKey = mVodInfo.sourceKey + mVodInfo.id + mVodInfo.playFlag + mVodInfo.playIndex;
+        if (reset) CacheManager.delete(MD5.string2MD5(progressKey), 0);
         if (Thunder.play(vs.url, new Thunder.ThunderCallback() {
             @Override
             public void status(int code, String info) {
