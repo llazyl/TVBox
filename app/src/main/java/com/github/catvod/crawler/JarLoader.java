@@ -23,11 +23,9 @@ import okhttp3.Response;
 
 public class JarLoader {
     private ConcurrentHashMap<String, DexClassLoader> classLoaders = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, Method> proxyMethods = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, Spider> spiders = new ConcurrentHashMap<>();
-    /**
-     * always from main jar.
-     */
-    private Method proxyFun = null;
+    private volatile String recentJarKey = "";
 
     /**
      * 不要在主线程调用我
@@ -36,7 +34,8 @@ public class JarLoader {
      */
     public boolean load(String cache) {
         spiders.clear();
-        proxyFun = null;
+        recentJarKey = "main";
+        proxyMethods.clear();
         classLoaders.clear();
         return loadClassLoader(cache, "main");
     }
@@ -61,7 +60,7 @@ public class JarLoader {
                         try {
                             Class proxy = classLoader.loadClass("com.github.catvod.spider.Proxy");
                             Method mth = proxy.getMethod("proxy", Map.class);
-                            proxyFun = mth;
+                            proxyMethods.put(key, mth);
                         } catch (Throwable th) {
 
                         }
@@ -83,22 +82,18 @@ public class JarLoader {
         return success;
     }
 
-    private DexClassLoader loadJarInternal(String jar) {
-        String[] urls = jar.split(";md5;");
-        String jarUrl = urls[0];
-        String urlMd5 = MD5.string2MD5(jarUrl);
-        if (classLoaders.contains(urlMd5))
-            return classLoaders.get(urlMd5);
-        String md5 = urls.length > 1 ? urls[1].trim() : "";
-        File cache = new File(App.getInstance().getFilesDir().getAbsolutePath() + "/" + urlMd5 + ".jar");
+    private DexClassLoader loadJarInternal(String jar, String md5, String key) {
+        if (classLoaders.contains(key))
+            return classLoaders.get(key);
+        File cache = new File(App.getInstance().getFilesDir().getAbsolutePath() + "/" + key + ".jar");
         if (!md5.isEmpty()) {
             if (cache.exists() && MD5.getFileMd5(cache).equalsIgnoreCase(md5)) {
-                loadClassLoader(cache.getAbsolutePath(), urlMd5);
-                return classLoaders.get(urlMd5);
+                loadClassLoader(cache.getAbsolutePath(), key);
+                return classLoaders.get(key);
             }
         }
         try {
-            Response response = OkGo.<File>get(jarUrl).execute();
+            Response response = OkGo.<File>get(jar).execute();
             InputStream is = response.body().byteStream();
             OutputStream os = new FileOutputStream(cache);
             try {
@@ -115,8 +110,8 @@ public class JarLoader {
                     e.printStackTrace();
                 }
             }
-            loadClassLoader(cache.getAbsolutePath(), urlMd5);
-            return classLoaders.get(urlMd5);
+            loadClassLoader(cache.getAbsolutePath(), key);
+            return classLoaders.get(key);
         } catch (Throwable e) {
             e.printStackTrace();
         }
@@ -125,19 +120,34 @@ public class JarLoader {
 
     public Spider getSpider(String key, String cls, String ext, String jar) {
         String clsKey = cls.replace("csp_", "");
+        String jarUrl = "";
+        String jarMd5 = "";
+        String jarKey = "";
+        if (jar.isEmpty()) {
+            jarKey = "main";
+        } else {
+            String[] urls = jar.split(";md5;");
+            jarUrl = urls[0];
+            jarKey = MD5.string2MD5(jarUrl);
+            jarMd5 = urls.length > 1 ? urls[1].trim() : "";
+        }
+        recentJarKey = jarKey;
         if (spiders.containsKey(key))
             return spiders.get(key);
         DexClassLoader classLoader = null;
-        if (jar.isEmpty())
+        if (jarKey.equals("main"))
             classLoader = classLoaders.get("main");
         else {
-            classLoader = loadJarInternal(jar);
+            classLoader = loadJarInternal(jarUrl, jarMd5, jarKey);
         }
         if (classLoader == null)
             return new SpiderNull();
         try {
             Spider sp = (Spider) classLoader.loadClass("com.github.catvod.spider." + clsKey).newInstance();
             sp.init(App.getInstance(), ext);
+            if (!jar.isEmpty()) {
+                sp.homeContent(false); // 增加此行 应该可以解决部分写的有问题源的历史记录问题 但会增加这个源的首次加载时间 不需要可以已删掉
+            }
             spiders.put(key, sp);
             return sp;
         } catch (Throwable th) {
@@ -176,6 +186,7 @@ public class JarLoader {
 
     public Object[] proxyInvoke(Map params) {
         try {
+            Method proxyFun = proxyMethods.get(recentJarKey);
             if (proxyFun != null) {
                 return (Object[]) proxyFun.invoke(null, params);
             }

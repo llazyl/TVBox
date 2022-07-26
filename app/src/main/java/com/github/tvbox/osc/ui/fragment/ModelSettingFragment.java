@@ -44,7 +44,7 @@ import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 /**
  * @author pj567
  * @date :2020/12/23
- * @description: 设置页面
+ * @description:
  */
 public class ModelSettingFragment extends BaseLazyFragment {
     private TextView tvDebugOpen;
@@ -160,6 +160,16 @@ public class ModelSettingFragment extends BaseLazyFragment {
                             super.downloadProgress(progress);
                         }
                     });
+            }
+        });
+        findViewById(R.id.llWpRecovery).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FastClickCheckUtil.check(v);
+                File wp = new File(requireActivity().getFilesDir().getAbsolutePath() + "/wp");
+                if (wp.exists())
+                    wp.delete();
+                ((BaseActivity) requireActivity()).changeWallpaper(true);
             }
         });
         findViewById(R.id.llHomeApi).setOnClickListener(new View.OnClickListener() {
