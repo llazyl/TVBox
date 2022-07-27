@@ -55,6 +55,7 @@ public class VodController extends BaseController {
                     }
                     case 1002: { // 显示底部菜单
                         mBottomRoot.setVisibility(VISIBLE);
+                        mBottomRoot.requestFocus();
                         break;
                     }
                     case 1003: { // 隐藏底部菜单
@@ -565,6 +566,7 @@ public class VodController extends BaseController {
             } else if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
                 if (!isBottomVisible()) {
                     showBottom();
+                    return true;
                 }
             }
         } else if (action == KeyEvent.ACTION_UP) {
