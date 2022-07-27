@@ -475,6 +475,9 @@ public class PlayFragment extends BaseLazyFragment {
 
         playUrl(null, null);
         String progressKey = mVodInfo.sourceKey + mVodInfo.id + mVodInfo.playFlag + mVodInfo.playIndex;
+        //存储播放进度
+        Object bodyKey=CacheManager.getCache(MD5.string2MD5(progressKey));
+        //重新播放清除现有进度
         if (reset) CacheManager.delete(MD5.string2MD5(progressKey), 0);
         if (Thunder.play(vs.url, new Thunder.ThunderCallback() {
             @Override
@@ -499,6 +502,8 @@ public class PlayFragment extends BaseLazyFragment {
             return;
         }
         sourceViewModel.getPlay(sourceKey, mVodInfo.playFlag, progressKey, vs.url);
+        //执行重新播放后还原之前的进度
+        if (reset) CacheManager.save(MD5.string2MD5(progressKey),bodyKey);
     }
 
     private String playSubtitle;
@@ -539,7 +544,13 @@ public class PlayFragment extends BaseLazyFragment {
 
     JSONObject jsonParse(String input, String json) throws JSONException {
         JSONObject jsonPlayData = new JSONObject(json);
-        String url = jsonPlayData.getString("url");
+        //小窗版解析方法改到这了  之前那个位置data解析无效
+        String url;
+        if (jsonPlayData.has("data")) {
+            url = jsonPlayData.getJSONObject("data").getString("url");
+        } else {
+            url = jsonPlayData.getString("url");
+        }
         String msg = jsonPlayData.optString("msg", "");
         if (url.startsWith("//")) {
             url = "https:" + url;
