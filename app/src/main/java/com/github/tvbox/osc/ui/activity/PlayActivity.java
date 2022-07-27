@@ -178,9 +178,9 @@ public class PlayActivity extends BaseActivity {
             }
 
             @Override
-            public void replay() {
+            public void replay(boolean replay) {
                 autoRetryCount = 0;
-                play(true);
+                play(replay);
             }
 
             @Override
@@ -466,7 +466,7 @@ public class PlayActivity extends BaseActivity {
         //存储播放进度
         Object bodyKey=CacheManager.getCache(MD5.string2MD5(progressKey));
         //重新播放清除现有进度
-        if (reset) CacheManager.delete(MD5.string2MD5(progressKey), 0);
+        if (reset) {CacheManager.delete(MD5.string2MD5(progressKey), 0);}
         if (Thunder.play(vs.url, new Thunder.ThunderCallback() {
             @Override
             public void status(int code, String info) {
@@ -491,7 +491,7 @@ public class PlayActivity extends BaseActivity {
         }
         sourceViewModel.getPlay(sourceKey, mVodInfo.playFlag, progressKey, vs.url);
         //执行重新播放后还原之前的进度
-        if (reset) CacheManager.save(MD5.string2MD5(progressKey),bodyKey);
+//        if (reset) CacheManager.save(MD5.string2MD5(progressKey),bodyKey);
     }
 
     private String playSubtitle;
