@@ -260,7 +260,7 @@ public class DetailActivity extends BaseActivity {
 
             @Override
             public void onItemPreSelected(TvRecyclerView parent, View itemView, int position) {
-                
+                seriesSelect = false;
             }
 
             @Override
