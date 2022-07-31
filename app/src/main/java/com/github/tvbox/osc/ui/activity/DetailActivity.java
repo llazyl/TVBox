@@ -645,6 +645,7 @@ public class DetailActivity extends BaseActivity {
             if (playFragment.onBackPressed())
                 return;
             toggleFullPreview();
+            mGridView.requestFocus();
             return;
         }
         if (seriesSelect) {
