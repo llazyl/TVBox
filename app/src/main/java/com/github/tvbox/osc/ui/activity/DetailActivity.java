@@ -155,7 +155,6 @@ public class DetailActivity extends BaseActivity {
             getSupportFragmentManager().beginTransaction().show(playFragment).commitAllowingStateLoss();
             tvPlay.setText("全屏");
         }
-        tvPlay.requestFocus();
         tvSort.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -273,20 +272,21 @@ public class DetailActivity extends BaseActivity {
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 FastClickCheckUtil.check(view);
                 if (vodInfo != null && vodInfo.seriesMap.get(vodInfo.playFlag).size() > 0) {
-                    boolean reload = false;
+//                    boolean reload = false;
                     if (vodInfo.playIndex != position) {
                         seriesAdapter.getData().get(vodInfo.playIndex).selected = false;
                         seriesAdapter.notifyItemChanged(vodInfo.playIndex);
                         seriesAdapter.getData().get(position).selected = true;
                         seriesAdapter.notifyItemChanged(position);
                         vodInfo.playIndex = position;
-                        reload = true;
+//                        reload = true;
                     }
                     seriesAdapter.getData().get(vodInfo.playIndex).selected = true;
                     seriesAdapter.notifyItemChanged(vodInfo.playIndex);
                     //选集全屏 想选集不全屏的注释下面一行
                     if (showPreview && !fullWindows) toggleFullPreview();
-                    if (reload || !showPreview) jumpToPlay();
+//                    if (!showPreview || reload) jumpToPlay();
+                    jumpToPlay();
                 }
             }
         });
@@ -679,7 +679,7 @@ public class DetailActivity extends BaseActivity {
     }
 
     // preview
-    boolean showPreview = Hawk.get(HawkConfig.SHOW_PREVIEW, true);; // true 开启 false 关闭
+    boolean showPreview = Hawk.get(HawkConfig.SHOW_PREVIEW, false);; // true 开启 false 关闭
     boolean fullWindows = false;
     ViewGroup.LayoutParams windowsPreview = null;
     ViewGroup.LayoutParams windowsFull = null;
@@ -704,8 +704,7 @@ public class DetailActivity extends BaseActivity {
             llLayoutParent = (ViewGroup) llLayout.getParent();
 
         fullWindows = !fullWindows;
-        // llPlayerFragmentContainer.setLayoutParams(fullWindows ? windowsFull : windowsPreview);
-        llPlayerFragmentContainerBlock.setVisibility(fullWindows ? View.GONE : View.VISIBLE);
+//        llPlayerFragmentContainer.setLayoutParams(fullWindows ? windowsFull : windowsPreview);
         if (fullWindows) {
             playerParent.removeView(playerRoot);
             ((ViewGroup) getWindow().getDecorView()).addView(playerRoot);
@@ -715,5 +714,6 @@ public class DetailActivity extends BaseActivity {
             playerParent.addView(playerRoot);
             llLayoutParent.addView(llLayout);
         }
+        llPlayerFragmentContainerBlock.setVisibility(fullWindows ? View.GONE : View.VISIBLE);
     }
 }
