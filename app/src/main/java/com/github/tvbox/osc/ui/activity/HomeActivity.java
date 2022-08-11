@@ -216,7 +216,7 @@ public class HomeActivity extends BaseActivity {
         if (home != null && home.getName() != null && !home.getName().isEmpty())
             tvName.setText(home.getName());
         if (dataInitOk && jarInitOk) {
-            showLoading();
+//            showLoading();
             sourceViewModel.getSort(ApiConfig.get().getHomeSourceBean().getKey());
             if (hasPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 LOG.e("有");

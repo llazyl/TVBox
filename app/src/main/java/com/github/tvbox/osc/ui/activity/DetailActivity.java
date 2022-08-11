@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.os.Handler;
 import android.text.Html;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -66,7 +65,6 @@ import java.io.ObjectOutputStream;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -111,6 +109,7 @@ public class DetailActivity extends BaseActivity {
     boolean seriesSelect = false;
     private View seriesFlagFocus = null;
     private boolean isReverse;
+    private String preFlag="";
 
     @Override
     protected int getLayoutResID() {
@@ -175,11 +174,10 @@ public class DetailActivity extends BaseActivity {
 //                        vodInfo.seriesMap.get(vodInfo.playFlag).get(vodInfo.playIndex).selected = false;
 //                    }
                     vodInfo.reverse();
-//                    if (vodInfo.seriesMap.get(preFlag).size() > vodInfo.playIndex) {
-//                        vodInfo.seriesMap.get(preFlag).get(vodInfo.playIndex).selected = false;
+//                    if (vodInfo.seriesMap.get(vodInfo.playFlag).size() > vodInfo.playIndex) {
+//                        vodInfo.seriesMap.get(vodInfo.playFlag).get(vodInfo.playIndex).selected = false;
 //                    }
-                    preFlag = "";
-                    insertVod(sourceKey, vodInfo);
+//                    insertVod(sourceKey, vodInfo);
                     seriesAdapter.notifyDataSetChanged();
                 }
             }
@@ -317,6 +315,11 @@ public class DetailActivity extends BaseActivity {
                         reload = true;
                     }
 
+                    //解决倒叙不刷新
+                    if (isReverse) {
+                        reload = true;
+                    }
+
                     seriesAdapter.getData().get(vodInfo.playIndex).selected = true;
                     seriesAdapter.notifyItemChanged(vodInfo.playIndex);
                     //选集全屏 想选集不全屏的注释下面一行
@@ -330,7 +333,6 @@ public class DetailActivity extends BaseActivity {
 
     private List<Runnable> pauseRunnable = null;
 
-    private String preFlag="";
     private void jumpToPlay() {
         if (vodInfo != null && vodInfo.seriesMap.get(vodInfo.playFlag).size() > 0) {
             preFlag = vodInfo.playFlag;
@@ -755,9 +757,6 @@ public class DetailActivity extends BaseActivity {
     boolean fullWindows = false;
     ViewGroup.LayoutParams windowsPreview = null;
     ViewGroup.LayoutParams windowsFull = null;
-//    ViewGroup playerParent = null;
-//    View playerRoot = null;
-//    ViewGroup llLayoutParent = null;
 
     void toggleFullPreview() {
         if (windowsPreview == null) {
@@ -767,25 +766,12 @@ public class DetailActivity extends BaseActivity {
             windowsFull = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         }
         fullWindows = !fullWindows;
-//        if (playerRoot == null)
-//            playerRoot = (View) llPlayerFragmentContainer.findViewById(R.id.mVideoView).getParent();
-//
-//        if (playerParent == null) {
-//            playerParent = (ViewGroup) playerRoot.getParent();
-//        }
-//        if (llLayoutParent == null)
-//            llLayoutParent = (ViewGroup) llLayout.getParent();
-
-//        if (fullWindows) {
-//            playerParent.removeView(playerRoot);
-//            ((ViewGroup) getWindow().getDecorView()).addView(playerRoot);
-//            llLayoutParent.removeView(llLayout);
-//        } else {
-//            ((ViewGroup) getWindow().getDecorView()).removeView(playerRoot);
-//            playerParent.addView(playerRoot);
-//            llLayoutParent.addView(llLayout);
-//        }
         llPlayerFragmentContainer.setLayoutParams(fullWindows ? windowsFull : windowsPreview);
         llPlayerFragmentContainerBlock.setVisibility(fullWindows ? View.GONE : View.VISIBLE);
+
+        tvPlay.setFocusable(!fullWindows);
+        tvSort.setFocusable(!fullWindows);
+        tvCollect.setFocusable(!fullWindows);
+        tvQuickSearch.setFocusable(!fullWindows);
     }
 }

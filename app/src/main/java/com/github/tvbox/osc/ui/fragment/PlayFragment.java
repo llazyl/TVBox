@@ -308,7 +308,7 @@ public class PlayFragment extends BaseLazyFragment {
                             playUrl(playUrl + url, headers);
                         }
                     } catch (Throwable th) {
-                        errorWithRetry("获取播放信息错误", true);
+//                        errorWithRetry("获取播放信息错误", true);
                     }
                 } else {
                     errorWithRetry("获取播放信息错误", true);
@@ -461,9 +461,9 @@ public class PlayFragment extends BaseLazyFragment {
     private int autoRetryCount = 0;
 
     boolean autoRetry() {
-        if (autoRetryCount < 3) {
-            autoRetryCount++;
+        if (autoRetryCount < 2) {
             play(false);
+            autoRetryCount++;
             return true;
         } else {
             autoRetryCount = 0;
@@ -656,7 +656,7 @@ public class PlayFragment extends BaseLazyFragment {
                                 playUrl(rs.getString("url"), headers);
                             } catch (Throwable e) {
                                 e.printStackTrace();
-                                errorWithRetry("解析错误", false);
+//                                errorWithRetry("解析错误", false);
                             }
                         }
 

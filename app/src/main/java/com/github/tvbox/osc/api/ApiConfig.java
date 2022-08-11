@@ -98,6 +98,8 @@ public class ApiConfig {
         String apiFix = apiUrl;
         if (apiUrl.startsWith("clan://")) {
             apiFix = clanToAddress(apiUrl);
+        }else if(!apiUrl.startsWith("http")){
+            apiFix = "http://" + apiFix;
         }
         OkGo.<String>get(apiFix)
                 .execute(new AbsCallback<String>() {
