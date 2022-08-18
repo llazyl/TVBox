@@ -85,7 +85,6 @@ public class SearchActivity extends BaseActivity {
         initView();
         initViewModel();
         initData();
-        enableKeyboard(this);
     }
 
     /*
@@ -188,6 +187,12 @@ public class SearchActivity extends BaseActivity {
             public void onClick(View v) {
                 FastClickCheckUtil.check(v);
                 etSearch.setText("");
+            }
+        });
+        etSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                enableKeyboard(SearchActivity.this);
             }
         });
         keyboard.setOnSearchKeyListener(new SearchKeyboard.OnSearchKeyListener() {

@@ -216,7 +216,7 @@ public class HomeActivity extends BaseActivity {
         if (home != null && home.getName() != null && !home.getName().isEmpty())
             tvName.setText(home.getName());
         if (dataInitOk && jarInitOk) {
-//            showLoading();
+            showLoading();
             sourceViewModel.getSort(ApiConfig.get().getHomeSourceBean().getKey());
             if (hasPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 LOG.e("有");
@@ -404,6 +404,11 @@ public class HomeActivity extends BaseActivity {
 
     private void exit() {
         if (System.currentTimeMillis() - mExitTime < 2000) {
+            //这一段借鉴来自 q群老哥 IDCardWeb
+            EventBus.getDefault().unregister(this);
+            AppManager.getInstance().appExit(0);
+            ControlManager.get().stopServer();
+            finish();
             super.onBackPressed();
         } else {
             mExitTime = System.currentTimeMillis();
@@ -583,8 +588,8 @@ public class HomeActivity extends BaseActivity {
                         bundle.putBoolean("useCache", true);
                         intent.putExtras(bundle);
                         HomeActivity.this.startActivity(intent);
-                        android.os.Process.killProcess(android.os.Process.myPid());
-                        System.exit(0);
+//                        android.os.Process.killProcess(android.os.Process.myPid());
+//                        System.exit(0);
 
                     }
                 }
