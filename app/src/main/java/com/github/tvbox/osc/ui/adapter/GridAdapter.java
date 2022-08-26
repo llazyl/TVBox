@@ -24,12 +24,36 @@ import me.jessyan.autosize.utils.AutoSizeUtils;
  * @description:
  */
 public class GridAdapter extends BaseQuickAdapter<Movie.Video, BaseViewHolder> {
-    public GridAdapter() {
-        super(R.layout.item_grid, new ArrayList<>());
+    private boolean mShowList = false;
+
+    public GridAdapter(boolean l) {
+        super( l ? R.layout.item_list:R.layout.item_grid, new ArrayList<>());
+        this.mShowList = l;
     }
 
     @Override
     protected void convert(BaseViewHolder helper, Movie.Video item) {
+        if(this.mShowList) {
+            helper.setText(R.id.tvNote, item.note);
+            helper.setText(R.id.tvName, item.name);
+            ImageView ivThumb = helper.getView(R.id.ivThumb);
+            //由于部分电视机使用glide报错
+            if (!TextUtils.isEmpty(item.pic)) {
+                Picasso.get()
+                        .load(DefaultConfig.checkReplaceProxy(item.pic))
+                        .transform(new RoundTransformation(MD5.string2MD5(item.pic + "position=" + helper.getLayoutPosition()))
+                                .centerCorp(true)
+                                .override(AutoSizeUtils.mm2px(mContext, 300), AutoSizeUtils.mm2px(mContext, 400))
+                                .roundRadius(AutoSizeUtils.mm2px(mContext, 10), RoundTransformation.RoundType.ALL))
+                        .placeholder(R.drawable.img_loading_placeholder)
+                        .error(R.drawable.img_loading_placeholder)
+                        .into(ivThumb);
+            } else {
+                ivThumb.setImageResource(R.drawable.img_loading_placeholder);
+            }
+            return;
+        }
+
         TextView tvYear = helper.getView(R.id.tvYear);
         if (item.year <= 0) {
             tvYear.setVisibility(View.GONE);

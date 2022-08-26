@@ -32,6 +32,7 @@ public class MovieSort implements Serializable {
         public boolean select = false;
         public ArrayList<SortFilter> filters = new ArrayList<>();
         public HashMap<String, String> filterSelect = new HashMap<>();
+        public String flag; // 类型
 
         public SortData() {
         }
