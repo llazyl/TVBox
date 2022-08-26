@@ -52,6 +52,9 @@
             android:name=".ui.activity.SearchActivity"
             android:screenOrientation="landscape" />
         <activity
+            android:name=".ui.activity.FastSearchActivity"
+            android:screenOrientation="landscape" />
+        <activity
             android:name=".ui.activity.SettingActivity"
             android:screenOrientation="landscape" />
         <activity

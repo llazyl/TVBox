@@ -9,10 +9,12 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.github.tvbox.osc.R;
+import com.github.tvbox.osc.api.ApiConfig;
 import com.github.tvbox.osc.base.BaseLazyFragment;
 import com.github.tvbox.osc.bean.AbsXml;
 import com.github.tvbox.osc.bean.Movie;
 import com.github.tvbox.osc.bean.MovieSort;
+import com.github.tvbox.osc.bean.SourceBean;
 import com.github.tvbox.osc.ui.activity.DetailActivity;
 import com.github.tvbox.osc.ui.adapter.GridAdapter;
 import com.github.tvbox.osc.ui.dialog.GridFilterDialog;
@@ -21,6 +23,9 @@ import com.github.tvbox.osc.util.FastClickCheckUtil;
 import com.github.tvbox.osc.viewmodel.SourceViewModel;
 import com.owen.tvrecyclerview.widget.TvRecyclerView;
 import com.owen.tvrecyclerview.widget.V7GridLayoutManager;
+import com.orhanobut.hawk.Hawk;
+import com.github.tvbox.osc.util.HawkConfig;
+import com.github.tvbox.osc.ui.activity.FastSearchActivity;
 
 /**
  * @author pj567
@@ -105,7 +110,13 @@ public class GridFragment extends BaseLazyFragment {
                     Bundle bundle = new Bundle();
                     bundle.putString("id", video.id);
                     bundle.putString("sourceKey", video.sourceKey);
-                    jumpActivity(DetailActivity.class, bundle);
+                    bundle.putString("title", video.name);
+                    SourceBean homeSourceBean = ApiConfig.get().getHomeSourceBean();
+                    if(homeSourceBean.isQuickSearch() && Hawk.get(HawkConfig.FAST_SEARCH_MODE, false)){
+                        jumpActivity(FastSearchActivity.class, bundle);
+                    }else{
+                        jumpActivity(DetailActivity.class, bundle);
+                    }
                 }
             }
         });
