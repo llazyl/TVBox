@@ -62,6 +62,8 @@ public class Movie implements Serializable {
         @XStreamAlias("des")
         public String des;// <![CDATA[权来]
         public String sourceKey;
+        @XStreamAlias("tag")
+        public String tag;
 
         @XStreamAlias("dl")
         public static class UrlBean implements Serializable {

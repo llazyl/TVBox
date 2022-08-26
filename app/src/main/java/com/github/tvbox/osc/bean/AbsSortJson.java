@@ -21,6 +21,7 @@ public class AbsSortJson implements Serializable {
             MovieSort.SortData sortData = new MovieSort.SortData();
             sortData.id = cls.type_id;
             sortData.name = cls.type_name;
+            sortData.flag = cls.type_flag;
             movieSort.sortList.add(sortData);
         }
         if (list != null && !list.isEmpty()) {
@@ -41,6 +42,7 @@ public class AbsSortJson implements Serializable {
     public class AbsJsonClass implements Serializable {
         public String type_id;
         public String type_name;
+        public String type_flag;
     }
 
 }
