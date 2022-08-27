@@ -5,6 +5,73 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+        <LinearLayout
+            android:id="@+id/tv_top_l_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:tag="tv_top_container"
+            android:visibility="gone"
+            tools:visibility="visible"
+            android:layout_marginStart="@dimen/vs_20"
+            android:layout_marginLeft="@dimen/vs_20"
+            android:layout_marginTop="@dimen/vs_10"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_info_name1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:width="680dp"
+                android:paddingTop="@dimen/vs_20"
+                android:paddingLeft="@dimen/vs_20"
+                android:text="http://"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/ts_24" />
+
+            <TextView
+                android:id="@+id/tv_videosize"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:paddingLeft="@dimen/vs_20"
+                android:tag="vod_video_size"
+                android:text="[ 1024 x 768 ]"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/ts_24" />
+
+        </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/tv_top_r_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:tag="tv_top_container"
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:layout_gravity="right"
+        android:layout_marginStart="@dimen/vs_20"
+        android:layout_marginLeft="@dimen/vs_20"
+        android:layout_marginTop="@dimen/vs_10"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_sys_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:padding="@dimen/vs_20"
+            android:tag="vod_control_pause_time"
+            android:text="00:00:00"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/ts_24" />
+    </LinearLayout>
     <LinearLayout
         android:id="@+id/bottom_container"
         android:layout_width="match_parent"
@@ -307,45 +374,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
+                android:maxLines="2"
                 android:ellipsize="end"
-                android:maxLines="1"
                 android:paddingTop="@dimen/vs_20"
                 android:paddingLeft="@dimen/vs_20"
                 android:text="http://"
                 android:textColor="@android:color/white"
                 android:textSize="@dimen/ts_24" />
-
-            <TextView
-                android:id="@+id/tv_videosize"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:paddingLeft="@dimen/vs_20"
-                android:tag="vod_video_size"
-                android:text="[ 1024 x 768 ]"
-                android:textColor="@android:color/white"
-                android:textSize="@dimen/ts_24" />
-
-
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/tv_sys_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/vs_20"
-            android:layout_marginRight="@dimen/vs_20"
-            android:layout_marginTop="@dimen/vs_10"
-            android:layout_gravity="right"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:padding="@dimen/vs_20"
-            android:tag="vod_control_pause_time"
-            android:text="00:00:00"
-            android:textColor="@android:color/white"
-            android:textSize="@dimen/ts_24" />
 
         <LinearLayout
             android:layout_width="@dimen/vs_280"

@@ -154,7 +154,7 @@
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:lineSpacingMultiplier="1.2"
-                    android:maxLines="4"
+                    android:maxLines="3"
                     android:textColor="@color/color_CCFFFFFF"
                     android:textSize="@dimen/ts_20" />
 
