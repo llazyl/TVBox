@@ -18,10 +18,21 @@
         <entry key="..\:/tvbox/TVBoxOS/app/src/main/res/layout/activity_search.xml" value="0.3619791666666667" />
         <entry key="..\:/tvbox/TVBoxOS/app/src/main/res/layout/activity_setting.xml" value="0.3619791666666667" />
         <entry key="..\:/tvbox/TVBoxOS/app/src/main/res/layout/box_vod_control_view.xml" value="0.3619791666666667" />
+        <entry key="..\:/tvbox/TVBoxOS/app/src/main/res/layout/dialog_api_history.xml" value="0.19708029197080293" />
+        <entry key="..\:/tvbox/TVBoxOS/app/src/main/res/layout/dialog_grid_filter.xml" value="0.3619791666666667" />
         <entry key="..\:/tvbox/TVBoxOS/app/src/main/res/layout/dialog_quick_search.xml" value="0.18449694717281656" />
+        <entry key="..\:/tvbox/TVBoxOS/app/src/main/res/layout/dialog_remote.xml" value="0.3619791666666667" />
+        <entry key="..\:/tvbox/TVBoxOS/app/src/main/res/layout/dialog_select.xml" value="0.3225923244026068" />
+        <entry key="..\:/tvbox/TVBoxOS/app/src/main/res/layout/dialog_tip.xml" value="0.3619791666666667" />
+        <entry key="..\:/tvbox/TVBoxOS/app/src/main/res/layout/fragment_grid.xml" value="0.3619791666666667" />
         <entry key="..\:/tvbox/TVBoxOS/app/src/main/res/layout/fragment_model.xml" value="0.33" />
+        <entry key="..\:/tvbox/TVBoxOS/app/src/main/res/layout/fragment_user.xml" value="0.3619791666666667" />
         <entry key="..\:/tvbox/TVBoxOS/app/src/main/res/layout/item_channel_group_layout.xml" value="0.22826086956521738" />
         <entry key="..\:/tvbox/TVBoxOS/app/src/main/res/layout/item_dialog_select.xml" value="0.3619791666666667" />
+        <entry key="..\:/tvbox/TVBoxOS/app/src/main/res/layout/item_grid.xml" value="0.3619791666666667" />
+        <entry key="..\:/tvbox/TVBoxOS/app/src/main/res/layout/item_grid_filter.xml" value="0.3619791666666667" />
+        <entry key="..\:/tvbox/TVBoxOS/app/src/main/res/layout/item_grid_filter_value.xml" value="0.3619791666666667" />
+        <entry key="..\:/tvbox/TVBoxOS/app/src/main/res/layout/item_list.xml" value="0.3619791666666667" />
         <entry key="..\:/tvbox/TVBoxOS/app/src/main/res/layout/item_live_channel_layout.xml" value="0.22826086956521738" />
         <entry key="..\:/tvbox/TVBoxOS/app/src/main/res/layout/item_quick_search_lite.xml" value="0.3619791666666667" />
         <entry key="..\:/tvbox/TVBoxOS/app/src/main/res/layout/loadsir_loading_layout.xml" value="0.3619791666666667" />

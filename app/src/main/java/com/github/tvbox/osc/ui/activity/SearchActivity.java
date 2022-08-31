@@ -1,6 +1,7 @@
 package com.github.tvbox.osc.ui.activity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -8,6 +9,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -82,6 +84,8 @@ public class SearchActivity extends BaseActivity {
         return R.layout.activity_search;
     }
 
+
+    private static Boolean hasKeyBoard;
     @Override
     protected void init() {
         disableKeyboard(SearchActivity.this);
@@ -95,6 +99,7 @@ public class SearchActivity extends BaseActivity {
      * @param activity Activity
      */
     public static void disableKeyboard(Activity activity) {
+        hasKeyBoard = false;
         activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
     }
 
@@ -103,7 +108,13 @@ public class SearchActivity extends BaseActivity {
      * @param activity Activity
      */
     public static void enableKeyboard(Activity activity) {
+        hasKeyBoard = true;
         activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+    }
+
+    public void openSystemKeyBoard() {
+        InputMethodManager imm = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(this.getCurrentFocus(), InputMethodManager.SHOW_FORCED);
     }
 
     private List<Runnable> pauseRunnable = null;
@@ -196,7 +207,8 @@ public class SearchActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
 //                Toast.makeText(mContext,"点击",Toast.LENGTH_SHORT).show();
-                enableKeyboard(SearchActivity.this);
+                if(!hasKeyBoard)enableKeyboard(SearchActivity.this);
+                openSystemKeyBoard();//再次尝试拉起键盘
                 SearchActivity.this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
             }
         });
@@ -429,8 +441,8 @@ public class SearchActivity extends BaseActivity {
         if (event.getAction() == KeyEvent.ACTION_DOWN) {
             int keyCode = event.getKeyCode();
             if (keyCode == KeyEvent.KEYCODE_MENU) {
-//                Toast.makeText(mContext,"菜单键",Toast.LENGTH_SHORT).show();
-                enableKeyboard(SearchActivity.this);
+                if(!hasKeyBoard)enableKeyboard(SearchActivity.this);
+                openSystemKeyBoard();//再次尝试拉起键盘
                 getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
             }
         } else if (event.getAction() == KeyEvent.ACTION_UP) {

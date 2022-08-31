@@ -286,6 +286,7 @@ public class PlayFragment extends BaseLazyFragment {
                         String url = info.getString("url");
                         HashMap<String, String> headers = null;
                         webUserAgent = null;
+                        webHeaderMap = null;
                         if (info.has("header")) {
                             try {
                                 JSONObject hds = new JSONObject(info.getString("header"));
@@ -300,6 +301,7 @@ public class PlayFragment extends BaseLazyFragment {
                                         webUserAgent = hds.getString(key).trim();
                                     }
                                 }
+                                webHeaderMap = headers;
                             } catch (Throwable th) {
 
                             }
@@ -520,6 +522,7 @@ public class PlayFragment extends BaseLazyFragment {
     private String parseFlag;
     private String webUrl;
     private String webUserAgent;
+    private Map<String, String > webHeaderMap;
 
     private void initParse(String flag, boolean useParse, String playUrl, final String url) {
         parseFlag = flag;
@@ -864,22 +867,29 @@ public class PlayFragment extends BaseLazyFragment {
             @Override
             public void run() {
                 // webUserAgent = "Mozilla/5.0 (Linux; Android 6.0.1; Moto G (4)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Mobile Safari/537.36";
-                String ua = webUserAgent;
                 if (mXwalkWebView != null) {
                     mXwalkWebView.stopLoading();
-                    if(ua != null) {
-                        mXwalkWebView.getSettings().setUserAgentString(ua);
+                    if(webUserAgent != null) {
+                        mXwalkWebView.getSettings().setUserAgentString(webUserAgent);
                     }
                     //mXwalkWebView.clearCache(true);
-                    mXwalkWebView.loadUrl(url);
+                    if(webHeaderMap != null){
+                        mXwalkWebView.loadUrl(url,webHeaderMap);
+                    }else {
+                        mXwalkWebView.loadUrl(url);
+                    }
                 }
                 if (mSysWebView != null) {
                     mSysWebView.stopLoading();
-                    if(ua != null) {
-                        mSysWebView.getSettings().setUserAgentString(ua);
+                    if(webUserAgent != null) {
+                        mSysWebView.getSettings().setUserAgentString(webUserAgent);
                     }
                     //mSysWebView.clearCache(true);
-                    mSysWebView.loadUrl(url);
+                    if(webHeaderMap != null){
+                        mSysWebView.loadUrl(url,webHeaderMap);
+                    }else {
+                        mSysWebView.loadUrl(url);
+                    }
                 }
             }
         });
@@ -1001,7 +1011,7 @@ public class PlayFragment extends BaseLazyFragment {
             settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         }
 //        settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
-        settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        settings.setCacheMode(WebSettings.LOAD_DEFAULT);
         /* 添加webView配置 */
         //设置编码
         settings.setDefaultTextEncodingName("utf-8");
@@ -1162,7 +1172,7 @@ public class PlayFragment extends BaseLazyFragment {
         settings.setBuiltInZoomControls(true);
         settings.setSupportZoom(false);
 //        settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
-        settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        settings.setCacheMode(WebSettings.LOAD_DEFAULT);
         // settings.setUserAgentString(ANDROID_UA);
 
         webView.setBackgroundColor(Color.BLACK);
