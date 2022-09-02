@@ -317,9 +317,11 @@ public class PlayActivity extends BaseActivity {
                         }
                     } catch (Throwable th) {
 //                        errorWithRetry("获取播放信息错误", true);
+                        Toast.makeText(mContext, "获取播放信息错误", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    errorWithRetry("获取播放信息错误", true);
+//                    errorWithRetry("获取播放信息错误", true);
+                    Toast.makeText(mContext, "获取播放信息错误", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -472,7 +474,7 @@ public class PlayActivity extends BaseActivity {
         String playTitleInfo = mVodInfo.name + " " + vs.name;
         mController.setTitle(playTitleInfo);
 
-        playUrl(null, null);
+//        playUrl(null, null);
         String progressKey = mVodInfo.sourceKey + mVodInfo.id + mVodInfo.playFlag + mVodInfo.playIndex;
         //存储播放进度
         Object bodyKey=CacheManager.getCache(MD5.string2MD5(progressKey));
@@ -651,7 +653,8 @@ public class PlayActivity extends BaseActivity {
                                 playUrl(rs.getString("url"), headers);
                             } catch (Throwable e) {
                                 e.printStackTrace();
-//                                errorWithRetry("解析错误", false);
+                                errorWithRetry("解析错误", false);
+//                                setTip("解析错误", false, true);
                             }
                         }
 
@@ -659,6 +662,7 @@ public class PlayActivity extends BaseActivity {
                         public void onError(Response<String> response) {
                             super.onError(response);
                             errorWithRetry("解析错误", false);
+//                            setTip("解析错误", false, true);
                         }
                     });
         } else if (pb.getType() == 2) { // json 扩展
@@ -674,8 +678,9 @@ public class PlayActivity extends BaseActivity {
                 @Override
                 public void run() {
                     JSONObject rs = ApiConfig.get().jsonExt(pb.getUrl(), jxs, webUrl);
-                    if (rs == null || !rs.has("url")) {
-                        errorWithRetry("解析错误", false);
+                    if (rs == null || !rs.has("url") || rs.optString("url").isEmpty()) {
+//                        errorWithRetry("解析错误", false);//没有url重试也没有重新获取
+                        setTip("解析错误", false, true);
                     } else {
                         HashMap<String, String> headers = null;
                         if (rs.has("header")) {
@@ -731,8 +736,9 @@ public class PlayActivity extends BaseActivity {
                 @Override
                 public void run() {
                     JSONObject rs = ApiConfig.get().jsonExtMix(parseFlag + "111", pb.getUrl(), finalExtendName, jxs, webUrl);
-                    if (rs == null || !rs.has("url")) {
-                        errorWithRetry("解析错误", false);
+                    if (rs == null || !rs.has("url") || rs.optString("url").isEmpty()) {
+//                        errorWithRetry("解析错误", false);
+                        setTip("解析错误", false, true);
                     } else {
                         if (rs.has("parse") && rs.optInt("parse", 0) == 1) {
                             runOnUiThread(new Runnable() {
