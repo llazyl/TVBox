@@ -553,7 +553,6 @@ public class DetailActivity extends BaseActivity {
                     llPlayerFragmentContainer.setVisibility(View.GONE);
                     llPlayerFragmentContainerBlock.setVisibility(View.GONE);
                 }
-                if(absXml != null && absXml.msg != null && !absXml.msg.isEmpty())Toast.makeText(DetailActivity.this, absXml.msg, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -805,7 +804,7 @@ public class DetailActivity extends BaseActivity {
 
     // preview
     VodInfo previewVodInfo = null;
-    boolean showPreview = Hawk.get(HawkConfig.SHOW_PREVIEW, false);; // true 开启 false 关闭
+    boolean showPreview = Hawk.get(HawkConfig.SHOW_PREVIEW, true);; // true 开启 false 关闭
     boolean fullWindows = false;
     ViewGroup.LayoutParams windowsPreview = null;
     ViewGroup.LayoutParams windowsFull = null;

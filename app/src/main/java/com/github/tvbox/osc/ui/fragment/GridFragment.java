@@ -204,7 +204,7 @@ public class GridFragment extends BaseLazyFragment {
                     else if(homeSourceBean.isQuickSearch() && Hawk.get(HawkConfig.FAST_SEARCH_MODE, false) && enableFastSearch()){
                         jumpActivity(FastSearchActivity.class, bundle);
                     }else{
-                        if(video.id == null || video.id.isEmpty()){
+                        if(video.id.isEmpty() || video.id.startsWith("msearch:")){
                             jumpActivity(SearchActivity.class, bundle);
                         }else {
                             jumpActivity(DetailActivity.class, bundle);
@@ -243,7 +243,6 @@ public class GridFragment extends BaseLazyFragment {
                         Toast.makeText(getContext(), "没有更多了", Toast.LENGTH_SHORT).show();
                     }
                 }
-                if(absXml != null && absXml.msg != null && !absXml.msg.isEmpty())Toast.makeText(getContext(), absXml.msg, Toast.LENGTH_SHORT).show();
                 if (page > maxPage) {
                     gridAdapter.loadMoreEnd();
                 } else {
