@@ -12,12 +12,14 @@
         <entry key="..\:/tvbox/TVBoxOS/app/src/main/layout/activity_live_play.xml" value="0.1" />
         <entry key="..\:/tvbox/TVBoxOS/app/src/main/res/drawable/box_controller_top_bg.xml" value="0.2455" />
         <entry key="..\:/tvbox/TVBoxOS/app/src/main/res/layout/activity_detail.xml" value="0.3619791666666667" />
+        <entry key="..\:/tvbox/TVBoxOS/app/src/main/res/layout/activity_history.xml" value="0.2859375" />
         <entry key="..\:/tvbox/TVBoxOS/app/src/main/res/layout/activity_home.xml" value="0.3619791666666667" />
         <entry key="..\:/tvbox/TVBoxOS/app/src/main/res/layout/activity_live_play.xml" value="0.3369894099848714" />
         <entry key="..\:/tvbox/TVBoxOS/app/src/main/res/layout/activity_play.xml" value="0.3619791666666667" />
         <entry key="..\:/tvbox/TVBoxOS/app/src/main/res/layout/activity_search.xml" value="0.3619791666666667" />
         <entry key="..\:/tvbox/TVBoxOS/app/src/main/res/layout/activity_setting.xml" value="0.3619791666666667" />
         <entry key="..\:/tvbox/TVBoxOS/app/src/main/res/layout/box_vod_control_view.xml" value="0.3619791666666667" />
+        <entry key="..\:/tvbox/TVBoxOS/app/src/main/res/layout/dialog_api.xml" value="0.3385416666666667" />
         <entry key="..\:/tvbox/TVBoxOS/app/src/main/res/layout/dialog_api_history.xml" value="0.19708029197080293" />
         <entry key="..\:/tvbox/TVBoxOS/app/src/main/res/layout/dialog_grid_filter.xml" value="0.3619791666666667" />
         <entry key="..\:/tvbox/TVBoxOS/app/src/main/res/layout/dialog_quick_search.xml" value="0.18449694717281656" />
