@@ -9,6 +9,7 @@ import android.widget.TextView;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.github.tvbox.osc.R;
 import com.github.tvbox.osc.base.BaseActivity;
+import com.github.tvbox.osc.bean.Movie;
 import com.github.tvbox.osc.bean.VodInfo;
 import com.github.tvbox.osc.cache.RoomDataManger;
 import com.github.tvbox.osc.event.RefreshEvent;
@@ -100,31 +101,31 @@ public class HistoryActivity extends BaseActivity {
                 FastClickCheckUtil.check(view);
                 VodInfo vodInfo = historyAdapter.getData().get(position);
 
-                //HistoryDialog historyDialog = new HistoryDialog().build(mContext, vodInfo).setOnHistoryListener(new HistoryDialog.OnHistoryListener() {
-                //    @Override
-                //    public void onLook(VodInfo vodInfo) {
-                //        if (vodInfo != null) {
-                //            Bundle bundle = new Bundle();
-                //            bundle.putInt("id", vodInfo.id);
-                //            bundle.putString("sourceKey", vodInfo.sourceKey);
-                //            jumpActivity(DetailActivity.class, bundle);
-                //        }
-                //    }
-
-                //    @Override
-                //    public void onDelete(VodInfo vodInfo) {
-                //        if (vodInfo != null) {
-                //               for (int i = 0; i < historyAdapter.getData().size(); i++) {
-                //                    if (vodInfo.id == historyAdapter.getData().get(i).id) {
-                //                        historyAdapter.remove(i);
-                //                        break;
-                //                    }
-                //                }
-                //                RoomDataManger.deleteVodRecord(vodInfo.sourceKey, vodInfo);
-                //        }
-                //    }
-                //});
-                //historyDialog.show();
+//                HistoryDialog historyDialog = new HistoryDialog().build(mContext, vodInfo).setOnHistoryListener(new HistoryDialog.OnHistoryListener() {
+//                    @Override
+//                    public void onLook(VodInfo vodInfo) {
+//                        if (vodInfo != null) {
+//                            Bundle bundle = new Bundle();
+//                            bundle.putInt("id", vodInfo.id);
+//                            bundle.putString("sourceKey", vodInfo.sourceKey);
+//                            jumpActivity(DetailActivity.class, bundle);
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onDelete(VodInfo vodInfo) {
+//                        if (vodInfo != null) {
+//                               for (int i = 0; i < historyAdapter.getData().size(); i++) {
+//                                    if (vodInfo.id == historyAdapter.getData().get(i).id) {
+//                                        historyAdapter.remove(i);
+//                                        break;
+//                                    }
+//                                }
+//                                RoomDataManger.deleteVodRecord(vodInfo.sourceKey, vodInfo);
+//                        }
+//                    }
+//                });
+//                historyDialog.show();
 
                 if (vodInfo != null) {
                     if (delMode) {
@@ -137,6 +138,16 @@ public class HistoryActivity extends BaseActivity {
                         jumpActivity(DetailActivity.class, bundle);
                     }
                 }
+            }
+        });
+        historyAdapter.setOnItemLongClickListener(new BaseQuickAdapter.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(BaseQuickAdapter adapter, View view, int position) {
+                FastClickCheckUtil.check(view);
+                VodInfo vodInfo = historyAdapter.getData().get(position);
+                historyAdapter.remove(position);
+                RoomDataManger.deleteVodRecord(vodInfo.sourceKey, vodInfo);
+                return true;
             }
         });
     }
