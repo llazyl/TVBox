@@ -1,6 +1,8 @@
 package com.github.tvbox.osc.ui.fragment;
 
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -14,6 +16,7 @@ import com.github.tvbox.osc.base.BaseActivity;
 import com.github.tvbox.osc.base.BaseLazyFragment;
 import com.github.tvbox.osc.bean.IJKCode;
 import com.github.tvbox.osc.bean.SourceBean;
+import com.github.tvbox.osc.ui.activity.HomeActivity;
 import com.github.tvbox.osc.ui.activity.SettingActivity;
 import com.github.tvbox.osc.ui.adapter.SelectDialogAdapter;
 import com.github.tvbox.osc.ui.dialog.AboutDialog;
@@ -195,6 +198,13 @@ public class ModelSettingFragment extends BaseLazyFragment {
                         public void click(SourceBean value, int pos) {
                             ApiConfig.get().setSourceBean(value);
                             tvHomeApi.setText(ApiConfig.get().getHomeSourceBean().getName());
+
+                            Intent intent =new Intent(mContext, HomeActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            Bundle bundle = new Bundle();
+                            bundle.putBoolean("useCache", true);
+                            intent.putExtras(bundle);
+                            startActivity(intent);
                         }
 
                         @Override
