@@ -282,6 +282,7 @@ public class PlayActivity extends BaseActivity {
                             zimuUrl = new String(Base64.decode(zimuBase64Url, Base64.DEFAULT));
                             mController.mSubtitleView.setVisibility(View.GONE);
                         }
+                        if(zimuUrl.isEmpty())zimuUrl=playSubtitle;
                         if (zimuUrl != null && zimuUrl .length() > 0) {
                             // 绑定MediaPlayer
                             mController.mSubtitleView.bindToMediaPlayer(mVideoView.getMediaPlayer());

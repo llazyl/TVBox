@@ -81,7 +81,6 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:paddingRight="@dimen/vs_20"
-            android:paddingTop="@dimen/vs_10"
             android:tag="vod_control_pause_time"
             android:text="0Kb/s"
             android:textColor="@android:color/white"
