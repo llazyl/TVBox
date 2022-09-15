@@ -6,7 +6,7 @@
     android:background="@android:color/black">
 
 
-    <xyz.doikki.videoplayer.player.VideoView
+    <com.github.tvbox.osc.player.MyVideoView
         android:id="@+id/mVideoView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
