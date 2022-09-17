@@ -35,15 +35,18 @@ import com.github.tvbox.osc.subtitle.format.FormatSRT;
 import com.github.tvbox.osc.subtitle.format.FormatSTL;
 import com.github.tvbox.osc.subtitle.model.TimedTextObject;
 import com.github.tvbox.osc.subtitle.runtime.AppTaskExecutor;
+import com.github.tvbox.osc.util.UnicodeReader;
+import com.lzy.okgo.OkGo;
+
+import org.apache.commons.io.input.ReaderInputStream;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
+import java.io.Reader;
+
 import okhttp3.Response;
 
 /**
@@ -153,25 +156,32 @@ public class SubtitleLoader {
     private static TimedTextObject loadFromRemote(final String remoteSubtitlePath)
             throws IOException, FatalParsingException {
         Log.d(TAG, "parseRemote: remoteSubtitlePath = " + remoteSubtitlePath);
-        if (!remoteSubtitlePath.contains("alicloud")) {
-            URL url = new URL(remoteSubtitlePath);
-            return loadAndParse(url.openStream(), url.getPath());
+        String referer = "";
+        String from = "";
+        if (remoteSubtitlePath.contains("alicloud")) {
+            referer = "https://www.aliyundrive.com/";
+            from = "aliyundrive";
+        } else if (remoteSubtitlePath.contains("assrt.net")) {
+            referer = "https://secure.assrt.net/";
+            from = "assrt";
         }
         String ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.54 Safari/537.36";
-        OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder()
-                .url(remoteSubtitlePath)
-                .addHeader("Referer", "https://www.aliyundrive.com/")
-                .addHeader("User-Agent", ua)
-                .build();
-        Response response = null;
-        response = client.newCall(request).execute();
+        Response response = OkGo.<String>get(remoteSubtitlePath)
+                .headers("Referer", referer)
+                .headers("User-Agent", ua)
+                .execute();
         String content = response.body().string();
         try {
             Uri uri = Uri.parse(remoteSubtitlePath);
             InputStream subtitle = new ByteArrayInputStream(content.getBytes());
-            String filename = uri.getQueryParameter("response-content-disposition");
-            filename = "zimu." + filename.substring(filename.lastIndexOf(".")+1);
+            String filename = "";
+            if (from == "aliyundrive") {
+                filename = uri.getQueryParameter("response-content-disposition");
+                filename = "zimu." + filename.substring(filename.lastIndexOf(".")+1);
+            } else {
+                filename = uri.getPath();
+                filename = "zimu." + filename.substring(filename.lastIndexOf(".")+1);
+            }
             return loadAndParse(subtitle, filename);
         } catch (Exception e) {
             e.printStackTrace();
@@ -191,16 +201,18 @@ public class SubtitleLoader {
         String fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
         String ext = fileName.substring(fileName.lastIndexOf("."));
         Log.d(TAG, "parse: name = " + fileName + ", ext = " + ext);
+        Reader reader = new UnicodeReader(is); //处理有BOM头的utf8
+        InputStream newInputStream = new ReaderInputStream(reader, "UTF-8");
         if (".srt".equalsIgnoreCase(ext)) {
-            return new FormatSRT().parseFile(fileName, is);
+            return new FormatSRT().parseFile(fileName, newInputStream);
         } else if (".ass".equalsIgnoreCase(ext)) {
-            return new FormatASS().parseFile(fileName, is);
+            return new FormatASS().parseFile(fileName, newInputStream);
         } else if (".stl".equalsIgnoreCase(ext)) {
-            return new FormatSTL().parseFile(fileName, is);
+            return new FormatSTL().parseFile(fileName, newInputStream);
         } else if (".ttml".equalsIgnoreCase(ext)) {
-            return new FormatSTL().parseFile(fileName, is);
+            return new FormatSTL().parseFile(fileName, newInputStream);
         }
-        return new FormatSRT().parseFile(fileName, is);
+        return new FormatSRT().parseFile(fileName, newInputStream);
     }
 
     public interface Callback {
