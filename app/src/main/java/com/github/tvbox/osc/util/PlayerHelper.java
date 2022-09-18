@@ -1,15 +1,22 @@
 package com.github.tvbox.osc.util;
 
+import android.app.Activity;
 import android.content.Context;
 
 import com.github.tvbox.osc.api.ApiConfig;
 import com.github.tvbox.osc.bean.IJKCode;
 import com.github.tvbox.osc.player.IjkMediaPlayer;
 import com.github.tvbox.osc.player.render.SurfaceRenderViewFactory;
+import com.github.tvbox.osc.player.thirdparty.Kodi;
+import com.github.tvbox.osc.player.thirdparty.MXPlayer;
+import com.github.tvbox.osc.player.thirdparty.ReexPlayer;
 import com.orhanobut.hawk.Hawk;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import tv.danmaku.ijk.media.player.IjkLibLoader;
 import xyz.doikki.videoplayer.exo.ExoMediaPlayerFactory;
@@ -139,17 +146,81 @@ public class PlayerHelper {
     }
 
     public static String getPlayerName(int playType) {
-        if (playType == 1) {
-            return "IJK播放器";
-        } else if (playType == 2) {
-            return "Exo播放器";
-        } else if (playType == 10) {
-            return "MXPlayer";
-        } else if (playType == 11) {
-            return "Reex";
+        HashMap<Integer, String> playersInfo = getPlayersInfo();
+        if (playersInfo.containsKey(playType)) {
+            return playersInfo.get(playType);
         } else {
             return "系统播放器";
         }
+    }
+
+    private static HashMap<Integer, String> mPlayersInfo = null;
+    public static HashMap<Integer, String> getPlayersInfo() {
+        if (mPlayersInfo == null) {
+            HashMap<Integer, String> playersInfo = new HashMap<>();
+            playersInfo.put(0, "系统播放器");
+            playersInfo.put(1, "IJK播放器");
+            playersInfo.put(2, "Exo播放器");
+            playersInfo.put(10, "MX播放器");
+            playersInfo.put(11, "Reex播放器");
+            playersInfo.put(12, "Kodi播放器");
+            mPlayersInfo = playersInfo;
+        }
+        return mPlayersInfo;
+    }
+
+    private static HashMap<Integer, Boolean> mPlayersExistInfo = null;
+    public static HashMap<Integer, Boolean> getPlayersExistInfo() {
+        if (mPlayersExistInfo == null) {
+            HashMap<Integer, Boolean> playersExist = new HashMap<>();
+            playersExist.put(0, true);
+            playersExist.put(1, true);
+            playersExist.put(2, true);
+            playersExist.put(10, MXPlayer.getPackageInfo() != null);
+            playersExist.put(11, ReexPlayer.getPackageInfo() != null);
+            playersExist.put(12, Kodi.getPackageInfo() != null);
+            mPlayersExistInfo = playersExist;
+        }
+        return mPlayersExistInfo;
+    }
+
+    public static Boolean getPlayerExist(int playType) {
+        HashMap<Integer, Boolean> playersExistInfo = getPlayersExistInfo();
+        if (playersExistInfo.containsKey(playType)) {
+            return playersExistInfo.get(playType);
+        } else {
+            return false;
+        }
+    }
+
+    public static ArrayList<Integer> getExistPlayerTypes() {
+        HashMap<Integer, Boolean> playersExistInfo = getPlayersExistInfo();
+        ArrayList<Integer> existPlayers = new ArrayList<>();
+        for(Integer playerType : playersExistInfo.keySet()) {
+            if (playersExistInfo.get(playerType)) {
+                existPlayers.add(playerType);
+            }
+        }
+        return existPlayers;
+    }
+
+    public static Boolean runExternalPlayer(int playerType, Activity activity, String url, String title, String subtitle, HashMap<String, String> headers) {
+        boolean callResult = false;
+        switch (playerType) {
+            case 10: {
+                callResult = MXPlayer.run(activity, url, title, subtitle, headers);
+                break;
+            }
+            case 11: {
+                callResult = ReexPlayer.run(activity, url, title, subtitle, headers);
+                break;
+            }
+            case 12: {
+                callResult = Kodi.run(activity, url, title, subtitle, headers);
+                break;
+            }
+        }
+        return callResult;
     }
 
     public static String getRenderName(int renderType) {
