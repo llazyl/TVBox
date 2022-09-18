@@ -39,7 +39,6 @@ import com.github.tvbox.osc.util.UnicodeReader;
 import com.lzy.okgo.OkGo;
 
 import org.apache.commons.io.input.ReaderInputStream;
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -73,7 +72,7 @@ public class SubtitleLoader {
     }
 
     private static void loadFromRemoteAsync(final String remoteSubtitlePath,
-                                           final Callback callback) {
+                                            final Callback callback) {
         AppTaskExecutor.deskIO().execute(new Runnable() {
             @Override
             public void run() {
@@ -105,7 +104,7 @@ public class SubtitleLoader {
     }
 
     private static void loadFromLocalAsync(final String localSubtitlePath,
-                                          final Callback callback) {
+                                           final Callback callback) {
         AppTaskExecutor.deskIO().execute(new Runnable() {
             @Override
             public void run() {
@@ -143,7 +142,7 @@ public class SubtitleLoader {
         try {
             if (path.startsWith("http://")
                     || path.startsWith("https://")) {
-               return loadFromRemote(path);
+                return loadFromRemote(path);
             } else {
                 return loadFromLocal(path);
             }

@@ -43,19 +43,19 @@ import java.util.Iterator;
 public class FormatASS implements TimedTextFileFormat {
 
 	public TimedTextObject parseFile(String fileName, InputStream is) throws IOException {
-		
+
 		TimedTextObject tto = new TimedTextObject();
 		tto.fileName = fileName;
-		
+
 		Subtitle caption = new Subtitle();
 		Style style;
-		
+
 		//for the clock timer
 		float timer = 100;
-		
+
 		//if the file is .SSA or .ASS
 		boolean isASS = false;
-		
+
 		//variables to store the formats
 		String[] styleFormat;
 		String[] dialogueFormat;
@@ -81,16 +81,18 @@ public class FormatASS implements TimedTextFileFormat {
 						line=br.readLine().trim();
 						//Each line is scanned for useful info until a new section is detected
 						while (!line.startsWith("[")){
-							if(line.startsWith("Title:"))
+							if(line.startsWith("Title:")) { //标题信息非必要
+								String[] titleArr = line.split(":");
 								//We have found the title
-								tto.title = line.split(":")[1].trim();
-							else if (line.startsWith("Original Script:"))
+								tto.title = titleArr.length > 1 ? titleArr[1].trim() : "";
+							} else if (line.startsWith("Original Script:")) { //作者信息非必要
+								String[] authorArr = line.split(":");
 								//We have found the author
-								tto.author = line.split(":")[1].trim();
-							else if (line.startsWith("Script Type:")){
+								tto.author = authorArr.length > 1 ? authorArr[1].trim() : "";
+							} else if (line.startsWith("Script Type:")){
 								//we have found the version
 								if(line.split(":")[1].trim().equalsIgnoreCase("v4.00+"))isASS = true;
-								//we check the type to set isASS or to warn if it comes from an older version than the studied specs
+									//we check the type to set isASS or to warn if it comes from an older version than the studied specs
 								else if(!line.split(":")[1].trim().equalsIgnoreCase("v4.00"))
 									tto.warnings+="Script version is older than 4.00, it may produce parsing errors.";
 							} else if (line.startsWith("Timer:"))
@@ -101,8 +103,8 @@ public class FormatASS implements TimedTextFileFormat {
 							line=br.readLine().trim();
 						}
 
-					} else if (line.equalsIgnoreCase("[v4 Styles]") 
-							|| line.equalsIgnoreCase("[v4 Styles+]") 
+					} else if (line.equalsIgnoreCase("[v4 Styles]")
+							|| line.equalsIgnoreCase("[v4 Styles+]")
 							|| line.equalsIgnoreCase("[v4+ Styles]")){
 						//its the Styles description section
 						if(line.contains("+")&&isASS==false){
@@ -180,15 +182,12 @@ public class FormatASS implements TimedTextFileFormat {
 						//its the custom fonts or embedded graphics section
 						//these are not supported
 						tto.warnings+= "The section "+line.trim()+" is not supported for conversion, all information there will be lost.\n\n";
-						line=br.readLine().trim();
 					} else {
 						tto.warnings+= "Unrecognized section: "+line.trim()+" all information there is ignored.";
-						line=br.readLine().trim();
-					}	
-				} else {
-					line = br.readLine();
-					lineCounter++;
+					}
 				}
+				line = br.readLine().trim();
+				lineCounter++;
 			}
 			// parsed styles that are not used should be eliminated
 			tto.cleanUnusedStyles();
@@ -206,7 +205,7 @@ public class FormatASS implements TimedTextFileFormat {
 
 
 	public String[] toFile(TimedTextObject tto) {
-		
+
 		//first we check if the TimedTextObject had been built, otherwise...
 		if(!tto.built)
 			return null;
@@ -216,7 +215,7 @@ public class FormatASS implements TimedTextFileFormat {
 		//the minimum size of the file is the number of captions and styles + lines for sections and formats and the script info, so we'll take some extra space.
 		ArrayList<String> file = new ArrayList<String>(30+tto.styling.size()+tto.captions.size());
 
-	//header is placed
+		//header is placed
 		file.add(index++,"[Script Info]");
 		//title next
 		String title = "Title: ";
@@ -247,7 +246,7 @@ public class FormatASS implements TimedTextFileFormat {
 		//an empty line is added
 		file.add(index++,"");
 
-	//Styles section
+		//Styles section
 		if (tto.useASSInsteadOfSSA)
 			file.add(index++,"[V4+ Styles]");
 		else file.add(index++,"[V4 Styles]");
@@ -283,7 +282,7 @@ public class FormatASS implements TimedTextFileFormat {
 		//an empty line is added
 		file.add(index++,"");
 
-	//Events section
+		//Events section
 		file.add(index++,"[Events]");
 		//define the format
 		if (tto.useASSInsteadOfSSA)
@@ -335,10 +334,10 @@ public class FormatASS implements TimedTextFileFormat {
 	}
 
 	/* PRIVATEMETHODS */
-	
+
 	/**
 	 * This methods transforms a format line from ASS according to a format definition into an Style object.
-	 * 
+	 *
 	 * @param line the format line without its declaration
 	 * @param styleFormat the list of attributes in this format line
 	 * @return a new Style object.
@@ -395,94 +394,94 @@ public class FormatASS implements TimedTextFileFormat {
 					int placement = Integer.parseInt(line[i].trim());
 					if (isASS){
 						switch(placement){
-						case 1:
-							newStyle.textAlign="bottom-left";
-							break;
-						case 2:
-							newStyle.textAlign="bottom-center";
-							break;
-						case 3:
-							newStyle.textAlign="bottom-right";
-							break;
-						case 4:
-							newStyle.textAlign="mid-left";
-							break;
-						case 5:
-							newStyle.textAlign="mid-center";
-							break;
-						case 6:
-							newStyle.textAlign="mid-right";
-							break;
-						case 7:
-							newStyle.textAlign="top-left";
-							break;
-						case 8:
-							newStyle.textAlign="top-center"; 
-							break;
-						case 9:
-							newStyle.textAlign="top-right";
-							break;
-						default:
-							warnings+="undefined alignment for style at line "+index+"\n\n";
+							case 1:
+								newStyle.textAlign="bottom-left";
+								break;
+							case 2:
+								newStyle.textAlign="bottom-center";
+								break;
+							case 3:
+								newStyle.textAlign="bottom-right";
+								break;
+							case 4:
+								newStyle.textAlign="mid-left";
+								break;
+							case 5:
+								newStyle.textAlign="mid-center";
+								break;
+							case 6:
+								newStyle.textAlign="mid-right";
+								break;
+							case 7:
+								newStyle.textAlign="top-left";
+								break;
+							case 8:
+								newStyle.textAlign="top-center";
+								break;
+							case 9:
+								newStyle.textAlign="top-right";
+								break;
+							default:
+								warnings+="undefined alignment for style at line "+index+"\n\n";
 						}
 					} else {
 						switch(placement){
-						case 9:
-							newStyle.textAlign="bottom-left";
-							break;
-						case 10:
-							newStyle.textAlign="bottom-center";
-							break;
-						case 11:
-							newStyle.textAlign="bottom-right";
-							break;
-						case 1:
-							newStyle.textAlign="mid-left";
-							break;
-						case 2:
-							newStyle.textAlign="mid-center";
-							break;
-						case 3:
-							newStyle.textAlign="mid-right";
-							break;
-						case 5:
-							newStyle.textAlign="top-left";
-							break;
-						case 6:
-							newStyle.textAlign="top-center"; 
-							break;
-						case 7:
-							newStyle.textAlign="top-right";
-							break;
-						default:
-							warnings+="undefined alignment for style at line "+index+"\n\n";
+							case 9:
+								newStyle.textAlign="bottom-left";
+								break;
+							case 10:
+								newStyle.textAlign="bottom-center";
+								break;
+							case 11:
+								newStyle.textAlign="bottom-right";
+								break;
+							case 1:
+								newStyle.textAlign="mid-left";
+								break;
+							case 2:
+								newStyle.textAlign="mid-center";
+								break;
+							case 3:
+								newStyle.textAlign="mid-right";
+								break;
+							case 5:
+								newStyle.textAlign="top-left";
+								break;
+							case 6:
+								newStyle.textAlign="top-center";
+								break;
+							case 7:
+								newStyle.textAlign="top-right";
+								break;
+							default:
+								warnings+="undefined alignment for style at line "+index+"\n\n";
 						}
 					}
-				}	
-				
+				}
+
 			}
 		}
-		
+
 		return newStyle;
 	}
-	
+
 	/**
 	 * This methods transforms a dialogue line from ASS according to a format definition into an Caption object.
-	 * 
+	 *
 	 * @param line the dialogue line without its declaration
 	 * @param dialogueFormat the list of attributes in this dialogue line
 	 * @param timer % to speed or slow the clock, above 100% span of the subtitles is reduced.
 	 * @return a new Caption object
 	 */
 	private Subtitle parseDialogueForASS(String[] line, String[] dialogueFormat, float timer, TimedTextObject tto) {
-		
+
 		Subtitle newCaption = new Subtitle();
-		
+
 		//all information from fields 10 onwards are the caption text therefore needn't be split
 		String captionText = line[9];
 		//text is cleaned before being inserted into the caption
-		newCaption.content = captionText.replaceAll("\\{.*?\\}", "").replace("\n", "<br />").replace("\\N", "<br />");		
-		
+		newCaption.content = captionText.replaceAll("\\{.*?\\}", "").replace("\n", "<br />").replace("\\N", "<br />");
+
 		for (int i = 0; i < dialogueFormat.length; i++) {
 			//we go through every format parameter and save the interesting values
 			if (dialogueFormat[i].trim().equalsIgnoreCase("Style")){
@@ -500,15 +499,15 @@ public class FormatASS implements TimedTextFileFormat {
 				newCaption.end=new Time("h:mm:ss.cs",line[i].trim());
 			}
 		}
-		
+
 		//timer is applied
-    	if (timer != 100){
-    		newCaption.start.mseconds /= (timer/100);
-    		newCaption.end.mseconds /= (timer/100);
-    	}
+		if (timer != 100){
+			newCaption.start.mseconds /= (timer/100);
+			newCaption.end.mseconds /= (timer/100);
+		}
 		return newCaption;
 	}
-	
+
 	/**
 	 * returns a string with the correctly formated colors
 	 * @param useASSInsteadOfSSA true if formated for ASS
@@ -527,7 +526,7 @@ public class FormatASS implements TimedTextFileFormat {
 		}
 		return colors;
 	}
-	
+
 	/**
 	 * returns a string with the correctly formated options
 	 * @param useASSInsteadOfSSA
@@ -549,10 +548,10 @@ public class FormatASS implements TimedTextFileFormat {
 			else
 				options+="0,";
 			options+="0,100,100,0,0,";
-		}	
+		}
 		return options;
 	}
-	
+
 	/**
 	 * converts the string explaining the alignment into the ASS equivalent integer offering bottom-center as default value
 	 * @param useASSInsteadOfSSA
@@ -580,7 +579,7 @@ public class FormatASS implements TimedTextFileFormat {
 				placement = 8;
 			else if ("top-right".equals(align))
 				placement = 9;
-			
+
 			return placement;
 		} else {
 
@@ -603,7 +602,7 @@ public class FormatASS implements TimedTextFileFormat {
 				placement = 6;
 			else if ("top-right".equals(align))
 				placement = 7;
-			
+
 			return placement;
 		}
 	}
