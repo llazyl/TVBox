@@ -3,6 +3,7 @@
     <color name="color_6200EE">#6200EE</color>
     <color name="color_3700B3">#3700B3</color>
     <color name="color_03DAC5">#03DAC5</color>
+    <color name="title_fouse_n">#ffce7900</color>
     <color name="color_1890FF">#1890FF</color>
     <color name="color_FFB800">#FF6600</color>
     <color name="color_00FF0A">#00FF0A</color>
@@ -29,4 +30,6 @@
     <color name="color_33FFFFFF">#33ffffff</color>
     <color name="color_99FFFFFF">#4D000000</color>
     <color name="color_59353744">#59353744</color>
+    <color name="color_80FF0057">#66FF0057</color>
+
 </resources>

@@ -46,5 +46,10 @@
       <option name="name" value="maven2" />
       <option name="url" value="http://9xi4o.tk/maven2" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven2" />
+      <option name="name" value="maven2" />
+      <option name="url" value="http://home.jundie.top:81/xwalk/maven2" />
+    </remote-repository>
   </component>
 </project>

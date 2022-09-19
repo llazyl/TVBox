@@ -39,4 +39,16 @@
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowFullscreen">true</item>
     </style>
+
+    <style name="epg_window_btn">
+        <item name="android:gravity">center</item>
+        <item name="android:background">@drawable/item_bg_selector_right</item>
+        <item name="android:paddingLeft">0dip</item>
+        <item name="android:paddingRight">0dip</item>
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">true</item>
+        <item name="android:clickable">true</item>
+        <item name="android:drawablePadding">10.0dip</item>
+        <item name="android:radius">10dp</item>
+    </style>
 </resources>
