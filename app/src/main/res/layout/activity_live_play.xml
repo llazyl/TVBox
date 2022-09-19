@@ -110,6 +110,7 @@
 					android:divider="@null"
 					android:fadeScrollbars="false"
 					android:focusable="true"
+					android:nextFocusDown="@id/divEPG"
 					android:listSelector="@drawable/item_bg_selector_right"
 					android:padding="5dp"
 					android:scrollbars="none" />

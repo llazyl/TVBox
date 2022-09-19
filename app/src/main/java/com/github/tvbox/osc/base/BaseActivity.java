@@ -20,9 +20,11 @@ import com.github.tvbox.osc.R;
 import com.github.tvbox.osc.callback.EmptyCallback;
 import com.github.tvbox.osc.callback.LoadingCallback;
 import com.github.tvbox.osc.util.AppManager;
+import com.github.tvbox.osc.util.HawkConfig;
 import com.kingja.loadsir.callback.Callback;
 import com.kingja.loadsir.core.LoadService;
 import com.kingja.loadsir.core.LoadSir;
+import com.orhanobut.hawk.Hawk;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -60,6 +62,7 @@ public abstract class BaseActivity extends AppCompatActivity implements CustomAd
         setContentView(getLayoutResID());
         mContext = this;
         AppManager.getInstance().addActivity(this);
+
         init();
     }
 
