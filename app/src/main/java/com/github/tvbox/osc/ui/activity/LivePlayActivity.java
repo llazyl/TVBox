@@ -128,16 +128,12 @@ public class LivePlayActivity extends BaseActivity {
     private TextView tv_right_top_epg_name;
     private TextView tv_right_top_type;
     private ImageView iv_circle_bg;
-    private TextView tv_netspeedinfo;
-    private TextView tv_ad ;
-    private TextView tv_voluminfo ;
     private TextView tv_shownum ;
     private TextView txtNoEpg ;
     private ImageView iv_back_bg;
 
     private ObjectAnimator objectAnimator;
-    private ObjectAnimator objectAnimator2;
-
+    public String epgStringAddress ="";
 
 
 
@@ -150,6 +146,12 @@ public class LivePlayActivity extends BaseActivity {
 
     @Override
     protected void init() {
+
+        epgStringAddress = Hawk.get(HawkConfig.EPG_URL,"");
+        if(epgStringAddress == null || epgStringAddress.length()<5)
+            epgStringAddress = "http://epg.51zmt.top:8000/api/diyp/?ch=";
+
+
         setLoadSir(findViewById(R.id.live_root));
         mVideoView = findViewById(R.id.mVideoView);
 
@@ -234,8 +236,8 @@ public class LivePlayActivity extends BaseActivity {
         final String channelName = channel_Name.getChannelName();
         Date date = new Date();
         SimpleDateFormat timeFormat = new SimpleDateFormat("yyyy-MM-dd");
-         String epgStringAddress ="http://epg.51zmt.top:8000/api/diyp/?ch=";
-        UrlHttpUtil.get(epgStringAddress + URLEncoder.encode(channelName.replace("+", "[add]").toString()) + "&date=" + timeFormat.format(date), new CallBackUtil.CallBackString() {
+
+         UrlHttpUtil.get(epgStringAddress + URLEncoder.encode(channelName.replace("+", "[add]").toString()) + "&date=" + timeFormat.format(date), new CallBackUtil.CallBackString() {
             public void onFailure(int i, String str) {
             }
             public void onResponse(String paramString) {
