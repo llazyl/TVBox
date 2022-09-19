@@ -7,10 +7,8 @@ package com.github.tvbox.osc.util;
  */
 public class HawkConfig {
     public static final String API_URL = "api_url";
-    public static final String EPG_URL = "epg_url";
     public static final String SHOW_PREVIEW = "show_preview";
     public static final String API_HISTORY = "api_history";
-    public static final String EPG_HISTORY = "epg_history";
     public static final String HOME_API = "home_api";
     public static final String DEFAULT_PARSE = "parse_default";
     public static final String DEBUG_OPEN = "debug_open";
