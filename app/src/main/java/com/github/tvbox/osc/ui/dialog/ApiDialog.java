@@ -65,8 +65,8 @@ public class ApiDialog extends BaseDialog {
                     ArrayList<String> history = Hawk.get(HawkConfig.API_HISTORY, new ArrayList<String>());
                     if (!history.contains(newApi))
                         history.add(0, newApi);
-                    if (history.size() > 10)
-                        history.remove(10);
+                    if (history.size() > 30)
+                        history.remove(30);
                     Hawk.put(HawkConfig.API_HISTORY, history);
                     listener.onchange(newApi);
                     dismiss();
