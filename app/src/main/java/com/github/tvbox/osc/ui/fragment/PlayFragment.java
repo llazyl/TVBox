@@ -192,7 +192,17 @@ public class PlayFragment extends BaseLazyFragment {
 
             @Override
             public void selectSubtitle() {
-                SubtitleDialog subtitleDialog = new SubtitleDialog(getContext());
+                SubtitleDialog subtitleDialog = new SubtitleDialog(getActivity());
+                subtitleDialog.setSubtitleViewListener(new SubtitleDialog.SubtitleViewListener() {
+                    @Override
+                    public void setTextSize(int size) {
+                        mController.mSubtitleView.setTextSize(size);
+                    }
+                    @Override
+                    public void setSubtitleDelay(int milliseconds) {
+                        mController.mSubtitleView.setSubtitleDelay(milliseconds);
+                    }
+                });
                 subtitleDialog.setSearchSubtitleListener(new SubtitleDialog.SearchSubtitleListener() {
                     @Override
                     public void openSearchSubtitleDialog() {

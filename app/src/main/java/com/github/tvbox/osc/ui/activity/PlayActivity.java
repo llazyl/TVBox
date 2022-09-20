@@ -194,6 +194,16 @@ public class PlayActivity extends BaseActivity {
             @Override
             public void selectSubtitle() {
                 SubtitleDialog subtitleDialog = new SubtitleDialog(PlayActivity.this);
+                subtitleDialog.setSubtitleViewListener(new SubtitleDialog.SubtitleViewListener() {
+                    @Override
+                    public void setTextSize(int size) {
+                        mController.mSubtitleView.setTextSize(size);
+                    }
+                    @Override
+                    public void setSubtitleDelay(int milliseconds) {
+                        mController.mSubtitleView.setSubtitleDelay(milliseconds);
+                    }
+                });
                 subtitleDialog.setSearchSubtitleListener(new SubtitleDialog.SearchSubtitleListener() {
                     @Override
                     public void openSearchSubtitleDialog() {

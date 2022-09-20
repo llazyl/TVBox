@@ -1,5 +1,6 @@
 package com.github.tvbox.osc.ui.dialog;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
@@ -8,6 +9,7 @@ import androidx.annotation.NonNull;
 
 import com.github.tvbox.osc.R;
 import com.github.tvbox.osc.util.FastClickCheckUtil;
+import com.github.tvbox.osc.util.SubtitleHelper;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -15,21 +17,35 @@ public class SubtitleDialog extends BaseDialog {
 
     private TextView selectLocal;
     private TextView selectRemote;
+    private TextView subtitleSizeMinus;
+    private TextView subtitleSizeText;
+    private TextView subtitleSizePlus;
+    private TextView subtitleTimeMinus;
+    private TextView subtitleTimeText;
+    private TextView subtitleTimePlus;
 
     private SearchSubtitleListener mSearchSubtitleListener;
     private LocalFileChooserListener mLocalFileChooserListener;
+    private SubtitleViewListener mSubtitleViewListener;
 
     public SubtitleDialog(@NonNull @NotNull Context context) {
-        super(context, R.style.CustomDialogStyleDim);
-        setCanceledOnTouchOutside(false);
-        setCancelable(true);
+        super(context);
+        if (context instanceof Activity) {
+            setOwnerActivity((Activity) context);
+        }
         setContentView(R.layout.dialog_subtitle);
-        init(context);
+        initView(context);
     }
 
-    private void init(Context context) {
+    private void initView(Context context) {
         selectLocal = findViewById(R.id.selectLocal);
         selectRemote = findViewById(R.id.selectRemote);
+        subtitleSizeMinus = findViewById(R.id.subtitleSizeMinus);
+        subtitleSizeText = findViewById(R.id.subtitleSizeText);
+        subtitleSizePlus = findViewById(R.id.subtitleSizePlus);
+        subtitleTimeMinus = findViewById(R.id.subtitleTimeMinus);
+        subtitleTimeText = findViewById(R.id.subtitleTimeText);
+        subtitleTimePlus = findViewById(R.id.subtitleTimePlus);
 
         selectLocal.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -48,6 +64,85 @@ public class SubtitleDialog extends BaseDialog {
                 mSearchSubtitleListener.openSearchSubtitleDialog();
             }
         });
+
+        int size = SubtitleHelper.getTextSize(getOwnerActivity());
+        subtitleSizeText.setText(Integer.toString(size));
+
+        subtitleSizeMinus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String sizeStr = subtitleSizeText.getText().toString();
+                int curSize = Integer.parseInt(sizeStr);
+                curSize -= 2;
+                if (curSize <= 12) {
+                    curSize = 12;
+                }
+                subtitleSizeText.setText(Integer.toString(curSize));
+                SubtitleHelper.setTextSize(curSize);
+                mSubtitleViewListener.setTextSize(curSize);
+            }
+        });
+        subtitleSizePlus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String sizeStr = subtitleSizeText.getText().toString();
+                int curSize = Integer.parseInt(sizeStr);
+                curSize += 2;
+                if (curSize >= 60) {
+                    curSize = 60;
+                }
+                subtitleSizeText.setText(Integer.toString(curSize));
+                SubtitleHelper.setTextSize(curSize);
+                mSubtitleViewListener.setTextSize(curSize);
+            }
+        });
+
+        int timeDelay = SubtitleHelper.getTimeDelay();
+        String timeStr = "0";
+        if (timeDelay != 0) {
+            double dbTimeDelay = timeDelay/1000;
+            timeStr = Double.toString(dbTimeDelay);
+        }
+        subtitleTimeText.setText(timeStr);
+
+        subtitleTimeMinus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FastClickCheckUtil.check(view);
+                String timeStr = subtitleTimeText.getText().toString();
+                double time = Float.parseFloat(timeStr);
+                double oneceDelay = -0.5;
+                time += oneceDelay;
+                if (time == 0.0) {
+                    timeStr = "0";
+                } else {
+                    timeStr = Double.toString(time);
+                }
+                subtitleTimeText.setText(timeStr);
+                int mseconds = (int)(oneceDelay*1000);
+                SubtitleHelper.setTimeDelay((int)(time*1000));
+                mSubtitleViewListener.setSubtitleDelay(mseconds);
+            }
+        });
+        subtitleTimePlus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FastClickCheckUtil.check(view);
+                String timeStr = subtitleTimeText.getText().toString();
+                double time = Float.parseFloat(timeStr);
+                double oneceDelay = 0.5;
+                time += oneceDelay;
+                if (time == 0.0) {
+                    timeStr = "0";
+                } else {
+                    timeStr = Double.toString(time);
+                }
+                subtitleTimeText.setText(timeStr);
+                int mseconds = (int)(oneceDelay*1000);
+                SubtitleHelper.setTimeDelay((int)(time*1000));
+                mSubtitleViewListener.setSubtitleDelay(mseconds);
+            }
+        });
     }
 
     public void setLocalFileChooserListener(LocalFileChooserListener localFileChooserListener) {
@@ -64,5 +159,14 @@ public class SubtitleDialog extends BaseDialog {
 
     public interface SearchSubtitleListener {
         void openSearchSubtitleDialog();
+    }
+
+    public void setSubtitleViewListener(SubtitleViewListener subtitleViewListener) {
+        mSubtitleViewListener = subtitleViewListener;
+    }
+
+    public interface SubtitleViewListener {
+        void setTextSize(int size);
+        void setSubtitleDelay(int milliseconds);
     }
 }

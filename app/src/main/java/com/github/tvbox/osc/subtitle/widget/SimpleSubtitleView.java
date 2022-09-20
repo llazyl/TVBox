@@ -95,6 +95,11 @@ public class SimpleSubtitleView extends TextView
     }
 
     @Override
+    public void setSubtitleDelay(Integer mseconds) {
+        mSubtitleEngine.setSubtitleDelay(mseconds);
+    }
+
+    @Override
     public void reset() {
         mSubtitleEngine.reset();
     }

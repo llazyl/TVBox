@@ -23,8 +23,10 @@ import com.github.tvbox.osc.subtitle.widget.SimpleSubtitleView;
 import com.github.tvbox.osc.ui.adapter.ParseAdapter;
 import com.github.tvbox.osc.ui.adapter.SelectDialogAdapter;
 import com.github.tvbox.osc.ui.dialog.SelectDialog;
+import com.github.tvbox.osc.util.FastClickCheckUtil;
 import com.github.tvbox.osc.util.HawkConfig;
 import com.github.tvbox.osc.util.PlayerHelper;
+import com.github.tvbox.osc.util.SubtitleHelper;
 import com.orhanobut.hawk.Hawk;
 import com.owen.tvrecyclerview.widget.TvRecyclerView;
 import com.owen.tvrecyclerview.widget.V7LinearLayoutManager;
@@ -181,6 +183,9 @@ public class VodController extends BaseController {
         mSubtitleView = findViewById(R.id.subtitle_view);
         mZimuBtn = findViewById(R.id.zimu_select);
 
+        int subtitleTextSize = SubtitleHelper.getTextSize(mActivity);
+        mSubtitleView.setTextSize(subtitleTextSize);
+
         myHandle=new Handler();
         myRunnable = new Runnable() {
             @Override
@@ -334,6 +339,7 @@ public class VodController extends BaseController {
             public void onClick(View view) {
 //                myHandle.removeCallbacks(myRunnable);
 //                myHandle.postDelayed(myRunnable, myHandleSeconds);
+                FastClickCheckUtil.check(view);
                 try {
                     int playerType = mPlayerConfig.getInt("pl");
                     int defaultPos = 0;
@@ -518,6 +524,7 @@ public class VodController extends BaseController {
         mZimuBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
+                FastClickCheckUtil.check(view);
                 listener.selectSubtitle();
                 hideBottom();
             }

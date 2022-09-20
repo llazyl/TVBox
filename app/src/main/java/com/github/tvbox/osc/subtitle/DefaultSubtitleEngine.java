@@ -34,7 +34,9 @@ import android.util.Log;
 
 import com.github.tvbox.osc.subtitle.cache.SubtitleCache;
 import com.github.tvbox.osc.subtitle.model.Subtitle;
+import com.github.tvbox.osc.subtitle.model.Time;
 import com.github.tvbox.osc.subtitle.model.TimedTextObject;
+import com.github.tvbox.osc.util.SubtitleHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,6 +86,7 @@ public class DefaultSubtitleEngine implements SubtitleEngine {
         mSubtitles = mCache.get(path);
         if (mSubtitles != null && !mSubtitles.isEmpty()) {
             Log.d(TAG, "from cache.");
+            setSubtitleDelay(SubtitleHelper.getTimeDelay());
             notifyPrepared();
             return;
         }
@@ -100,6 +103,7 @@ public class DefaultSubtitleEngine implements SubtitleEngine {
                     return;
                 }
                 mSubtitles = new ArrayList<>(captions.values());
+                setSubtitleDelay(SubtitleHelper.getTimeDelay());
                 notifyPrepared();
                 mCache.put(path, new ArrayList<>(captions.values()));
             }
@@ -109,6 +113,34 @@ public class DefaultSubtitleEngine implements SubtitleEngine {
                 Log.e(TAG, "onError: " + exception.getMessage());
             }
         });
+    }
+
+    @Override
+    public void setSubtitleDelay(Integer milliseconds) {
+        if (milliseconds == 0) {
+            return;
+        }
+        if (mSubtitles == null || mSubtitles.size() == 0) {
+            return;
+        }
+        List<Subtitle> thisSubtitles = mSubtitles;
+        mSubtitles = null;
+        for (int i = 0; i < thisSubtitles.size(); i++) {
+            Subtitle subtitle = thisSubtitles.get(i);
+            Time start = subtitle.start;
+            Time end = subtitle.end;
+            start.mseconds += milliseconds;
+            end.mseconds += milliseconds;
+            if (start.mseconds <= 0) {
+                start.mseconds = 0;
+            }
+            if (end.mseconds <= 0) {
+                end.mseconds = 0;
+            }
+            subtitle.start = start;
+            subtitle.end = end;
+        }
+        mSubtitles = thisSubtitles;
     }
 
     @Override
