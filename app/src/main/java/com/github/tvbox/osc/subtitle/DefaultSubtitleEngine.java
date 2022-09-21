@@ -32,12 +32,16 @@ import androidx.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.github.tvbox.osc.base.App;
+import com.github.tvbox.osc.cache.CacheManager;
 import com.github.tvbox.osc.subtitle.cache.SubtitleCache;
 import com.github.tvbox.osc.subtitle.model.Subtitle;
 import com.github.tvbox.osc.subtitle.model.Time;
-import com.github.tvbox.osc.subtitle.model.TimedTextObject;
+import com.github.tvbox.osc.util.FileUtils;
+import com.github.tvbox.osc.util.MD5;
 import com.github.tvbox.osc.util.SubtitleHelper;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
@@ -67,7 +71,6 @@ public class DefaultSubtitleEngine implements SubtitleEngine {
 
     public DefaultSubtitleEngine() {
         mCache = new SubtitleCache();
-
     }
 
     @Override
@@ -92,12 +95,12 @@ public class DefaultSubtitleEngine implements SubtitleEngine {
         }
         SubtitleLoader.loadSubtitle(path, new SubtitleLoader.Callback() {
             @Override
-            public void onSuccess(final TimedTextObject timedTextObject) {
-                if (timedTextObject == null) {
+            public void onSuccess(final SubtitleLoadSuccessResult subtitleLoadSuccessResult) {
+                if (subtitleLoadSuccessResult.timedTextObject == null) {
                     Log.d(TAG, "onSuccess: timedTextObject is null.");
                     return;
                 }
-                final TreeMap<Integer, Subtitle> captions = timedTextObject.captions;
+                final TreeMap<Integer, Subtitle> captions = subtitleLoadSuccessResult.timedTextObject.captions;
                 if (captions == null) {
                     Log.d(TAG, "onSuccess: captions is null.");
                     return;
@@ -106,6 +109,23 @@ public class DefaultSubtitleEngine implements SubtitleEngine {
                 setSubtitleDelay(SubtitleHelper.getTimeDelay());
                 notifyPrepared();
                 mCache.put(path, new ArrayList<>(captions.values()));
+
+                String subtitlePath = subtitleLoadSuccessResult.subtitlePath;
+                if (subtitlePath.startsWith("http://") || subtitlePath.startsWith("https://")) {
+                    String subtitleFileCacheDir = App.getInstance().getCacheDir().getAbsolutePath() + "/zimu/";
+                    File cacheDir = new File(subtitleFileCacheDir);
+                    if (!cacheDir.exists()) {
+                        cacheDir.mkdirs();
+                    }
+                    String subtitleFile = subtitleFileCacheDir + subtitleLoadSuccessResult.fileName;
+                    File cacheSubtitleFile = new File(subtitleFile);
+                    boolean writeResult = FileUtils.writeSimple(subtitleLoadSuccessResult.content.getBytes(), cacheSubtitleFile);
+                    if (writeResult) {
+                        CacheManager.save(MD5.string2MD5(getPlaySubtitleCacheKey()), subtitleFile);
+                    }
+                } else {
+                    CacheManager.save(MD5.string2MD5(getPlaySubtitleCacheKey()), path);
+                }
             }
 
             @Override
@@ -141,6 +161,15 @@ public class DefaultSubtitleEngine implements SubtitleEngine {
             subtitle.end = end;
         }
         mSubtitles = thisSubtitles;
+    }
+
+    private static String playSubtitleCacheKey;
+    public void setPlaySubtitleCacheKey(String cacheKey) {
+        playSubtitleCacheKey = cacheKey;
+    }
+
+    public String getPlaySubtitleCacheKey() {
+        return playSubtitleCacheKey;
     }
 
     @Override

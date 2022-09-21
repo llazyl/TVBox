@@ -99,6 +99,14 @@ public class SimpleSubtitleView extends TextView
         mSubtitleEngine.setSubtitleDelay(mseconds);
     }
 
+    public void setPlaySubtitleCacheKey(String cacheKey) {
+        mSubtitleEngine.setPlaySubtitleCacheKey(cacheKey);
+    }
+
+    public String getPlaySubtitleCacheKey() {
+        return mSubtitleEngine.getPlaySubtitleCacheKey();
+    }
+
     @Override
     public void reset() {
         mSubtitleEngine.reset();

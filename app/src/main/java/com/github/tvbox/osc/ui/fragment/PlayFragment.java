@@ -328,10 +328,17 @@ public class PlayFragment extends BaseLazyFragment {
                         // 绑定MediaPlayer
                         mController.mSubtitleView.bindToMediaPlayer(mVideoView.getMediaPlayer());
                         mController.mSubtitleView.setVisibility(View.INVISIBLE);
+                        mController.mSubtitleView.setPlaySubtitleCacheKey(subtitleCacheKey);
                         if (playSubtitle != null && playSubtitle .length() > 0) {
                             // 设置字幕
                             mController.mSubtitleView.setSubtitlePath(playSubtitle);
                             mController.mSubtitleView.setVisibility(View.VISIBLE);
+                        } else {
+                            String subtitlePathCache = (String)CacheManager.getCache(MD5.string2MD5(subtitleCacheKey));
+                            if (subtitlePathCache != null && !subtitlePathCache.isEmpty()) {
+                                mController.mSubtitleView.setSubtitlePath(subtitlePathCache);
+                                mController.mSubtitleView.setVisibility(View.VISIBLE);
+                            }
                         }
                         //加载字幕结束
                     }
@@ -351,6 +358,7 @@ public class PlayFragment extends BaseLazyFragment {
                         boolean parse = info.optString("parse", "1").equals("1");
                         boolean jx = info.optString("jx", "0").equals("1");
                         playSubtitle = info.optString("subt", /*"https://dash.akamaized.net/akamai/test/caption_test/ElephantsDream/ElephantsDream_en.vtt"*/"");
+                        subtitleCacheKey = info.optString("subtKey", null);
                         String playUrl = info.optString("playUrl", "");
                         String flag = info.optString("flag");
                         String url = info.getString("url");
@@ -558,9 +566,8 @@ public class PlayFragment extends BaseLazyFragment {
 
         stopParse();
         if(mVideoView!=null) mVideoView.release();
+        String subtitleCacheKey = mVodInfo.sourceKey + "-" + mVodInfo.id + "-" + mVodInfo.playFlag + "-" + mVodInfo.playIndex + "-subt";
         String progressKey = mVodInfo.sourceKey + mVodInfo.id + mVodInfo.playFlag + mVodInfo.playIndex;
-        //存储播放进度
-        Object bodyKey=CacheManager.getCache(MD5.string2MD5(progressKey));
         //重新播放清除现有进度
         if (reset) CacheManager.delete(MD5.string2MD5(progressKey), 0);
         if (Thunder.play(vs.url, new Thunder.ThunderCallback() {
@@ -585,12 +592,11 @@ public class PlayFragment extends BaseLazyFragment {
             mController.showParse(false);
             return;
         }
-        sourceViewModel.getPlay(sourceKey, mVodInfo.playFlag, progressKey, vs.url);
-        //执行重新播放后还原之前的进度
-//        if (reset) CacheManager.save(MD5.string2MD5(progressKey),bodyKey);
+        sourceViewModel.getPlay(sourceKey, mVodInfo.playFlag, progressKey, vs.url, subtitleCacheKey);
     }
 
     private String playSubtitle;
+    private String subtitleCacheKey;
     private String progressKey;
     private String parseFlag;
     private String webUrl;
