@@ -1,6 +1,7 @@
 package com.github.tvbox.osc.ui.adapter;
 
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -62,7 +63,11 @@ public class HistoryAdapter extends BaseQuickAdapter<VodInfo, BaseViewHolder> {
         }*/
         helper.setVisible(R.id.tvLang, false);
         helper.setVisible(R.id.tvArea, false);
-        helper.setVisible(R.id.tvNote, false);
+        if (item.note == null || item.note.isEmpty()) {
+            helper.setVisible(R.id.tvNote, false);
+        } else {
+            helper.setText(R.id.tvNote, item.note);
+        }
         helper.setText(R.id.tvName, item.name);
         // helper.setText(R.id.tvActor, item.actor);
         ImageView ivThumb = helper.getView(R.id.ivThumb);
