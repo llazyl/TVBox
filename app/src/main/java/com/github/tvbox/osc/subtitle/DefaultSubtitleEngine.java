@@ -96,6 +96,10 @@ public class DefaultSubtitleEngine implements SubtitleEngine {
         SubtitleLoader.loadSubtitle(path, new SubtitleLoader.Callback() {
             @Override
             public void onSuccess(final SubtitleLoadSuccessResult subtitleLoadSuccessResult) {
+                if (subtitleLoadSuccessResult == null) {
+                    Log.d(TAG, "onSuccess: subtitleLoadSuccessResult is null.");
+                    return;
+                }
                 if (subtitleLoadSuccessResult.timedTextObject == null) {
                     Log.d(TAG, "onSuccess: timedTextObject is null.");
                     return;

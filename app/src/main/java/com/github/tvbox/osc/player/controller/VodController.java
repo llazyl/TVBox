@@ -122,7 +122,8 @@ public class VodController extends BaseController {
     TextView mPlayLoadNetSpeed;
     TextView mVideoSize;
     public SimpleSubtitleView mSubtitleView;
-    public TextView mZimuBtn;
+    TextView mZimuBtn;
+    TextView mAudioTrackBtn;
 
     Handler myHandle;
     Runnable myRunnable;
@@ -182,6 +183,7 @@ public class VodController extends BaseController {
         mVideoSize = findViewById(R.id.tv_videosize);
         mSubtitleView = findViewById(R.id.subtitle_view);
         mZimuBtn = findViewById(R.id.zimu_select);
+        mAudioTrackBtn = findViewById(R.id.audio_track_select);
 
         int subtitleTextSize = SubtitleHelper.getTextSize(mActivity);
         mSubtitleView.setTextSize(subtitleTextSize);
@@ -529,6 +531,14 @@ public class VodController extends BaseController {
                 hideBottom();
             }
         });
+        mAudioTrackBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FastClickCheckUtil.check(view);
+                listener.selectAudioTrack();
+                hideBottom();
+            }
+        });
     }
 
     @Override
@@ -559,6 +569,7 @@ public class VodController extends BaseController {
             mPlayerTimeStartBtn.setText(PlayerUtils.stringForTime(mPlayerConfig.getInt("st") * 1000));
             mPlayerTimeSkipBtn.setText(PlayerUtils.stringForTime(mPlayerConfig.getInt("et") * 1000));
             mPlayerTimeStepBtn.setText(Hawk.get(HawkConfig.PLAY_TIME_STEP, 5) + "s");
+            mAudioTrackBtn.setVisibility((playerType == 1) ? VISIBLE : GONE);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -589,6 +600,8 @@ public class VodController extends BaseController {
         void errReplay();
 
         void selectSubtitle();
+
+        void selectAudioTrack();
     }
 
     public void setListener(VodControlListener listener) {
