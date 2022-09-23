@@ -113,38 +113,36 @@ public class FormatASS implements TimedTextFileFormat {
 							tto.warnings+="ScriptType should be set to v4:00+ in the [Script Info] section.\n\n";
 						}
 						lineCounter++;
-						line=br.readLine().trim();
+						line=br.readLine();
 						//the first line should define the format
 						if(!line.startsWith("Format:")){
 							//if not, we scan for the format.
 							tto.warnings+="Format: (format definition) expected at line "+line+" for the styles section\n\n";
 							while (!line.startsWith("Format:")){
 								lineCounter++;
-								line=br.readLine().trim();;
+								line=br.readLine();
 							}
 						}
 						// we recover the format's fields
 						styleFormat = line.split(":")[1].trim().split(",");
 						lineCounter++;
-						line=br.readLine().trim();
+						line=br.readLine();
 						// we parse each style until we reach a new section
-						while (!line.startsWith("[")){
-							//we check it is a style
-							if (line.startsWith("Style:")){
-								//we parse the style
-								style = parseStyleForASS(line.split(":")[1].trim().split(","),styleFormat,lineCounter,isASS,tto.warnings);
-								//and save the style
-								tto.styling.put(style.iD, style);
-							}
+						while (!line.startsWith("Style:")){
+							tto.warnings+="Style: (format definition) expected at line "+line+" for the styles section\n\n";
 							//next line
 							lineCounter++;
-							line=br.readLine().trim();
+							line=br.readLine();
 						}
+						//we parse the style
+						style = parseStyleForASS(line.split(":")[1].trim().split(","),styleFormat,lineCounter,isASS,tto.warnings);
+						//and save the style
+						tto.styling.put(style.iD, style);
 
 					} else if (line.trim().equalsIgnoreCase("[Events]")){
 						//its the events specification section
 						lineCounter++;
-						line=br.readLine().trim();
+						line=br.readLine();
 						tto.warnings+="Only dialogue events are considered, all other events are ignored.\n\n";
 						//the first line should define the format of the dialogues
 						if(!line.startsWith("Format:")){
@@ -152,14 +150,14 @@ public class FormatASS implements TimedTextFileFormat {
 							tto.warnings+="Format: (format definition) expected at line "+line+" for the events section\n\n";
 							while (!line.startsWith("Format:")){
 								lineCounter++;
-								line=br.readLine().trim();
+								line=br.readLine();
 							}
 						}
 						// we recover the format's fields
 						dialogueFormat = line.split(":")[1].trim().split(",");
 						//next line
 						lineCounter++;
-						line=br.readLine().trim();
+						line=br.readLine();
 						// we parse each style until we reach a new section
 						while (!line.startsWith("[")){
 							//we check it is a dialogue
@@ -175,7 +173,7 @@ public class FormatASS implements TimedTextFileFormat {
 							}
 							//next line
 							lineCounter++;
-							line=br.readLine().trim();
+							line=br.readLine();
 						}
 
 					} else if (line.trim().equalsIgnoreCase("[Fonts]") || line.trim().equalsIgnoreCase("[Graphics]")){
@@ -186,7 +184,7 @@ public class FormatASS implements TimedTextFileFormat {
 						tto.warnings+= "Unrecognized section: "+line.trim()+" all information there is ignored.";
 					}
 				}
-				line = br.readLine().trim();
+				line = br.readLine();
 				lineCounter++;
 			}
 			// parsed styles that are not used should be eliminated

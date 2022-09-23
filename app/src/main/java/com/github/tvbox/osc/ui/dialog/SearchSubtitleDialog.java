@@ -1,5 +1,6 @@
 package com.github.tvbox.osc.ui.dialog;
 
+import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
 import android.view.View;
@@ -51,6 +52,9 @@ public class SearchSubtitleDialog extends BaseDialog {
     public SearchSubtitleDialog(@NonNull @NotNull Context context) {
         super(context);
         mContext = context;
+        if (context instanceof Activity) {
+            setOwnerActivity((Activity) context);
+        }
         setContentView(R.layout.dialog_search_subtitle);
         initView(context);
         initViewModel();
@@ -105,7 +109,18 @@ public class SearchSubtitleDialog extends BaseDialog {
         searchAdapter.setNewData(new ArrayList<>());
     }
 
-    private void search(String wd) {
+    public void setSearchWord(String wd) {
+        wd = wd.replaceAll("(?:（|\\(|\\[|【|\\.mp4|\\.mkv|\\.avi|\\.MP4|\\.MKV|\\.AVI)", "");
+        wd = wd.replaceAll("(?:：|\\:|）|\\)|\\]|】|\\.)", " ");
+        int len = wd.length();
+        int finalLen = len >= 36 ? 36 : len;
+        wd = wd.substring(0, finalLen);
+        subtitleSearchEt.setText(wd);
+        subtitleSearchEt.setSelection(wd.length());
+        subtitleSearchEt.requestFocus();
+    }
+
+    public void search(String wd) {
         isSearchPag = true;
         searchAdapter.setNewData(new ArrayList<>());
         if (!TextUtils.isEmpty(wd)) {
@@ -116,7 +131,6 @@ public class SearchSubtitleDialog extends BaseDialog {
         } else {
             Toast.makeText(getContext(), "输入内容不能为空", Toast.LENGTH_SHORT).show();
         }
-
     }
 
     private void initViewModel() {

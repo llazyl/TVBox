@@ -34,7 +34,6 @@ import android.util.Log;
 
 import com.github.tvbox.osc.base.App;
 import com.github.tvbox.osc.cache.CacheManager;
-import com.github.tvbox.osc.subtitle.cache.SubtitleCache;
 import com.github.tvbox.osc.subtitle.model.Subtitle;
 import com.github.tvbox.osc.subtitle.model.Time;
 import com.github.tvbox.osc.util.FileUtils;
@@ -65,12 +64,11 @@ public class DefaultSubtitleEngine implements SubtitleEngine {
     private List<Subtitle> mSubtitles;
     private UIRenderTask mUIRenderTask;
     private AbstractPlayer mMediaPlayer;
-    private SubtitleCache mCache;
     private OnSubtitlePreparedListener mOnSubtitlePreparedListener;
     private OnSubtitleChangeListener mOnSubtitleChangeListener;
 
     public DefaultSubtitleEngine() {
-        mCache = new SubtitleCache();
+
     }
 
     @Override
@@ -86,13 +84,7 @@ public class DefaultSubtitleEngine implements SubtitleEngine {
             Log.w(TAG, "loadSubtitleFromRemote: path is null.");
             return;
         }
-        mSubtitles = mCache.get(path);
-        if (mSubtitles != null && !mSubtitles.isEmpty()) {
-            Log.d(TAG, "from cache.");
-            setSubtitleDelay(SubtitleHelper.getTimeDelay());
-            notifyPrepared();
-            return;
-        }
+
         SubtitleLoader.loadSubtitle(path, new SubtitleLoader.Callback() {
             @Override
             public void onSuccess(final SubtitleLoadSuccessResult subtitleLoadSuccessResult) {
@@ -112,7 +104,6 @@ public class DefaultSubtitleEngine implements SubtitleEngine {
                 mSubtitles = new ArrayList<>(captions.values());
                 setSubtitleDelay(SubtitleHelper.getTimeDelay());
                 notifyPrepared();
-                mCache.put(path, new ArrayList<>(captions.values()));
 
                 String subtitlePath = subtitleLoadSuccessResult.subtitlePath;
                 if (subtitlePath.startsWith("http://") || subtitlePath.startsWith("https://")) {

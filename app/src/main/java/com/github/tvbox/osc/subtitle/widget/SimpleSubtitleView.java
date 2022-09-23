@@ -32,9 +32,11 @@ import android.text.Html;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
+import com.github.tvbox.osc.cache.CacheManager;
 import com.github.tvbox.osc.subtitle.DefaultSubtitleEngine;
 import com.github.tvbox.osc.subtitle.SubtitleEngine;
 import com.github.tvbox.osc.subtitle.model.Subtitle;
+import com.github.tvbox.osc.util.MD5;
 
 import java.util.List;
 
@@ -105,6 +107,13 @@ public class SimpleSubtitleView extends TextView
 
     public String getPlaySubtitleCacheKey() {
         return mSubtitleEngine.getPlaySubtitleCacheKey();
+    }
+
+    public void clearSubtitleCache() {
+        String subtitleCacheKey = getPlaySubtitleCacheKey();
+        if (subtitleCacheKey != null && subtitleCacheKey.length() > 0) {
+            CacheManager.delete(MD5.string2MD5(subtitleCacheKey), "");
+        }
     }
 
     @Override

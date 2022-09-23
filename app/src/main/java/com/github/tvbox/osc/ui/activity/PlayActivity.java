@@ -220,17 +220,20 @@ public class PlayActivity extends BaseActivity {
                         searchSubtitleDialog.setSubtitleLoader(new SearchSubtitleDialog.SubtitleLoader() {
                             @Override
                             public void loadSubtitle(Subtitle subtitle) {
-
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         String zimuUrl = subtitle.getUrl();
                                         LOG.i("Remote Subtitle Url: " + zimuUrl);
                                         setSubtitle(zimuUrl);//设置字幕
+                                        if (searchSubtitleDialog != null) {
+                                            searchSubtitleDialog.dismiss();
+                                        }
                                     }
                                 });
                             }
                         });
+                        searchSubtitleDialog.setSearchWord(mVodInfo.playNote);
                         searchSubtitleDialog.show();
                     }
                 });
@@ -322,7 +325,7 @@ public class PlayActivity extends BaseActivity {
     void setSubtitle(String path) {
         if (path != null && path .length() > 0) {
             // 设置字幕
-            mController.mSubtitleView.setVisibility(View.INVISIBLE);
+            mController.mSubtitleView.setVisibility(View.GONE);
             mController.mSubtitleView.setSubtitlePath(path);
             mController.mSubtitleView.setVisibility(View.VISIBLE);
         }
@@ -399,7 +402,7 @@ public class PlayActivity extends BaseActivity {
                         //加载字幕开始
                         // 绑定MediaPlayer
                         mController.mSubtitleView.bindToMediaPlayer(mVideoView.getMediaPlayer());
-                        mController.mSubtitleView.setVisibility(View.INVISIBLE);
+                        mController.mSubtitleView.setVisibility(View.GONE);
                         mController.mSubtitleView.setPlaySubtitleCacheKey(subtitleCacheKey);
                         if (playSubtitle != null && playSubtitle .length() > 0) {
                             // 设置字幕
@@ -627,7 +630,10 @@ public class PlayActivity extends BaseActivity {
         String subtitleCacheKey = mVodInfo.sourceKey + "-" + mVodInfo.id + "-" + mVodInfo.playFlag + "-" + mVodInfo.playIndex + "-subt";
         String progressKey = mVodInfo.sourceKey + mVodInfo.id + mVodInfo.playFlag + mVodInfo.playIndex;
         //重新播放清除现有进度
-        if (reset) {CacheManager.delete(MD5.string2MD5(progressKey), 0);}
+        if (reset) {
+            CacheManager.delete(MD5.string2MD5(progressKey), 0);
+            CacheManager.delete(MD5.string2MD5(subtitleCacheKey), "");
+        }
         if (Thunder.play(vs.url, new Thunder.ThunderCallback() {
             @Override
             public void status(int code, String info) {
