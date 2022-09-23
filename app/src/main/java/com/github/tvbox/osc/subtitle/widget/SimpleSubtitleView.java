@@ -55,6 +55,10 @@ public class SimpleSubtitleView extends TextView
 
     private SubtitleEngine mSubtitleEngine;
 
+    public boolean isInternal = false;
+
+    public boolean hasInternal = false;
+
     public SimpleSubtitleView(final Context context) {
         super(context);
         init();
@@ -93,6 +97,7 @@ public class SimpleSubtitleView extends TextView
 
     @Override
     public void setSubtitlePath(final String path) {
+        isInternal = false;
         mSubtitleEngine.setSubtitlePath(path);
     }
 

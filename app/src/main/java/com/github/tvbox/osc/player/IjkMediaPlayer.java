@@ -9,6 +9,7 @@ import com.github.tvbox.osc.bean.IJKCode;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.misc.ITrackInfo;
 import tv.danmaku.ijk.media.player.misc.IjkTrackInfo;
 import xyz.doikki.videoplayer.ijk.IjkPlayer;
@@ -41,6 +42,8 @@ public class IjkMediaPlayer extends IjkPlayer {
                 }
             }
         }
+        //开启内置字幕
+        mMediaPlayer.setOption(tv.danmaku.ijk.media.player.IjkMediaPlayer.OPT_CATEGORY_PLAYER, "subtitle", 1);
     }
 
     @Override
@@ -88,6 +91,10 @@ public class IjkMediaPlayer extends IjkPlayer {
 
     public void setTrack(int trackIndex) {
         mMediaPlayer.selectTrack(trackIndex);
+    }
+
+    public void setOnTimedTextListener(IMediaPlayer.OnTimedTextListener listener) {
+        mMediaPlayer.setOnTimedTextListener(listener);
     }
 
 }

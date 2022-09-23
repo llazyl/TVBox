@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class SubtitleDialog extends BaseDialog {
 
+    public TextView selectInternal;
     private TextView selectLocal;
     private TextView selectRemote;
     private TextView subtitleSizeMinus;
@@ -38,6 +39,7 @@ public class SubtitleDialog extends BaseDialog {
     }
 
     private void initView(Context context) {
+        selectInternal = findViewById(R.id.selectInternal);
         selectLocal = findViewById(R.id.selectLocal);
         selectRemote = findViewById(R.id.selectRemote);
         subtitleSizeMinus = findViewById(R.id.subtitleSizeMinus);
@@ -143,6 +145,14 @@ public class SubtitleDialog extends BaseDialog {
                 mSubtitleViewListener.setSubtitleDelay(mseconds);
             }
         });
+        selectInternal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FastClickCheckUtil.check(view);
+                dismiss();
+                mSubtitleViewListener.selectInternalSubtitle();
+            }
+        });
     }
 
     public void setLocalFileChooserListener(LocalFileChooserListener localFileChooserListener) {
@@ -168,5 +178,6 @@ public class SubtitleDialog extends BaseDialog {
     public interface SubtitleViewListener {
         void setTextSize(int size);
         void setSubtitleDelay(int milliseconds);
+        void selectInternalSubtitle();
     }
 }
