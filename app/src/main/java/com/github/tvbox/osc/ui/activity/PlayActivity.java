@@ -269,7 +269,11 @@ public class PlayActivity extends BaseActivity {
                         });
                     }
                 });
-                searchSubtitleDialog.setSearchWord(mVodInfo.playNote);
+                if(mVodInfo.playFlag.contains("Ali")||mVodInfo.playFlag.contains("parse")){
+                    searchSubtitleDialog.setSearchWord(mVodInfo.playNote);
+                }else {
+                    searchSubtitleDialog.setSearchWord(mVodInfo.name);
+                }
                 searchSubtitleDialog.show();
             }
         });
@@ -337,7 +341,9 @@ public class PlayActivity extends BaseActivity {
 
             @Override
             public String getDisplay(TrackInfoBean val) {
-                return val.index + " : " + val.language;
+//                return val.index + " : " + val.language;
+                String str = val.name.substring(val.name.substring(0, val.name.indexOf(",")).length()+1).trim();
+                return val.index + " : " + str;
             }
         }, new DiffUtil.ItemCallback<TrackInfoBean>() {
             @Override
