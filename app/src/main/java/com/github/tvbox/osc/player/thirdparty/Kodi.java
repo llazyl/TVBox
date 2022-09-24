@@ -10,6 +10,7 @@ import android.util.Log;
 
 import com.github.tvbox.osc.base.App;
 
+import java.net.URLEncoder;
 import java.util.HashMap;
 
 public class Kodi {
@@ -76,20 +77,20 @@ public class Kodi {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setPackage(packageInfo.packageName);
         intent.setClassName(packageInfo.packageName, packageInfo.activityName);
-
+        if (headers != null && headers.size() > 0) {
+            url = url + "|";
+            int idx = 0;
+            for (String hk : headers.keySet()) {
+                url += hk + "=" + URLEncoder.encode(headers.get(hk).trim());
+                if (idx < headers.keySet().size() -1) {
+                    url += "&";
+                }
+                idx ++;
+            }
+        }
         intent.setData(Uri.parse(url));
         intent.putExtra("title", title);
         intent.putExtra("name", title);
-        if (headers != null && headers.size() > 0) {
-            String[] hds = new String[headers.size() * 2];
-            int idx = 0;
-            for (String hk : headers.keySet()) {
-                hds[idx] = hk;
-                hds[idx + 1] = headers.get(hk).trim();
-                idx += 2;
-            }
-            intent.putExtra("headers", headers);
-        }
 
         if (subtitle != null && !subtitle.isEmpty()) {
             intent.putExtra("subs", subtitle);

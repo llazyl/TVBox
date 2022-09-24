@@ -11,6 +11,7 @@ import android.util.Log;
 
 import com.github.tvbox.osc.base.App;
 
+import java.net.URLEncoder;
 import java.util.HashMap;
 
 public class MXPlayer {
@@ -80,19 +81,19 @@ public class MXPlayer {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setPackage(packageInfo.packageName);
         intent.setClassName(packageInfo.packageName, packageInfo.activityName);
-
-        intent.setData(Uri.parse(url));
-        intent.putExtra("title", title);
         if (headers != null && headers.size() > 0) {
-            String[] hds = new String[headers.size() * 2];
+            url = url + "|";
             int idx = 0;
             for (String hk : headers.keySet()) {
-                hds[idx] = hk;
-                hds[idx + 1] = headers.get(hk).trim();
-                idx += 2;
+                url += hk + "=" + URLEncoder.encode(headers.get(hk).trim());
+                if (idx < headers.keySet().size() -1) {
+                    url += "&";
+                }
+                idx ++;
             }
-            intent.putExtra("headers", headers);
         }
+        intent.setData(Uri.parse(url));
+        intent.putExtra("title", title);
 
         if (subtitle != null && !subtitle.isEmpty()) {
             Parcelable[] parcels = new Parcelable[1];
