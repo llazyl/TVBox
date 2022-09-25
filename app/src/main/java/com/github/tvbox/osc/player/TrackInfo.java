@@ -26,8 +26,8 @@ public class TrackInfo {
 
     public int getSelected(List<TrackInfoBean> list, boolean track) {
         int i = 0;
-        for (TrackInfoBean audio : list) {
-            if (audio.selected) return track ? audio.index : i;
+        for (TrackInfoBean trackInfoBean : list) {
+            if (trackInfoBean.selected) return track ? trackInfoBean.index : i;
             i++;
         }
         return 99999;

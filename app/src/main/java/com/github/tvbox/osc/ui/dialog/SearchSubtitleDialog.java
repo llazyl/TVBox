@@ -150,15 +150,6 @@ public class SearchSubtitleDialog extends BaseDialog {
                     });
                     return;
                 }
-                //过滤结果
-                ArrayList<Subtitle> data_new=new ArrayList<>();
-                for (int i=0;i< data.size();i++){
-                    Subtitle subtitle = data.get(i);
-                    if(subtitle.getName().contains(searchWord)){
-                        data_new.add(subtitle);
-                    }
-                }
-                data = data_new;
 
                 if (data.size() > 0) {
                     mGridView.requestFocus();

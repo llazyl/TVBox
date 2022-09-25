@@ -203,7 +203,11 @@ public class PlayFragment extends BaseLazyFragment {
 
             @Override
             public void selectSubtitle() {
-                selectMySubtitle();
+                try {
+                    selectMySubtitle();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
@@ -229,10 +233,13 @@ public class PlayFragment extends BaseLazyFragment {
         }
     }
 
-    void selectMySubtitle() {
+    void selectMySubtitle() throws Exception {
         SubtitleDialog subtitleDialog = new SubtitleDialog(getActivity());
-        if (mController.mSubtitleView.hasInternal) {
+        int playerType = mVodPlayerCfg.getInt("pl");
+        if (mController.mSubtitleView.hasInternal && playerType == 1) {
             subtitleDialog.selectInternal.setVisibility(View.VISIBLE);
+        } else {
+            subtitleDialog.selectInternal.setVisibility(View.GONE);
         }
         subtitleDialog.setSubtitleViewListener(new SubtitleDialog.SubtitleViewListener() {
             @Override
@@ -243,10 +250,13 @@ public class PlayFragment extends BaseLazyFragment {
             public void setSubtitleDelay(int milliseconds) {
                 mController.mSubtitleView.setSubtitleDelay(milliseconds);
             }
-
             @Override
             public void selectInternalSubtitle() {
                 selectMyInternalSubtitle();
+            }
+            @Override
+            public void setTextStyle(int style) {
+                setSubtitleViewTextStyle(style);
             }
         });
         subtitleDialog.setSearchSubtitleListener(new SubtitleDialog.SearchSubtitleListener() {
@@ -297,6 +307,15 @@ public class PlayFragment extends BaseLazyFragment {
         subtitleDialog.show();
     }
 
+    void setSubtitleViewTextStyle(int style) {
+        if (style == 0) {
+            mController.mSubtitleView.setTextColor(getContext().getResources().getColorStateList(R.color.color_FFFFFF));
+            mController.mSubtitleView.setShadowLayer(2, 1, 1, R.color.color_CC000000);
+        } else if (style == 1) {
+            mController.mSubtitleView.setTextColor(getContext().getResources().getColorStateList(R.color.color_FFB6C1));
+            mController.mSubtitleView.setShadowLayer(2, 1, 1, R.color.color_FFFFFF);
+        }
+    }
 
     void selectMyAudioTrack() {
         AbstractPlayer mediaPlayer = mVideoView.getMediaPlayer();
@@ -342,9 +361,10 @@ public class PlayFragment extends BaseLazyFragment {
 
             @Override
             public String getDisplay(TrackInfoBean val) {
-//                return val.index + " : " + val.language;
-                String str = val.name.substring(val.name.substring(0, val.name.indexOf(",")).length()+1).trim();
-                return val.index + " : " + str;
+                String name = val.name.replace("AUDIO,", "");
+                name = name.replace("N/A,", "");
+                name = name.replace(" ", "");
+                return val.index + " : " + val.language + " : " + name;
             }
         }, new DiffUtil.ItemCallback<TrackInfoBean>() {
             @Override
@@ -496,8 +516,8 @@ public class PlayFragment extends BaseLazyFragment {
     }
 
     private void initSubtitleView() {
+        TrackInfo trackInfo = null;
         if (mVideoView.getMediaPlayer() instanceof IjkMediaPlayer) {
-            TrackInfo trackInfo = null;
             trackInfo = ((IjkMediaPlayer)(mVideoView.getMediaPlayer())).getTrackInfo();
             if (trackInfo != null && trackInfo.getSubtitle().size() > 0) {
                 mController.mSubtitleView.hasInternal = true;
@@ -524,6 +544,19 @@ public class PlayFragment extends BaseLazyFragment {
             } else {
                 if (mController.mSubtitleView.hasInternal) {
                     mController.mSubtitleView.isInternal = true;
+                    if (trackInfo != null) {
+                        List<TrackInfoBean> subtitleTrackList = trackInfo.getSubtitle();
+                        int selectedIndex = trackInfo.getSubtitleSelected(true);
+                        for(TrackInfoBean subtitleTrackInfoBean : subtitleTrackList) {
+                            String lowerLang = subtitleTrackInfoBean.language.toLowerCase();
+                            if (lowerLang.startsWith("zh") || lowerLang.startsWith("ch")) {
+                                if (selectedIndex != subtitleTrackInfoBean.index) {
+                                    ((IjkMediaPlayer)(mVideoView.getMediaPlayer())).setTrack(subtitleTrackInfoBean.index);
+                                    break;
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

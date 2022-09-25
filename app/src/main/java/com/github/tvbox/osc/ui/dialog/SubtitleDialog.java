@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -24,6 +25,8 @@ public class SubtitleDialog extends BaseDialog {
     private TextView subtitleTimeMinus;
     private TextView subtitleTimeText;
     private TextView subtitleTimePlus;
+    private TextView subtitleStyleOne;
+    private TextView subtitleStyleTwo;
 
     private SearchSubtitleListener mSearchSubtitleListener;
     private LocalFileChooserListener mLocalFileChooserListener;
@@ -48,6 +51,8 @@ public class SubtitleDialog extends BaseDialog {
         subtitleTimeMinus = findViewById(R.id.subtitleTimeMinus);
         subtitleTimeText = findViewById(R.id.subtitleTimeText);
         subtitleTimePlus = findViewById(R.id.subtitleTimePlus);
+        subtitleStyleOne = findViewById(R.id.subtitleStyleOne);
+        subtitleStyleTwo = findViewById(R.id.subtitleStyleTwo);
 
         selectLocal.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -153,6 +158,26 @@ public class SubtitleDialog extends BaseDialog {
                 mSubtitleViewListener.selectInternalSubtitle();
             }
         });
+
+        subtitleStyleOne.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int style = 0;
+                dismiss();
+                mSubtitleViewListener.setTextStyle(style);
+                Toast.makeText(getContext(), "设置样式成功", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        subtitleStyleTwo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int style = 1;
+                dismiss();
+                mSubtitleViewListener.setTextStyle(style);
+                Toast.makeText(getContext(), "设置样式成功", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     public void setLocalFileChooserListener(LocalFileChooserListener localFileChooserListener) {
@@ -179,5 +204,6 @@ public class SubtitleDialog extends BaseDialog {
         void setTextSize(int size);
         void setSubtitleDelay(int milliseconds);
         void selectInternalSubtitle();
+        void setTextStyle(int style);
     }
 }
