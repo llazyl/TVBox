@@ -1347,9 +1347,9 @@ public class PlayActivity extends BaseActivity {
         }
 
         WebResourceResponse checkIsVideo(String url, HashMap<String, String> headers) {
-//            if (url.endsWith("/favicon.ico")) {
-//                return new WebResourceResponse("image/png", null, null);
-//            }
+            if (url.endsWith("/favicon.ico")) {
+                return null;
+            }
             LOG.i("shouldInterceptRequest url:" + url);
             boolean ad;
             if (!loadedUrls.containsKey(url)) {
@@ -1520,9 +1520,9 @@ public class PlayActivity extends BaseActivity {
         public XWalkWebResourceResponse shouldInterceptLoadRequest(XWalkView view, XWalkWebResourceRequest request) {
             String url = request.getUrl().toString();
             // suppress favicon requests as we don't display them anywhere
-//            if (url.endsWith("/favicon.ico")) {
-//                return createXWalkWebResourceResponse("image/png", null, null);
-//            }
+            if (url.endsWith("/favicon.ico")) {
+                return null;
+            }
             LOG.i("shouldInterceptLoadRequest url:" + url);
             boolean ad;
             if (!loadedUrls.containsKey(url)) {

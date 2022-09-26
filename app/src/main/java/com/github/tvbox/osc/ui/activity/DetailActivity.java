@@ -264,7 +264,7 @@ public class DetailActivity extends BaseActivity {
                 //获取剪切板管理器
                 ClipboardManager cm = (ClipboardManager)getSystemService(mContext.CLIPBOARD_SERVICE);
                 //设置内容到剪切板
-                cm.setPrimaryClip(ClipData.newPlainText(null, tvPlayUrl.getText().toString().replace("播放地址: ","")));
+                cm.setPrimaryClip(ClipData.newPlainText(null, tvPlayUrl.getText().toString().replace("播放地址：","")));
                 Toast.makeText(DetailActivity.this, "已复制", Toast.LENGTH_SHORT).show();
             }
         });
@@ -532,7 +532,7 @@ public class DetailActivity extends BaseActivity {
                                 flag.selected = false;
                         }
                         //设置播放地址
-                        setTextShow(tvPlayUrl, "播放地址: ", vodInfo.seriesMap.get(vodInfo.playFlag).get(0).url);
+                        setTextShow(tvPlayUrl, "播放地址：", vodInfo.seriesMap.get(vodInfo.playFlag).get(0).url);
                         seriesFlagAdapter.setNewData(vodInfo.seriesFlags);
                         mGridViewFlag.scrollToPosition(flagScrollTo);
 
