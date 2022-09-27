@@ -59,15 +59,34 @@ public class CheckboxSearchAdapter extends ListAdapter<SourceBean, CheckboxSearc
         SourceBean sourceBean = data.get(position);
         holder.oneSearchSource.setOnCheckedChangeListener(null);
         holder.oneSearchSource.setText(sourceBean.getName());
-        holder.oneSearchSource.setChecked(mCheckedSources.containsKey(sourceBean.getKey()));
+        if (mCheckedSources != null) {
+            holder.oneSearchSource.setChecked(mCheckedSources.containsKey(sourceBean.getKey()));
+        }
         holder.oneSearchSource.setTag(sourceBean);
         holder.oneSearchSource.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (buttonView.isPressed()) {
+                    return;
+                }
                 if (isChecked) {
                     mCheckedSources.put(sourceBean.getKey(), sourceBean);
                 } else {
                     mCheckedSources.remove(sourceBean.getKey());
+                }
+                notifyItemChanged(position);
+            }
+        });
+        holder.oneSearchSource.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                boolean isChecked = mCheckedSources.containsKey(sourceBean.getKey());
+                if (isChecked) {
+                    mCheckedSources.remove(sourceBean.getKey());
+                    holder.oneSearchSource.setChecked(false);
+                } else {
+                    mCheckedSources.put(sourceBean.getKey(), sourceBean);
+                    holder.oneSearchSource.setChecked(true);
                 }
                 notifyItemChanged(position);
             }

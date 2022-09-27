@@ -81,7 +81,7 @@ public class SearchActivity extends BaseActivity {
     private String searchTitle = "";
     private TextView tvSearchCheckboxBtn;
 
-    private HashMap<String, SourceBean> mCheckSourcees = null;
+    private HashMap<String, SourceBean> mCheckSourcees = new HashMap<>();
     private SearchCheckboxDialog mSearchCheckboxDialog = null;
 
     @Override
