@@ -625,6 +625,10 @@ public class VodController extends BaseController {
         mPlayTitle1.setText(playTitleInfo);
     }
 
+    public void setUrlTitle(String playTitleInfo) {
+        mPlayTitle.setText(playTitleInfo);
+    }
+
     public void resetSpeed() {
         skipEnd = true;
         mHandler.removeMessages(1004);

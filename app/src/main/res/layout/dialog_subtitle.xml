@@ -31,7 +31,7 @@
                 android:text="选择内置字幕"
                 android:visibility="gone"
                 android:textColor="@color/color_FFFFFF"
-                android:textSize="@dimen/ts_24" />
+                android:textSize="@dimen/ts_20" />
 
             <TextView
                 android:id="@+id/selectLocal"
@@ -45,7 +45,7 @@
                 android:padding="@dimen/vs_10"
                 android:text="选择本地字幕"
                 android:textColor="@color/color_FFFFFF"
-                android:textSize="@dimen/ts_24" />
+                android:textSize="@dimen/ts_20" />
 
             <TextView
                 android:id="@+id/selectRemote"
@@ -59,7 +59,7 @@
                 android:padding="@dimen/vs_10"
                 android:text="在线搜索字幕"
                 android:textColor="@color/color_FFFFFF"
-                android:textSize="@dimen/ts_24" />
+                android:textSize="@dimen/ts_20" />
 
             <LinearLayout
                 android:gravity="center_vertical"
@@ -79,7 +79,7 @@
                     android:padding="@dimen/vs_10"
                     android:text="字号减小"
                     android:textColor="@color/color_FFFFFF"
-                    android:textSize="@dimen/ts_24" />
+                    android:textSize="@dimen/ts_20" />
 
                 <TextView
                     android:id="@+id/subtitleSizeText"
@@ -105,7 +105,7 @@
                     android:padding="@dimen/vs_10"
                     android:text="字号增大"
                     android:textColor="@color/color_FFFFFF"
-                    android:textSize="@dimen/ts_24" />
+                    android:textSize="@dimen/ts_20" />
 
             </LinearLayout>
 
@@ -131,7 +131,7 @@
                     android:shadowRadius="2"
                     android:shadowDx="1"
                     android:shadowDy="1"
-                    android:textSize="@dimen/ts_24" />
+                    android:textSize="@dimen/ts_20" />
 
                 <TextView
                     android:layout_width="@dimen/vs_120"
@@ -159,7 +159,7 @@
                     android:shadowRadius="2"
                     android:shadowDx="1"
                     android:shadowDy="1"
-                    android:textSize="@dimen/ts_24" />
+                    android:textSize="@dimen/ts_20" />
 
             </LinearLayout>
 
@@ -178,7 +178,7 @@
                     android:gravity="center"
                     android:text="字幕延时仅对外挂字幕有效"
                     android:textColor="@color/color_6C3D3D3D"
-                    android:textSize="@dimen/ts_24" />
+                    android:textSize="@dimen/ts_20" />
 
             </LinearLayout>
 
@@ -200,7 +200,7 @@
                     android:padding="@dimen/vs_10"
                     android:text="字幕提前"
                     android:textColor="@color/color_FFFFFF"
-                    android:textSize="@dimen/ts_24" />
+                    android:textSize="@dimen/ts_20" />
 
                 <TextView
                     android:id="@+id/subtitleTimeText"
@@ -226,7 +226,7 @@
                     android:padding="@dimen/vs_10"
                     android:text="字幕推迟"
                     android:textColor="@color/color_FFFFFF"
-                    android:textSize="@dimen/ts_24" />
+                    android:textSize="@dimen/ts_20" />
 
             </LinearLayout>
 

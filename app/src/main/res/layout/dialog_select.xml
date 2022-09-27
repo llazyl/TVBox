@@ -21,7 +21,7 @@
             android:singleLine="true"
             android:text="11111111"
             android:textColor="@color/color_CC000000"
-            android:textSize="@dimen/ts_26"
+            android:textSize="@dimen/ts_24"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"

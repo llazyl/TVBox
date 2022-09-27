@@ -13,5 +13,5 @@
     android:padding="@dimen/vs_10"
     android:text="@{name}"
     android:textColor="@color/color_FFFFFF"
-    android:textSize="@dimen/ts_26"
+    android:textSize="@dimen/ts_22"
     tools:text="11111111111111" />
