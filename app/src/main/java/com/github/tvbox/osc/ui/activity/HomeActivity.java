@@ -124,7 +124,7 @@ public class HomeActivity extends BaseActivity {
             useCacheConfig = bundle.getBoolean("useCache", false);
         }
         if (XXPermissions.isGranted(HomeActivity.this, Permission.Group.STORAGE)) {
-            Toast.makeText(HomeActivity.this, "已获得存储权限", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(HomeActivity.this, "已获得存储权限", Toast.LENGTH_SHORT).show();
         } else {
             XXPermissions.with(HomeActivity.this)
                     .permission(Permission.Group.STORAGE)
@@ -132,7 +132,7 @@ public class HomeActivity extends BaseActivity {
                         @Override
                         public void onGranted(List<String> permissions, boolean all) {
                             if (all) {
-                           //     Toast.makeText(HomeActivity.this, "已获得存储权限", Toast.LENGTH_SHORT).show();
+                           //  Toast.makeText(HomeActivity.this, "已获得存储权限", Toast.LENGTH_SHORT).show();
                             }
                         }
 
@@ -140,7 +140,7 @@ public class HomeActivity extends BaseActivity {
                         public void onDenied(List<String> permissions, boolean never) {
                             if (never) {
                                 Toast.makeText(HomeActivity.this, "获取存储权限失败,请在系统设置中开启", Toast.LENGTH_SHORT).show();
-                                XXPermissions.startPermissionActivity((Activity) HomeActivity.this, permissions);
+                               /XXPermissions.startPermissionActivity((Activity) HomeActivity.this, permissions);
                             } else {
                                 Toast.makeText(HomeActivity.this, "获取存储权限失败", Toast.LENGTH_SHORT).show();
                             }
