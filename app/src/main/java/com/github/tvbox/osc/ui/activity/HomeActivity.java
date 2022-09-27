@@ -140,7 +140,7 @@ public class HomeActivity extends BaseActivity {
                         public void onDenied(List<String> permissions, boolean never) {
                             if (never) {
                                 Toast.makeText(HomeActivity.this, "获取存储权限失败,请在系统设置中开启", Toast.LENGTH_SHORT).show();
-                               /XXPermissions.startPermissionActivity((Activity) HomeActivity.this, permissions);
+                                XXPermissions.startPermissionActivity((Activity) HomeActivity.this, permissions);
                             } else {
                                 Toast.makeText(HomeActivity.this, "获取存储权限失败", Toast.LENGTH_SHORT).show();
                             }
