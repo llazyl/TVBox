@@ -18,10 +18,23 @@
             android:gravity="center_vertical"
             android:orientation="vertical">
 
+            <TextView
+                android:id="@+id/tvSearchCheckboxBtn"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/vs_50"
+                android:layout_weight="1"
+                android:background="@drawable/shape_user_focus"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="指定搜索源"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/ts_20" />
+
             <EditText
                 android:id="@+id/etSearch"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/vs_50"
+                android:layout_marginTop="@dimen/vs_10"
                 android:background="@drawable/input_search"
                 android:hint="请输入要搜索的内容"
                 android:inputType="text"

@@ -31,6 +31,7 @@ import com.github.tvbox.osc.server.ControlManager;
 import com.github.tvbox.osc.ui.adapter.PinyinAdapter;
 import com.github.tvbox.osc.ui.adapter.SearchAdapter;
 import com.github.tvbox.osc.ui.dialog.RemoteDialog;
+import com.github.tvbox.osc.ui.dialog.SearchCheckboxDialog;
 import com.github.tvbox.osc.ui.tv.QRCodeGen;
 import com.github.tvbox.osc.ui.tv.widget.SearchKeyboard;
 import com.github.tvbox.osc.util.FastClickCheckUtil;
@@ -53,6 +54,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -77,7 +79,10 @@ public class SearchActivity extends BaseActivity {
     private SearchAdapter searchAdapter;
     private PinyinAdapter wordAdapter;
     private String searchTitle = "";
+    private TextView tvSearchCheckboxBtn;
 
+    private HashMap<String, SourceBean> mCheckSourcees = null;
+    private SearchCheckboxDialog mSearchCheckboxDialog = null;
 
     @Override
     protected int getLayoutResID() {
@@ -138,6 +143,7 @@ public class SearchActivity extends BaseActivity {
         llLayout = findViewById(R.id.llLayout);
         etSearch = findViewById(R.id.etSearch);
         tvSearch = findViewById(R.id.tvSearch);
+        tvSearchCheckboxBtn = findViewById(R.id.tvSearchCheckboxBtn);
         tvClear = findViewById(R.id.tvClear);
         tvAddress = findViewById(R.id.tvAddress);
         ivQRCode = findViewById(R.id.ivQRCode);
@@ -240,6 +246,28 @@ public class SearchActivity extends BaseActivity {
             }
         });
         setLoadSir(llLayout);
+        tvSearchCheckboxBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                List<SourceBean> allSourceBean = ApiConfig.get().getSourceBeanList();
+                List<SourceBean> searchAbleSource = new ArrayList<>();
+                if (mSearchCheckboxDialog == null) {
+                    mCheckSourcees = new HashMap<>();
+                }
+                for(SourceBean sourceBean : allSourceBean) {
+                    if (sourceBean.isSearchable()) {
+                        searchAbleSource.add(sourceBean);
+                        if (mSearchCheckboxDialog == null) {
+                            mCheckSourcees.put(sourceBean.getKey(), sourceBean);
+                        }
+                    }
+                }
+                if (mSearchCheckboxDialog == null) {
+                    mSearchCheckboxDialog = new SearchCheckboxDialog(SearchActivity.this, searchAbleSource, mCheckSourcees);
+                }
+                mSearchCheckboxDialog.show();
+            }
+        });
     }
 
     private void initViewModel() {
@@ -405,8 +433,16 @@ public class SearchActivity extends BaseActivity {
             if (!bean.isSearchable()) {
                 continue;
             }
+            if (mCheckSourcees != null && !mCheckSourcees.containsKey(bean.getKey())) {
+                continue;
+            }
             siteKey.add(bean.getKey());
             allRunCount.incrementAndGet();
+        }
+        if (siteKey.size() <= 0) {
+            Toast.makeText(mContext, "没有指定搜索源", Toast.LENGTH_SHORT).show();
+            showEmpty();
+            return;
         }
         for (String key : siteKey) {
             searchExecutorService.execute(new Runnable() {

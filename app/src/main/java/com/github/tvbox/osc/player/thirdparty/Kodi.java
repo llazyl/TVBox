@@ -74,32 +74,33 @@ public class Kodi {
         if (packageInfo == null)
             return false;
 
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setPackage(packageInfo.packageName);
-        intent.setClassName(packageInfo.packageName, packageInfo.activityName);
-        if (headers != null && headers.size() > 0) {
-            url = url + "|";
-            int idx = 0;
-            for (String hk : headers.keySet()) {
-                url += hk + "=" + URLEncoder.encode(headers.get(hk).trim());
-                if (idx < headers.keySet().size() -1) {
-                    url += "&";
-                }
-                idx ++;
-            }
-        }
-        intent.setData(Uri.parse(url));
-        intent.putExtra("title", title);
-        intent.putExtra("name", title);
 
-        if (subtitle != null && !subtitle.isEmpty()) {
-            intent.putExtra("subs", subtitle);
-        }
 
         try {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setPackage(packageInfo.packageName);
+            intent.setClassName(packageInfo.packageName, packageInfo.activityName);
+            if (headers != null && headers.size() > 0) {
+                url = url + "|";
+                int idx = 0;
+                for (String hk : headers.keySet()) {
+                    url += hk + "=" + URLEncoder.encode(headers.get(hk), "UTF-8");
+                    if (idx < headers.keySet().size() -1) {
+                        url += "&";
+                    }
+                    idx ++;
+                }
+            }
+            intent.setData(Uri.parse(url));
+            intent.putExtra("title", title);
+            intent.putExtra("name", title);
+
+            if (subtitle != null && !subtitle.isEmpty()) {
+                intent.putExtra("subs", subtitle);
+            }
             activity.startActivity(intent);
             return true;
-        } catch (ActivityNotFoundException ex) {
+        } catch (Exception ex) {
             Log.e(TAG, "Can't run Kodi", ex);
             return false;
         }
