@@ -33,4 +33,5 @@ public class HawkConfig {
     public static final String FAST_SEARCH_MODE = "fast_search_mode";
     public static final String SUBTITLE_TEXT_SIZE = "subtitle_text_size";
     public static final String SUBTITLE_TIME_DELAY = "subtitle_time_delay";
+    public static final String SOURCES_FOR_SEARCH = "sources_for_search";
 }

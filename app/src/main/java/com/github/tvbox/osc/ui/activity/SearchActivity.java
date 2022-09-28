@@ -249,20 +249,14 @@ public class SearchActivity extends BaseActivity {
         tvSearchCheckboxBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                List<SourceBean> allSourceBean = ApiConfig.get().getSourceBeanList();
-                List<SourceBean> searchAbleSource = new ArrayList<>();
                 if (mSearchCheckboxDialog == null) {
-                    mCheckSourcees = new HashMap<>();
-                }
-                for(SourceBean sourceBean : allSourceBean) {
-                    if (sourceBean.isSearchable()) {
-                        searchAbleSource.add(sourceBean);
-                        if (mSearchCheckboxDialog == null) {
-                            mCheckSourcees.put(sourceBean.getKey(), sourceBean);
+                    List<SourceBean> allSourceBean = ApiConfig.get().getSourceBeanList();
+                    List<SourceBean> searchAbleSource = new ArrayList<>();
+                    for(SourceBean sourceBean : allSourceBean) {
+                        if (sourceBean.isSearchable()) {
+                            searchAbleSource.add(sourceBean);
                         }
                     }
-                }
-                if (mSearchCheckboxDialog == null) {
                     mSearchCheckboxDialog = new SearchCheckboxDialog(SearchActivity.this, searchAbleSource, mCheckSourcees);
                 }
                 mSearchCheckboxDialog.show();
@@ -370,6 +364,8 @@ public class SearchActivity extends BaseActivity {
                         return response.body().string();
                     }
                 });
+
+        initCheckedSourcesForSearch();
     }
 
     private void refreshQRCode() {
@@ -395,6 +391,19 @@ public class SearchActivity extends BaseActivity {
             } catch (Exception e) {
                 searchData(null);
             }
+        }
+    }
+
+    private void initCheckedSourcesForSearch() {
+        mCheckSourcees = Hawk.get(HawkConfig.SOURCES_FOR_SEARCH, new HashMap<>());
+        if (mCheckSourcees == null || mCheckSourcees.size() <= 0) {
+            for (SourceBean bean : ApiConfig.get().getSourceBeanList()) {
+                if (!bean.isSearchable()) {
+                    continue;
+                }
+                mCheckSourcees.put(bean.getKey(), bean);
+            }
+            Hawk.put(HawkConfig.SOURCES_FOR_SEARCH, mCheckSourcees);
         }
     }
 
