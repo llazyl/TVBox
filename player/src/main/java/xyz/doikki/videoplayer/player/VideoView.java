@@ -732,6 +732,14 @@ public class VideoView<P extends AbstractPlayer> extends FrameLayout
         //将播放器视图添加到DecorView中即实现了全屏
         decorView.addView(mPlayerContainer);
 
+        Activity activity = getActivity();
+        int[] size = getVideoSize();
+        int width = size[0];
+        int height = size[1];
+        if (width < height) {
+           activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
+
         setPlayerState(PLAYER_FULL_SCREEN);
     }
 
@@ -778,6 +786,14 @@ public class VideoView<P extends AbstractPlayer> extends FrameLayout
         //把播放器视图从DecorView中移除并添加到当前FrameLayout中即退出了全屏
         decorView.removeView(mPlayerContainer);
         this.addView(mPlayerContainer);
+
+        Activity activity = getActivity();
+        int[] size = getVideoSize();
+        int width = size[0];
+        int height = size[1];
+        if (width < height) {
+           activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
 
         setPlayerState(PLAYER_NORMAL);
     }
