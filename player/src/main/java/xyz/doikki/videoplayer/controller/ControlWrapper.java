@@ -186,16 +186,10 @@ public class ControlWrapper implements MediaPlayerControl, IVideoController {
         int[] size = getVideoSize();
         int width = size[0];
         int height = size[1];
-        if (isFullScreen()) {
-            stopFullScreen();
-            if (width > height) {
-               activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            }
+        if (width < height) {
+           activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         } else {
-            startFullScreen();
-            if (width > height) {
-                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-            }
+            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
     }
 
