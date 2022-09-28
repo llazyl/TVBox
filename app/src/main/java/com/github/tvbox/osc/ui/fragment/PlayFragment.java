@@ -779,6 +779,7 @@ public class PlayFragment extends BaseLazyFragment {
     }
 
     public void play(boolean reset) {
+        if(mVodInfo==null)return;
         VodInfo.VodSeries vs = mVodInfo.seriesMap.get(mVodInfo.playFlag).get(mVodInfo.playIndex);
         EventBus.getDefault().post(new RefreshEvent(RefreshEvent.TYPE_REFRESH, mVodInfo.playIndex));
         setTip("正在获取播放信息", true, false);
@@ -1232,16 +1233,20 @@ public class PlayFragment extends BaseLazyFragment {
     }
 
     boolean checkVideoFormat(String url) {
-        if (sourceBean.getType() == 3) {
-            if (url.contains("=http") || url.contains(".html")) {
-                return false;
+        try{
+            if (sourceBean.getType() == 3) {
+                if (url.contains("=http") || url.contains(".html")) {
+                    return false;
+                }
+                Spider sp = ApiConfig.get().getCSP(sourceBean);
+                if (sp != null && sp.manualVideoCheck()){
+                    return sp.isVideoFormat(url);
+                }
             }
-            Spider sp = ApiConfig.get().getCSP(sourceBean);
-            if (sp != null && sp.manualVideoCheck()){
-                return sp.isVideoFormat(url);
-            }
+            return DefaultConfig.isVideoFormat(url);
+        }catch (Exception e){
+            return false;
         }
-        return DefaultConfig.isVideoFormat(url);
     }
 
     class MyWebView extends WebView {
