@@ -1,6 +1,7 @@
 package com.github.tvbox.osc.ui.adapter;
 
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -29,7 +30,12 @@ public class CollectAdapter extends BaseQuickAdapter<VodCollect, BaseViewHolder>
         helper.setVisible(R.id.tvArea, false);
         helper.setVisible(R.id.tvNote, false);
         TextView tvYear = helper.getView(R.id.tvYear);
-        tvYear.setText(ApiConfig.get().getSource(item.sourceKey).getName());
+        if (ApiConfig.get().getSource(item.sourceKey)!=null) {
+            tvYear.setText(ApiConfig.get().getSource(item.sourceKey).getName());
+            tvYear.setVisibility(View.VISIBLE);
+        } else {
+            tvYear.setVisibility(View.GONE);
+        }
         helper.setText(R.id.tvName, item.name);
         ImageView ivThumb = helper.getView(R.id.ivThumb);
         //由于部分电视机使用glide报错
