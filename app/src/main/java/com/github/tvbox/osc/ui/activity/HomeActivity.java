@@ -14,7 +14,6 @@ import android.os.Handler;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.BounceInterpolator;
 import android.widget.LinearLayout;
@@ -27,13 +26,11 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.viewpager.widget.ViewPager;
 
-import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.github.tvbox.osc.R;
 import com.github.tvbox.osc.api.ApiConfig;
 import com.github.tvbox.osc.base.BaseActivity;
 import com.github.tvbox.osc.base.BaseLazyFragment;
 import com.github.tvbox.osc.bean.AbsSortXml;
-import com.github.tvbox.osc.bean.Movie;
 import com.github.tvbox.osc.bean.MovieSort;
 import com.github.tvbox.osc.bean.SourceBean;
 import com.github.tvbox.osc.event.RefreshEvent;
@@ -132,7 +129,7 @@ public class HomeActivity extends BaseActivity {
                         @Override
                         public void onGranted(List<String> permissions, boolean all) {
                             if (all) {
-                           //  Toast.makeText(HomeActivity.this, "已获得存储权限", Toast.LENGTH_SHORT).show();
+                                //  Toast.makeText(HomeActivity.this, "已获得存储权限", Toast.LENGTH_SHORT).show();
                             }
                         }
 
@@ -169,16 +166,17 @@ public class HomeActivity extends BaseActivity {
                         public void run() {
                             TextView textView = view.findViewById(R.id.tvTitle);
                             textView.getPaint().setFakeBoldText(false);
-                            if(sortFocused == p){
+                            if (sortFocused == p) {
                                 view.animate().scaleX(1.1f).scaleY(1.1f).setInterpolator(new BounceInterpolator()).setDuration(300).start();
                                 textView.setTextColor(HomeActivity.this.getResources().getColor(R.color.color_FFFFFF));
-                            }else {
+                            } else {
                                 view.animate().scaleX(1.0f).scaleY(1.0f).setDuration(300).start();
                                 textView.setTextColor(HomeActivity.this.getResources().getColor(R.color.color_BBFFFFFF));
                                 view.findViewById(R.id.tvFilter).setVisibility(View.GONE);
                             }
                             textView.invalidate();
                         }
+
                         public View v = view;
                         public int p = position;
                     }, 10);
@@ -209,7 +207,7 @@ public class HomeActivity extends BaseActivity {
                     BaseLazyFragment baseLazyFragment = fragments.get(currentSelected);
                     if ((baseLazyFragment instanceof GridFragment) && !sortAdapter.getItem(position).filters.isEmpty()) {// 弹出筛选
                         ((GridFragment) baseLazyFragment).showFilter();
-                    }else if (baseLazyFragment instanceof UserFragment) {
+                    } else if (baseLazyFragment instanceof UserFragment) {
                         showSiteSwitch();
                     }
                 }
@@ -243,13 +241,13 @@ public class HomeActivity extends BaseActivity {
         tvName.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                Intent intent =new Intent(getApplicationContext(), HomeActivity.class);
+                Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 Bundle bundle = new Bundle();
                 bundle.putBoolean("useCache", true);
                 intent.putExtras(bundle);
                 HomeActivity.this.startActivity(intent);
-                return  true;
+                return true;
             }
         });
         setLoadSir(this.contentLayout);
@@ -454,8 +452,10 @@ public class HomeActivity extends BaseActivity {
         BaseLazyFragment baseLazyFragment = this.fragments.get(i);
         if (baseLazyFragment instanceof GridFragment) {
             View view = this.sortFocusView;
-            GridFragment grid = (GridFragment)baseLazyFragment;
-            if(grid.restoreView() ){ return; }// 还原上次保存的UI内容
+            GridFragment grid = (GridFragment) baseLazyFragment;
+            if (grid.restoreView()) {
+                return;
+            }// 还原上次保存的UI内容
             if (view != null && !view.isFocused()) {
                 this.sortFocusView.requestFocus();
             } else if (this.sortFocused != 0) {
@@ -621,7 +621,7 @@ public class HomeActivity extends BaseActivity {
                 @Override
                 public void click(SourceBean value, int pos) {
                     ApiConfig.get().setSourceBean(value);
-                    Intent intent =new Intent(getApplicationContext(), HomeActivity.class);
+                    Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     Bundle bundle = new Bundle();
                     bundle.putBoolean("useCache", true);

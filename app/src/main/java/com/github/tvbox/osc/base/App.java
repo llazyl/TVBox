@@ -10,6 +10,7 @@ import com.github.tvbox.osc.util.EpgNameFuzzyMatch;
 import com.github.tvbox.osc.util.HawkConfig;
 import com.github.tvbox.osc.util.OkGoHelper;
 import com.github.tvbox.osc.util.PlayerHelper;
+import com.github.tvbox.osc.util.js.JSEngine;
 import com.kingja.loadsir.core.LoadSir;
 import com.orhanobut.hawk.Hawk;
 
@@ -46,6 +47,7 @@ public class App extends MultiDexApplication {
                 .setSupportSP(false)
                 .setSupportSubunits(Subunits.MM);
         PlayerHelper.init();
+        JSEngine.getInstance().create();
     }
 
     private void initParams() {
@@ -59,5 +61,11 @@ public class App extends MultiDexApplication {
 
     public static App getInstance() {
         return instance;
+    }
+
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
+        JSEngine.getInstance().destroy();
     }
 }
