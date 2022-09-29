@@ -103,6 +103,18 @@ public class OkGoHelper {
         dnsOverHttps = new DnsOverHttps.Builder().client(dohClient).url(dohUrl.isEmpty() ? null : HttpUrl.get(dohUrl)).build();
     }
 
+
+    static OkHttpClient defaultClient = null;
+    static OkHttpClient noRedirectClient = null;
+
+    public static OkHttpClient getDefaultClient() {
+        return defaultClient;
+    }
+
+    public static OkHttpClient getNoRedirectClient() {
+        return noRedirectClient;
+    }
+
     public static void init() {
         initDnsOverHttps();
 
@@ -136,6 +148,12 @@ public class OkGoHelper {
 
         OkHttpClient okHttpClient = builder.build();
         OkGo.getInstance().setOkHttpClient(okHttpClient);
+
+        defaultClient = okHttpClient;
+
+        builder.followRedirects(false);
+        builder.followSslRedirects(false);
+        noRedirectClient = builder.build();
 
         initExoOkHttpClient();
         initPicasso(okHttpClient);
