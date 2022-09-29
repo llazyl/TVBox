@@ -1,38 +1,22 @@
 package com.github.tvbox.osc.util;
 
-import android.app.Activity;
 import android.content.res.AssetManager;
-import android.os.Environment;
-import android.widget.Toast;
-
 import com.github.tvbox.osc.base.App;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.hjq.permissions.OnPermissionCallback;
-import com.hjq.permissions.Permission;
-import com.hjq.permissions.XXPermissions;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.AbsCallback;
 import com.lzy.okgo.model.Response;
 import com.lzy.okgo.request.GetRequest;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.Hashtable;
-import java.util.List;
-
-import kotlin.reflect.KType;
 
 public class EpgNameFuzzyMatch {
 
@@ -42,26 +26,6 @@ public class EpgNameFuzzyMatch {
     public static void init() {
         if(epgNameDoc != null)
             return;
-
-        String root = Environment.getExternalStorageDirectory().getAbsolutePath();
-        try { //  读取本地tvbox_tv文件夹  Roinlong_Epg.json 文件中的内容
-            File file = new File(root + "/tvbox_tv/");
-            if (!file.exists()){
-                file.mkdirs();
-            }else{
-                String epgnameFile = root + "/tvbox_tv/Roinlong_Epg.json";
-                    String content = FileUtils.readFileToString(epgnameFile,"UTF-8");
-                    if(!content.isEmpty()){
-                        JsonObject  jsonObj =  new Gson().fromJson(content,  JsonObject.class);
-                        epgNameDoc =jsonObj;
-                        hasAddData(epgNameDoc);
-                        return;
-                    }
-            }
-        } catch (Exception e) {
-
-            e.printStackTrace();
-        }
 
         try {
             AssetManager assetManager = App.getInstance().getAssets(); //获得assets资源管理器（assets中的文件无法直接访问，可以使用AssetManager访问）

@@ -6,7 +6,6 @@ import android.animation.AnimatorSet;
 import android.animation.IntEvaluator;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -51,9 +50,6 @@ import com.github.tvbox.osc.util.DefaultConfig;
 import com.github.tvbox.osc.util.HawkConfig;
 import com.github.tvbox.osc.util.LOG;
 import com.github.tvbox.osc.viewmodel.SourceViewModel;
-import com.hjq.permissions.OnPermissionCallback;
-import com.hjq.permissions.Permission;
-import com.hjq.permissions.XXPermissions;
 import com.orhanobut.hawk.Hawk;
 import com.owen.tvrecyclerview.widget.TvRecyclerView;
 import com.owen.tvrecyclerview.widget.V7LinearLayoutManager;
@@ -119,30 +115,6 @@ public class HomeActivity extends BaseActivity {
         if (intent != null && intent.getExtras() != null) {
             Bundle bundle = intent.getExtras();
             useCacheConfig = bundle.getBoolean("useCache", false);
-        }
-        if (XXPermissions.isGranted(HomeActivity.this, Permission.Group.STORAGE)) {
-//            Toast.makeText(HomeActivity.this, "已获得存储权限", Toast.LENGTH_SHORT).show();
-        } else {
-            XXPermissions.with(HomeActivity.this)
-                    .permission(Permission.Group.STORAGE)
-                    .request(new OnPermissionCallback() {
-                        @Override
-                        public void onGranted(List<String> permissions, boolean all) {
-                            if (all) {
-                                //  Toast.makeText(HomeActivity.this, "已获得存储权限", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-
-                        @Override
-                        public void onDenied(List<String> permissions, boolean never) {
-                            if (never) {
-                                Toast.makeText(HomeActivity.this, "获取存储权限失败,请在系统设置中开启", Toast.LENGTH_SHORT).show();
-                                XXPermissions.startPermissionActivity((Activity) HomeActivity.this, permissions);
-                            } else {
-                                Toast.makeText(HomeActivity.this, "获取存储权限失败", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
         }
         initData();
     }
