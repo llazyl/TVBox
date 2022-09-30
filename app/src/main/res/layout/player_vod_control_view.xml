@@ -5,10 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-        <LinearLayout
+    <LinearLayout
             android:id="@+id/tv_top_l_container"
             android:layout_width="720dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:tag="tv_top_container"
             android:visibility="gone"
             tools:visibility="visible"
@@ -44,12 +44,12 @@
                 android:textColor="@android:color/white"
                 android:textSize="@dimen/ts_20" />
 
-        </LinearLayout>
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/tv_top_r_container"
         android:layout_width="120dp"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:tag="tv_top_container"
         android:visibility="gone"
         tools:visibility="visible"
@@ -348,6 +348,21 @@
                     android:text="音轨"
                     android:textColor="@android:color/white"
                     android:textSize="@dimen/ts_20"/>
+
+                <TextView
+                    android:id="@+id/landscape_portrait"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/vs_5"
+                    android:layout_marginRight="@dimen/vs_5"
+                    android:background="@drawable/button_dialog_main"
+                    android:focusable="true"
+                    android:padding="@dimen/vs_10"
+                    android:visibility="gone"
+                    android:text="横竖屏"
+                    android:textColor="@android:color/white"
+                    android:textSize="@dimen/ts_20"/>
+
             </LinearLayout>
         </HorizontalScrollView>
 

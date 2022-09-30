@@ -1,6 +1,7 @@
 package com.github.tvbox.osc.player.controller;
 
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.os.Handler;
 import android.os.Message;
 import android.view.KeyEvent;
@@ -27,6 +28,7 @@ import com.github.tvbox.osc.ui.dialog.SelectDialog;
 import com.github.tvbox.osc.util.FastClickCheckUtil;
 import com.github.tvbox.osc.util.HawkConfig;
 import com.github.tvbox.osc.util.PlayerHelper;
+import com.github.tvbox.osc.util.ScreenUtils;
 import com.github.tvbox.osc.util.SubtitleHelper;
 import com.orhanobut.hawk.Hawk;
 import com.owen.tvrecyclerview.widget.TvRecyclerView;
@@ -125,6 +127,7 @@ public class VodController extends BaseController {
     public SimpleSubtitleView mSubtitleView;
     TextView mZimuBtn;
     TextView mAudioTrackBtn;
+    TextView mLandscapePortraitBtn;
 
     Handler myHandle;
     Runnable myRunnable;
@@ -185,11 +188,11 @@ public class VodController extends BaseController {
         mSubtitleView = findViewById(R.id.subtitle_view);
         mZimuBtn = findViewById(R.id.zimu_select);
         mAudioTrackBtn = findViewById(R.id.audio_track_select);
+        mLandscapePortraitBtn = findViewById(R.id.landscape_portrait);
 
-        int subtitleTextSize = SubtitleHelper.getTextSize(mActivity);
-        mSubtitleView.setTextSize(subtitleTextSize);
+        initSubtitleInfo();
 
-        myHandle=new Handler();
+        myHandle = new Handler();
         myRunnable = new Runnable() {
             @Override
             public void run() {
@@ -584,6 +587,39 @@ public class VodController extends BaseController {
                 hideBottom();
             }
         });
+        mLandscapePortraitBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FastClickCheckUtil.check(view);
+                setLandscapePortrait();
+                hideBottom();
+            }
+        });
+        initLandscapePortraitBtnInfo();
+    }
+
+    void initLandscapePortraitBtnInfo() {
+        double screenSqrt = ScreenUtils.getSqrt(mActivity);
+        if (screenSqrt < 20.0) {
+            mLandscapePortraitBtn.setVisibility(View.VISIBLE);
+            mLandscapePortraitBtn.setText("竖屏");
+        }
+    }
+
+    void setLandscapePortrait() {
+        int requestedOrientation = mActivity.getRequestedOrientation();
+        if (requestedOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE || requestedOrientation == ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE || requestedOrientation == ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE) {
+            mLandscapePortraitBtn.setText("横屏");
+            mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+        } else if (requestedOrientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT || requestedOrientation == ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT || requestedOrientation == ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT) {
+            mLandscapePortraitBtn.setText("竖屏");
+            mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+        }
+    }
+
+    void initSubtitleInfo() {
+        int subtitleTextSize = SubtitleHelper.getTextSize(mActivity);
+        mSubtitleView.setTextSize(subtitleTextSize);
     }
 
     @Override
