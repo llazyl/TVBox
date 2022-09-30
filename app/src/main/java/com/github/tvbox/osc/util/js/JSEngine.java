@@ -129,19 +129,28 @@ public class JSEngine {
     }
 
     void initLocalStorage() {
-        SharedPreferences sharedPreferences = App.getInstance().getSharedPreferences("js_engine", Context.MODE_PRIVATE);
         jsContext.evaluate("var local = {};");
         JSObject console = (JSObject) jsContext.getGlobalObject().getProperty("local");
         console.setProperty("get", new JSCallFunction() {
             @Override
             public Object call(Object... args) {
-                return sharedPreferences.getString(args[0].toString() + "_" + args[1].toString(), "");
+                SharedPreferences sharedPreferences = App.getInstance().getSharedPreferences("js_engine_" + args[0].toString(), Context.MODE_PRIVATE);
+                return sharedPreferences.getString(args[1].toString(), "");
             }
         });
         console.setProperty("set", new JSCallFunction() {
             @Override
             public Object call(Object... args) {
-                sharedPreferences.edit().putString(args[0].toString() + "_" + args[1].toString(), args[2].toString()).commit();
+                SharedPreferences sharedPreferences = App.getInstance().getSharedPreferences("js_engine_" + args[0].toString(), Context.MODE_PRIVATE);
+                sharedPreferences.edit().putString(args[1].toString(), args[2].toString()).commit();
+                return null;
+            }
+        });
+        console.setProperty("delete", new JSCallFunction() {
+            @Override
+            public Object call(Object... args) {
+                SharedPreferences sharedPreferences = App.getInstance().getSharedPreferences("js_engine_" + args[0].toString(), Context.MODE_PRIVATE);
+                sharedPreferences.edit().remove(args[1].toString()).commit();
                 return null;
             }
         });
