@@ -91,6 +91,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import me.jessyan.autosize.AutoSize;
 import tv.danmaku.ijk.media.player.IMediaPlayer;
@@ -478,6 +479,7 @@ public class PlayFragment extends BaseLazyFragment {
     }
 
     void playUrl(String url, HashMap<String, String> headers) {
+        LOG.i("playUrl:" + url);
         requireActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -579,7 +581,6 @@ public class PlayFragment extends BaseLazyFragment {
                         String flag = info.optString("flag");
                         String url = info.getString("url");
                         HashMap<String, String> headers = null;
-                        webUserAgent = null;
                         webHeaderMap = null;
                         if (info.has("header")) {
                             try {
@@ -591,9 +592,6 @@ public class PlayFragment extends BaseLazyFragment {
                                         headers = new HashMap<>();
                                     }
                                     headers.put(key, hds.getString(key));
-                                    if (key.equalsIgnoreCase("user-agent")) {
-                                        webUserAgent = hds.getString(key).trim();
-                                    }
                                 }
                                 webHeaderMap = headers;
                             } catch (Throwable th) {
@@ -789,6 +787,7 @@ public class PlayFragment extends BaseLazyFragment {
         mController.setTitle(playTitleInfo);
 
         stopParse();
+        loadFoundCount.set(0);
         if(mVideoView!=null) mVideoView.release();
         String subtitleCacheKey = mVodInfo.sourceKey + "-" + mVodInfo.id + "-" + mVodInfo.playFlag + "-" + mVodInfo.playIndex+ "-" + vs.name + "-subt";
         String progressKey = mVodInfo.sourceKey + mVodInfo.id + mVodInfo.playFlag + mVodInfo.playIndex + vs.name;
@@ -827,7 +826,6 @@ public class PlayFragment extends BaseLazyFragment {
     private String progressKey;
     private String parseFlag;
     private String webUrl;
-    private String webUserAgent;
     private Map<String, String > webHeaderMap;
 
     private void initParse(String flag, boolean useParse, String playUrl, final String url) {
@@ -857,7 +855,6 @@ public class PlayFragment extends BaseLazyFragment {
                 parseBean.setUrl(playUrl);
             }
         }
-        loadFound = false;
         doParse(parseBean);
     }
 
@@ -895,7 +892,6 @@ public class PlayFragment extends BaseLazyFragment {
     void stopParse() {
         mHandler.removeMessages(100);
         stopLoadWebView(false);
-        loadFound = false;
         OkGo.getInstance().cancelTag("json_jx");
         if (parseThreadPool != null) {
             try {
@@ -911,6 +907,7 @@ public class PlayFragment extends BaseLazyFragment {
 
     private void doParse(ParseBean pb) {
         stopParse();
+        loadFoundCount.set(0);
         if (pb.getType() == 0) {
             setTip("正在嗅探播放地址", true, false);
             mHandler.removeMessages(100);
@@ -1108,7 +1105,7 @@ public class PlayFragment extends BaseLazyFragment {
     private WebView mSysWebView;
     private SysWebClient mSysWebClient;
     private Map<String, Boolean> loadedUrls = new HashMap<>();
-    private boolean loadFound = false;
+    private AtomicInteger loadFoundCount = new AtomicInteger(0);
 
     void loadWebView(String url) {
         if (mSysWebView == null && mXwalkWebView == null) {
@@ -1176,12 +1173,8 @@ public class PlayFragment extends BaseLazyFragment {
         requireActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                // webUserAgent = "Mozilla/5.0 (Linux; Android 6.0.1; Moto G (4)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Mobile Safari/537.36";
                 if (mXwalkWebView != null) {
                     mXwalkWebView.stopLoading();
-//                    if(webUserAgent != null) {
-//                        mXwalkWebView.getSettings().setUserAgentString(webUserAgent);
-//                    }
                     //mXwalkWebView.clearCache(true);
                     if(webHeaderMap != null){
                         mXwalkWebView.loadUrl(url,webHeaderMap);
@@ -1191,9 +1184,6 @@ public class PlayFragment extends BaseLazyFragment {
                 }
                 if (mSysWebView != null) {
                     mSysWebView.stopLoading();
-//                    if(webUserAgent != null) {
-//                        mSysWebView.getSettings().setUserAgentString(webUserAgent);
-//                    }
                     //mSysWebView.clearCache(true);
                     if(webHeaderMap != null){
                         mSysWebView.loadUrl(url,webHeaderMap);
@@ -1387,20 +1377,21 @@ public class PlayFragment extends BaseLazyFragment {
                 ad = loadedUrls.get(url);
             }
 
-            if (!ad && !loadFound) {
+            if (!ad) {
                 if (checkVideoFormat(url)) {
-                    mHandler.removeMessages(100);
-                    loadFound = true;
-                    if (headers != null && !headers.isEmpty()) {
-                        playUrl(url, headers);
-                    } else {
-                        playUrl(url, null);
+                    if (loadFoundCount.incrementAndGet() == 1) {
+                        mHandler.removeMessages(100);
+                        if (headers != null && !headers.isEmpty()) {
+                            playUrl(url, headers);
+                        } else {
+                            playUrl(url, null);
+                        }
+                        stopLoadWebView(false);
                     }
-                    stopLoadWebView(false);
                 }
             }
 
-            return ad || loadFound ?
+            return ad || loadFoundCount.get() > 0 ?
                     AdBlocker.createEmptyResource() :
                     null;
         }
@@ -1409,10 +1400,7 @@ public class PlayFragment extends BaseLazyFragment {
         @Override
         public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
             WebResourceResponse response = checkIsVideo(url, null);
-//            if (response == null)
-//                return super.shouldInterceptRequest(view, url);
-//            else
-                return response;
+            return response;
         }
 
         @Nullable
@@ -1428,21 +1416,16 @@ public class PlayFragment extends BaseLazyFragment {
             HashMap<String, String> webHeaders = new HashMap<>();
             try {
                 Map<String, String> hds = request.getRequestHeaders();
-                for (String k : hds.keySet()) {
-                    if (k.equalsIgnoreCase("user-agent")
-                            || k.equalsIgnoreCase("referer")
-                            || k.equalsIgnoreCase("origin")) {
-                        webHeaders.put(k, " " + hds.get(k));
+                if (!hds.isEmpty() && hds.size() > 0) {
+                    for (String k : hds.keySet()) {
+                        webHeaders.put(k, hds.get(k));
                     }
                 }
             } catch (Throwable th) {
-
+                th.printStackTrace();
             }
             WebResourceResponse response = checkIsVideo(url, webHeaders);
-//            if (response == null)
-//                return super.shouldInterceptRequest(view, request);
-//            else
-                return response;
+            return response;
         }
 
         @Override
@@ -1559,32 +1542,31 @@ public class PlayFragment extends BaseLazyFragment {
             } else {
                 ad = loadedUrls.get(url);
             }
-            if (!ad && !loadFound) {
+            if (!ad ) {
                 if (checkVideoFormat(url)) {
-                    mHandler.removeMessages(100);
-                    loadFound = true;
-                    HashMap<String, String> webHeaders = new HashMap<>();
-                    try {
-                        Map<String, String> hds = request.getRequestHeaders();
-                        for (String k : hds.keySet()) {
-                            if (k.equalsIgnoreCase("user-agent")
-                                    || k.equalsIgnoreCase("referer")
-                                    || k.equalsIgnoreCase("origin")) {
-                                webHeaders.put(k, " " + hds.get(k));
+                    if (loadFoundCount.incrementAndGet() == 1) {
+                        mHandler.removeMessages(100);
+                        HashMap<String, String> webHeaders = new HashMap<>();
+                        try {
+                            Map<String, String> hds = request.getRequestHeaders();
+                            if (!hds.isEmpty() && hds.size() > 0) {
+                                for (String k : hds.keySet()) {
+                                    webHeaders.put(k, hds.get(k));
+                                }
                             }
+                        } catch (Throwable th) {
+                            th.printStackTrace();
                         }
-                    } catch (Throwable th) {
-
+                        if (webHeaders != null && !webHeaders.isEmpty()) {
+                            playUrl(url, webHeaders);
+                        } else {
+                            playUrl(url, null);
+                        }
+                        stopLoadWebView(false);
                     }
-                    if (webHeaders != null && !webHeaders.isEmpty()) {
-                        playUrl(url, webHeaders);
-                    } else {
-                        playUrl(url, null);
-                    }
-                    stopLoadWebView(false);
                 }
             }
-            return ad || loadFound ?
+            return ad || loadFoundCount.get() > 0 ?
                     createXWalkWebResourceResponse("text/plain", "utf-8", new ByteArrayInputStream("".getBytes())) :
                     super.shouldInterceptLoadRequest(view, request);
         }
