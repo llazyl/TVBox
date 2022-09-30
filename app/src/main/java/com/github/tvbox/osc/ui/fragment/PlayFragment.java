@@ -3,6 +3,7 @@ package com.github.tvbox.osc.ui.fragment;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.net.http.SslError;
 import android.os.Build;
@@ -668,6 +669,11 @@ public class PlayFragment extends BaseLazyFragment {
     }
 
     public boolean onBackPressed() {
+        int requestedOrientation = getActivity().getRequestedOrientation();
+        if (requestedOrientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT || requestedOrientation == ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT || requestedOrientation == ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT) {
+            getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+            mController.mLandscapePortraitBtn.setText("竖屏");
+        }
         if (mController.onBackPressed()) {
             return true;
         }
@@ -1365,10 +1371,10 @@ public class PlayFragment extends BaseLazyFragment {
         }
 
         WebResourceResponse checkIsVideo(String url, HashMap<String, String> headers) {
-            if (url.endsWith("/favicon.ico")) {
-                return new WebResourceResponse("image/png", null, null);
-            }
             LOG.i("shouldInterceptRequest url:" + url);
+            if (url.endsWith("/favicon.ico")) {
+                return null;
+            }
             boolean ad;
             if (!loadedUrls.containsKey(url)) {
                 ad = AdBlocker.isAd(url);
@@ -1538,7 +1544,7 @@ public class PlayFragment extends BaseLazyFragment {
             String url = request.getUrl().toString();
             // suppress favicon requests as we don't display them anywhere
             if (url.endsWith("/favicon.ico")) {
-                return createXWalkWebResourceResponse("image/png", null, null);
+                return super.shouldInterceptLoadRequest(view, request);
             }
             LOG.i("shouldInterceptLoadRequest url:" + url);
             boolean ad;
