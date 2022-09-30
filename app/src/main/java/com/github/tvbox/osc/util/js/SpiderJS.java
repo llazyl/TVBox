@@ -37,10 +37,11 @@ public class SpiderJS extends Spider {
                             if (js.contains(".js?")) {
                                 int spIdx = js.indexOf(".js?");
                                 String[] query = js.substring(spIdx + 4).split("&|=");
+                                js = js.substring(0, spIdx);
                                 for (int i = 0; i < query.length; i += 2) {
                                     String key = query[i];
                                     String val = query[i + 1];
-                                    String sub = JSModule.convertModuleName(js.substring(0, spIdx), val);
+                                    String sub = JSModule.convertModuleName(js, val);
                                     String content = JSEngine.getInstance().loadModule(sub);
                                     jsContent = jsContent.replace("__" + key.toUpperCase() + "__", content);
                                 }
