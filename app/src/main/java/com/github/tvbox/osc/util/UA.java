@@ -9,7 +9,7 @@ import java.io.InputStream;
 import java.util.Random;
 
 public class UA {
-    /*
+
     private static String[] uas = new String[]{
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36",
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4557.4 Safari/537.36",
@@ -5419,57 +5419,11 @@ public class UA {
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
     };
 
-
-    public static void writeToFile() {
-        try {
-            FileOutputStream fos = new FileOutputStream("/sdcard/ua.db");
-            DataOutputStream dos = new DataOutputStream(fos);
-            dos.writeInt(uas.length);
-            for (int i = 0; i < uas.length; i++) {
-                dos.writeInt(0);
-            }
-            int strOffset = 0;
-            for (int i = 0; i < uas.length; i++) {
-                long oldPos = fos.getChannel().position();
-                dos.writeUTF(uas[i]);
-                long newPos = fos.getChannel().position();
-                fos.getChannel().position(4 + (i * 4));
-                dos.writeInt(strOffset);
-                strOffset += newPos - oldPos;
-                fos.getChannel().position(newPos);
-            }
-            dos.flush();
-            dos.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     public static String randomOne() {
-        try {
-            FileInputStream fis = new FileInputStream("/sdcard/ua.db");
-            DataInputStream dis = new DataInputStream(fis);
-            int len = dis.readInt();
-            int random = new Random().nextInt(len);
-            int skipLen = 4 + random * 4;
-            fis.getChannel().position(0);
-            fis.getChannel().position(skipLen);
-            int offset = dis.readInt();
-            int strOffset = 4 + 4 * len + offset;
-            fis.getChannel().position(0);
-            fis.getChannel().position(strOffset);
-            String s = dis.readUTF();
-            return s;
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+        int num = uas.length;
+        int key = (int)(Math.random()*num);
+        return uas[key];
     }
-    */
 
     public static String random() {
         try {
