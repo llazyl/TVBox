@@ -33,6 +33,7 @@ import com.github.tvbox.osc.ui.tv.QRCodeGen;
 import com.github.tvbox.osc.ui.tv.widget.SearchKeyboard;
 import com.github.tvbox.osc.util.FastClickCheckUtil;
 import com.github.tvbox.osc.util.HawkConfig;
+import com.github.tvbox.osc.util.SearchHelper;
 import com.github.tvbox.osc.viewmodel.SourceViewModel;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -87,8 +88,8 @@ public class FastSearchActivity extends BaseActivity {
     private boolean isFilterMode = false;
     private String searchFilterKey = "";    // 过滤的key
     private HashMap<String, ArrayList<Movie.Video> > resultVods; // 搜索结果
-    private  int finishedCount=0;
     private List<String> quickSearchWord = new ArrayList<>();
+    private HashMap<String, SourceBean> mCheckSources = null;
 
     private View.OnFocusChangeListener focusChangeListener = new View.OnFocusChangeListener() {
         @Override
@@ -317,6 +318,7 @@ public class FastSearchActivity extends BaseActivity {
                 });
     }
     private void initData() {
+        initCheckedSourcesForSearch();
         Intent intent = getIntent();
         if (intent != null && intent.hasExtra("title")) {
             String title = intent.getStringExtra("title");
@@ -336,9 +338,6 @@ public class FastSearchActivity extends BaseActivity {
  
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void refresh(RefreshEvent event) {
-        if(mSearchTitle != null){
-            mSearchTitle.setText(String.format("搜索(%d/%d)", finishedCount, spNames.size()));
-        }
         if (event.type == RefreshEvent.TYPE_SEARCH_RESULT) {
             try {
                 searchData(event.obj == null ? null : (AbsXml) event.obj);
@@ -352,6 +351,13 @@ public class FastSearchActivity extends BaseActivity {
                 searchWordAdapter.setNewData(data);
             }
         }
+        if(mSearchTitle != null){
+            mSearchTitle.setText(String.format("搜索(%d/%d)", resultVods.size(), spNames.size()));
+        }
+    }
+
+    private void initCheckedSourcesForSearch() {
+        mCheckSources = SearchHelper.getSourcesForSearch();
     }
 
     private void search(String title) {
@@ -369,7 +375,6 @@ public class FastSearchActivity extends BaseActivity {
         searchFilterKey = "";
         isFilterMode = false;
         spNames.clear();
-        finishedCount=0;
 
         searchResult();
     }
@@ -407,6 +412,9 @@ public class FastSearchActivity extends BaseActivity {
             if (!bean.isSearchable()) {
                 continue;
             }
+            if (mCheckSources != null && !mCheckSources.containsKey(bean.getKey())) {
+                continue;
+            }
             siteKey.add(bean.getKey());
             this.spNames.put(bean.getName(), bean.getKey());
             allRunCount.incrementAndGet();
@@ -421,17 +429,11 @@ public class FastSearchActivity extends BaseActivity {
                     }catch (Exception e){
 
                     }
-//                    updateSearchResultCount(1);
                 }
             });
         }
     }
-    synchronized private void  updateSearchResultCount(int n){
-//        finishedCount +=n;
-        finishedCount = resultVods.size();
-        if(finishedCount > spNames.size()) finishedCount = spNames.size();
 
-    }
     // 向过滤栏添加有结果的spname
     private String addWordAdapterIfNeed(String key){
         try {
@@ -475,7 +477,6 @@ public class FastSearchActivity extends BaseActivity {
             }
 
             if (searchAdapter.getData().size() > 0) {
-                finishedCount +=1;
                 searchAdapter.addData(data);
             } else {
                 showSuccess();
