@@ -120,7 +120,7 @@ public class JarLoader {
     }
 
     public Spider getSpider(String key, String cls, String ext, String jar) {
-        if (cls.toLowerCase().endsWith(".js")) {
+        if (cls.toLowerCase().endsWith(".js") || cls.toLowerCase().contains(".js?")) {
             if (spiders.containsKey(key))
                 return spiders.get(key);
             try {

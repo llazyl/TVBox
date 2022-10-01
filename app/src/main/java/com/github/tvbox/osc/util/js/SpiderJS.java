@@ -4,8 +4,10 @@ import android.content.Context;
 
 import com.github.catvod.crawler.Spider;
 import com.github.tvbox.quickjs.JSArray;
+import com.github.tvbox.quickjs.JSModule;
 import com.github.tvbox.quickjs.JSObject;
 
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -31,6 +33,22 @@ public class SpiderJS extends Spider {
                     public void run() {
                         String moduleKey = "__" + UUID.randomUUID().toString().replace("-", "") + "__";
                         String jsContent = JSEngine.getInstance().loadModule(js);
+                        try {
+                            if (js.contains(".js?")) {
+                                int spIdx = js.indexOf(".js?");
+                                String[] query = js.substring(spIdx + 4).split("&|=");
+                                js = js.substring(0, spIdx);
+                                for (int i = 0; i < query.length; i += 2) {
+                                    String key = query[i];
+                                    String val = query[i + 1];
+                                    String sub = JSModule.convertModuleName(js, val);
+                                    String content = JSEngine.getInstance().loadModule(sub);
+                                    jsContent = jsContent.replace("__" + key.toUpperCase() + "__", content);
+                                }
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                         jsContent = jsContent.replace("__JS_SPIDER__", "globalThis." + moduleKey);
                         JSEngine.getInstance().getJsContext().evaluateModule(jsContent, js);
                         jsObject = (JSObject) JSEngine.getInstance().getJsContext().getProperty(JSEngine.getInstance().getGlobalObj(), moduleKey);

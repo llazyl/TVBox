@@ -27,7 +27,7 @@ public final class JSModule {
         return name.startsWith("http://") || name.startsWith("https://") || name.startsWith("assets://");
     }
 
-    static String convertModuleName(String moduleBaseName, String moduleName) {
+    public static String convertModuleName(String moduleBaseName, String moduleName) {
         if (moduleName == null || moduleName.length() == 0) {
             return moduleName;
         }
