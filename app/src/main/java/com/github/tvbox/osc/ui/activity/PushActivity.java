@@ -13,6 +13,9 @@ import com.github.tvbox.osc.base.BaseActivity;
 import com.github.tvbox.osc.server.ControlManager;
 import com.github.tvbox.osc.ui.tv.QRCodeGen;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import me.jessyan.autosize.utils.AutoSizeUtils;
 
 public class PushActivity extends BaseActivity {
@@ -42,8 +45,13 @@ public class PushActivity extends BaseActivity {
                     if (manager != null) {
                         if (manager.hasPrimaryClip() && manager.getPrimaryClip() != null && manager.getPrimaryClip().getItemCount() > 0) {
                             ClipData.Item addedText = manager.getPrimaryClip().getItemAt(0);
+                            String clipText = addedText.getText().toString().trim();
+                            Matcher m = Pattern.compile("(https?://[A-Za-z0-9:_@$#\\/\\.\\?\\=\\&\\%\\-]+)").matcher(clipText);
+                            if (m.find()) {
+                                clipText = m.group(1);
+                            }
                             Intent newIntent = new Intent(mContext, DetailActivity.class);
-                            newIntent.putExtra("id", addedText.getText().toString().trim());
+                            newIntent.putExtra("id", clipText);
                             newIntent.putExtra("sourceKey", "push_agent");
                             newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             PushActivity.this.startActivity(newIntent);
