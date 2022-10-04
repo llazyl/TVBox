@@ -14,6 +14,8 @@ import com.orhanobut.hawk.Hawk;
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 
@@ -78,7 +80,12 @@ public class ControlManager {
 
                 @Override
                 public void onPushReceived(String url) {
-                    EventBus.getDefault().post(new RefreshEvent(RefreshEvent.TYPE_PUSH_URL, url));
+                    Matcher m = Pattern.compile("(https?://[A-Za-z0-9:_@$#\\/\\.\\?\\=\\&\\%\\-]+)").matcher(url);
+                    String finalUrl = url;
+                    if (m.find()) {
+                        finalUrl = m.group(1);
+                    }
+                    EventBus.getDefault().post(new RefreshEvent(RefreshEvent.TYPE_PUSH_URL, finalUrl));
                 }
             });
             try {
