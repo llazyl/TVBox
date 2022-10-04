@@ -3,6 +3,7 @@ package com.github.tvbox.osc.util;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.text.TextUtils;
 
 import com.github.tvbox.osc.api.ApiConfig;
@@ -110,19 +111,20 @@ public class DefaultConfig {
     private static final Pattern snifferMatch = Pattern.compile("http((?!http).)*?default\\.365yg\\.com/.*|http((?!http).){20,}?/m3u8\\?pt=m3u8.*|http((?!http).)*?default\\.ixigua\\.com/.*|http((?!http).)*?dycdn-tos\\.pstatp[^\\?]*|http.*?/player/m3u8play\\.php\\?url=.*|http.*?/playlist/m3u8/\\?vid=.*|http.*?\\.php\\?type=m3u8&.*|http.*?/download.aspx\\?.*|http.*?/api/up_api.php\\?.*|https.*?\\.66yk\\.cn.*|http((?!http).)*?netease\\.com/file/.*");
     private static final Pattern normalSnifferMatch = Pattern.compile("http((?!http).){20,}?\\.(m3u8|mp4|flv|avi|mkv|rm|wmv|mpg)\\?.*|http((?!http).){20,}\\.(m3u8|mp4|flv|avi|mkv|rm|wmv|mpg)");
     public static boolean isVideoFormat(String url) {
-        if (url.contains("=http") || url.contains("?http") || url.contains(".html")) {
+        if (url.contains("=http")) {
+            return false;
+        }
+        Uri uri = Uri.parse(url);
+        if (uri.getPath().endsWith(".js") || uri.getPath().endsWith(".css") || uri.getPath().endsWith(".html")) {
+            return false;
+        }
+        if (uri.getQuery().startsWith("http")) {
             return false;
         }
         if (normalSnifferMatch.matcher(url).find()) {
-            if (url.contains("cdn-tos") && (url.contains(".js") || url.contains(".css"))) {
-                return false;
-            }
             return true;
         }
         if (snifferMatch.matcher(url).find()) {
-            if (url.contains("cdn-tos") && (url.contains(".js") || url.contains(".css"))) {
-                return false;
-            }
             return true;
         }
         return false;

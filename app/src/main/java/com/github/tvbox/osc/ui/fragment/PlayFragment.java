@@ -61,6 +61,7 @@ import com.github.tvbox.osc.util.HawkConfig;
 import com.github.tvbox.osc.util.LOG;
 import com.github.tvbox.osc.util.MD5;
 import com.github.tvbox.osc.util.PlayerHelper;
+import com.github.tvbox.osc.util.VideoParseRuler;
 import com.github.tvbox.osc.util.XWalkUtils;
 import com.github.tvbox.osc.util.thunder.Thunder;
 import com.github.tvbox.osc.viewmodel.SourceViewModel;
@@ -1253,7 +1254,7 @@ public class PlayFragment extends BaseLazyFragment {
                     return sp.isVideoFormat(url);
                 }
             }
-            return DefaultConfig.isVideoFormat(url);
+            return VideoParseRuler.checkIsVideoForParse(webUrl, url);
         }catch (Exception e){
             return false;
         }
