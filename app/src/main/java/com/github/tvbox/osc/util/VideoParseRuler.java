@@ -1,22 +1,23 @@
 package com.github.tvbox.osc.util;
 
 import android.net.Uri;
-
-import androidx.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class VideoParseRuler {
 
-    private static final HashMap<String, ArrayList<String>> HOSTS_RULE = new HashMap<>();
+    private static final HashMap<String, ArrayList<ArrayList<String>>> HOSTS_RULE = new HashMap<>();
 
     public static void addHostRule(String host, ArrayList<String> rule) {
-        HOSTS_RULE.put(host, rule);
+        ArrayList<ArrayList<String>> rules = new ArrayList<>();
+        if (HOSTS_RULE.get(host) != null && HOSTS_RULE.get(host).size() > 0) {
+            rules = HOSTS_RULE.get(host);
+        }
+        rules.add(rule);
+        HOSTS_RULE.put(host, rules);
     }
 
-    @Nullable
-    public static ArrayList<String> getHostRule(String host) {
+    public static ArrayList<ArrayList<String>> getHostRules(String host) {
         if (HOSTS_RULE.containsKey(host)) {
             return HOSTS_RULE.get(host);
         }
@@ -31,18 +32,9 @@ public class VideoParseRuler {
             }
             if (!isVideo) {
                 Uri uri = Uri.parse(webUrl);
-                ArrayList<String> hostRule = getHostRule(uri.getHost());
-                if (hostRule != null && hostRule.size() > 0) {
-                    boolean checkIsVideo = true;
-                    for(int i=0; i<hostRule.size(); i++) {
-                        if (!url.contains(hostRule.get(i))) {
-                            checkIsVideo = false;
-                            break;
-                        }
-                    }
-                    if (checkIsVideo) {
-                        isVideo = true;
-                    }
+                isVideo = checkVideoForOneHostRules(uri.getHost(), url);
+                if (!isVideo) {
+                    isVideo = checkVideoForOneHostRules("*", url);
                 }
             }
             return isVideo;
@@ -50,6 +42,32 @@ public class VideoParseRuler {
             e.printStackTrace();
         }
         return false;
+    }
+
+    private static boolean checkVideoForOneHostRules(String host, String url) {
+        boolean isVideo = false;
+        ArrayList<ArrayList<String>> hostRules = getHostRules(host);
+        if (hostRules != null && hostRules.size() > 0) {
+
+            boolean isVideoRuleCheck = false;
+            for(int i=0; i<hostRules.size(); i++) {
+                boolean checkIsVideo = true;
+                for(int j=0; j<hostRules.get(i).size(); j++) {
+                    if (!url.contains(hostRules.get(i).get(j))) {
+                        checkIsVideo = false;
+                        break;
+                    }
+                }
+                if (checkIsVideo) {
+                    isVideoRuleCheck = true;
+                    break;
+                }
+            }
+            if (isVideoRuleCheck) {
+                isVideo = true;
+            }
+        }
+        return isVideo;
     }
 
 }
