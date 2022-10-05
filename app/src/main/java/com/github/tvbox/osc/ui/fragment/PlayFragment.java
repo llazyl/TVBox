@@ -1454,14 +1454,14 @@ public class PlayFragment extends BaseLazyFragment {
         public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
             String url = request.getUrl().toString();
             LOG.i("shouldInterceptRequest url:" + url);
-            //css与jpg等无效资源避免请求远程直接返回response
+            //jpg等无效资源避免请求远程直接返回response
             String uselessmMimeType = null;
-            if (url.contains(".css")) {
-                uselessmMimeType = "text/css";
-            } else if (url.contains(".jpg")) {
+            if (url.contains(".jpg")) {
                 uselessmMimeType = "image/jpeg";
             } else if (url.contains(".png")) {
                 uselessmMimeType = "image/png";
+            } else if (url.contains(".gif")) {
+                uselessmMimeType = "image/gif";
             }
             if (uselessmMimeType != null && !uselessmMimeType.isEmpty()) {
                 return new WebResourceResponse(uselessmMimeType, "UTF-8", null);
@@ -1594,14 +1594,14 @@ public class PlayFragment extends BaseLazyFragment {
                 }
                 return null;
             }
-            //css与jpg等无效资源避免请求远程直接返回response
+            //jpg等无效资源避免请求远程直接返回response
             String uselessmMimeType = null;
-            if (url.contains(".css")) {
-                uselessmMimeType = "text/css";
-            } else if (url.contains(".jpg")) {
+            if (url.contains(".jpg")) {
                 uselessmMimeType = "image/jpeg";
             } else if (url.contains(".png")) {
                 uselessmMimeType = "image/png";
+            } else if (url.contains(".gif")) {
+                uselessmMimeType = "image/gif";
             }
             if (uselessmMimeType != null && !uselessmMimeType.isEmpty()) {
                 return createXWalkWebResourceResponse(uselessmMimeType, "UTF-8", null);
