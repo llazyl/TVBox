@@ -113,14 +113,16 @@ public class VodController extends BaseController {
     TextView mNextBtn;
     TextView mPreBtn;
     TextView mPlayerScaleBtn;
-    TextView mPlayerSpeedBtn;
+    public TextView mPlayerSpeedBtn;
     TextView mPlayerBtn;
     TextView mPlayerIJKBtn;
     TextView mPlayerRetry;
     TextView mPlayrefresh;
-    TextView mPlayerTimeStartBtn;
-    TextView mPlayerTimeSkipBtn;
-    TextView mPlayerTimeStepBtn;
+    public TextView mPlayerTimeStartEndText;
+    public TextView mPlayerTimeStartBtn;
+    public TextView mPlayerTimeSkipBtn;
+    public TextView mPlayerTimeStepBtn;
+    public TextView mPlayerTimeResetBtn;
     TextView mPlayPauseTime;
     TextView mPlayLoadNetSpeed;
     TextView mVideoSize;
@@ -179,9 +181,11 @@ public class VodController extends BaseController {
         mPlayerSpeedBtn = findViewById(R.id.play_speed);
         mPlayerBtn = findViewById(R.id.play_player);
         mPlayerIJKBtn = findViewById(R.id.play_ijk);
+        mPlayerTimeStartEndText = findViewById(R.id.play_time_start_end_text);
         mPlayerTimeStartBtn = findViewById(R.id.play_time_start);
         mPlayerTimeSkipBtn = findViewById(R.id.play_time_end);
         mPlayerTimeStepBtn = findViewById(R.id.play_time_step);
+        mPlayerTimeResetBtn = findViewById(R.id.play_time_reset);
         mPlayPauseTime = findViewById(R.id.tv_sys_time);
         mPlayLoadNetSpeed = findViewById(R.id.tv_play_load_net_speed);
         mVideoSize = findViewById(R.id.tv_videosize);
@@ -463,7 +467,7 @@ public class VodController extends BaseController {
             }
         });
 //        增加播放页面片头片尾时间重置
-        findViewById(R.id.play_time_reset).setOnClickListener(new OnClickListener() {
+        mPlayerTimeResetBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 myHandle.removeCallbacks(myRunnable);

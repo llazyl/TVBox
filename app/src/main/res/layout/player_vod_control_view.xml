@@ -254,6 +254,7 @@
                     android:textSize="@dimen/ts_20" />
 
                 <TextView
+                    android:id="@+id/play_time_start_end_text"
                     android:singleLine="true"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

@@ -253,6 +253,14 @@ public class GridFragment extends BaseLazyFragment {
                     }
                     page++;
                     maxPage = absXml.movie.pagecount;
+
+                    if (page > maxPage) {
+                        gridAdapter.loadMoreEnd();
+                        gridAdapter.setEnableLoadMore(false);
+                    } else {
+                        gridAdapter.loadMoreComplete();
+                        gridAdapter.setEnableLoadMore(true);
+                    }
                 } else {
                     if(page == 1){
                         showEmpty();
@@ -260,11 +268,12 @@ public class GridFragment extends BaseLazyFragment {
                     if(page > maxPage){
                         Toast.makeText(getContext(), "没有更多了", Toast.LENGTH_SHORT).show();
                     }
-                }
-                if (page > maxPage) {
-                    gridAdapter.loadMoreEnd();
-                } else {
-                    gridAdapter.loadMoreComplete();
+                    if (page > maxPage) {
+                        gridAdapter.loadMoreEnd();
+                    } else {
+                        gridAdapter.loadMoreComplete();
+                    }
+                    gridAdapter.setEnableLoadMore(false);
                 }
             }
         });

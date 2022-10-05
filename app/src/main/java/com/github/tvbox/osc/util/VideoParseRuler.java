@@ -47,7 +47,7 @@ public class VideoParseRuler {
             }
             return isVideo;
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
         return false;
     }
