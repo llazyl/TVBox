@@ -106,28 +106,37 @@ public class DefaultConfig {
         return start > -1 ? fileName.substring(0, start) : fileName;
     }
 
-    private static final String[] videoSuffix = {"m3u8","mp4","flv","avi","mkv","rm","wmv","mpg"};
+//    private static final String[] videoSuffix = {"m3u8","mp4","flv","avi","mkv","rm","wmv","mpg"};
+//    public static boolean isVideoFormat(String url) {
+//        if (url.contains("=http")) {
+//            return false;
+//        }
+//        Uri uri = Uri.parse(url);
+//        String path = uri.getPath();
+//        if (path == null || path.isEmpty()) {
+//            return false;
+//        }
+//        if (path.endsWith(".js") || path.endsWith(".css") || path.endsWith(".html")) {
+//            return false;
+//        }
+//        String query = uri.getQuery();
+//        if (query != null && query.startsWith("http")) {
+//            return false;
+//        }
+//        for(String oneSubfix : videoSuffix) {
+//            if (path.contains("." + oneSubfix)) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
+
+    private static final Pattern snifferMatch = Pattern.compile("http((?!http).){20,}?\\.(m3u8|mp4|flv|avi|mkv|rm|wmv|mpg)\\?.*|http((?!http).){20,}\\.(m3u8|mp4|flv|avi|mkv|rm|wmv|mpg)|http((?!http).){20,}?/m3u8\\?pt=m3u8.*|http((?!http).)*?default\\.ixigua\\.com/.*|http((?!http).)*?dycdn-tos\\.pstatp[^\\?]*|http.*?/play.{0,3}\\?[^url]{2,8}=.*|http.*?/player/m3u8play\\.php\\?url=.*|http.*?/player/.*?[pP]lay\\.php\\?url=.*|http.*?/playlist/m3u8/\\?vid=.*|http.*?\\.php\\?type=m3u8&.*|http.*?/download.aspx\\?.*|http.*?/api/up_api.php\\?.*|https.*?\\.66yk\\.cn.*|http((?!http).)*?netease\\.com/file/.*");
     public static boolean isVideoFormat(String url) {
-        if (url.contains("=http")) {
+        if (url.contains("=http") || url.contains(".html")) {
             return false;
         }
-        Uri uri = Uri.parse(url);
-        String path = uri.getPath();
-        if (path == null || path.isEmpty()) {
-            return false;
-        }
-        if (path.endsWith(".js") || path.endsWith(".css") || path.endsWith(".html")) {
-            return false;
-        }
-        String query = uri.getQuery();
-        if (query != null && query.startsWith("http")) {
-            return false;
-        }
-        for(String oneSubfix : videoSuffix) {
-            if (path.endsWith("." + oneSubfix)) {
-                return true;
-            }
-        }
+        if (snifferMatch.matcher(url).find()) return true;
         return false;
     }
 

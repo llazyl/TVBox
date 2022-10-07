@@ -27,10 +27,7 @@ public class VideoParseRuler {
     public static boolean checkIsVideoForParse(String webUrl, String url) {
         try {
             boolean isVideo = DefaultConfig.isVideoFormat(url);
-            if (webUrl == null || webUrl.isEmpty()) {
-                return isVideo;
-            }
-            if (!isVideo) {
+            if (!HOSTS_RULE.isEmpty() && !isVideo && webUrl != null) {
                 Uri uri = Uri.parse(webUrl);
                 isVideo = checkVideoForOneHostRules(uri.getHost(), url);
                 if (!isVideo) {
