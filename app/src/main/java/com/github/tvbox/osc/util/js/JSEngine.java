@@ -302,7 +302,7 @@ public class JSEngine {
         JSThread thread = null;
         for (String name : threads.keySet()) {
             JSThread jsThread = threads.get(name);
-            if (jsThread.retain < count && jsThread.retain < 2) {
+            if (jsThread.retain < count && jsThread.retain < 1) {
                 thread = jsThread;
                 count = jsThread.retain;
             }
