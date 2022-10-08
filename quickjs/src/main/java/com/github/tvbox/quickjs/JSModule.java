@@ -31,8 +31,9 @@ public final class JSModule {
         if (moduleName == null || moduleName.length() == 0) {
             return moduleName;
         }
-        if (!isRemote(moduleName))
-            moduleName = moduleName.replace("//", "/");
+        if (isRemote(moduleName))
+            return moduleName;
+        moduleName = moduleName.replace("//", "/");
         if (moduleName.startsWith("./")) {
             moduleName = moduleName.substring(2);
         }
