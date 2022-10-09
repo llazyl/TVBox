@@ -28,9 +28,9 @@ public class SearchCheckboxDialog extends BaseDialog{
     private TextView clearAll;
     private List<SourceBean> mSourceList;
 
-    public HashMap<String, SourceBean> mCheckSourcees = new HashMap<>();
+    public HashMap<String, String> mCheckSourcees = new HashMap<>();
 
-    public SearchCheckboxDialog(@NonNull @NotNull Context context, List<SourceBean> sourceList, HashMap<String, SourceBean> checkedSources) {
+    public SearchCheckboxDialog(@NonNull @NotNull Context context, List<SourceBean> sourceList, HashMap<String, String> checkedSources) {
         super(context);
         if (context instanceof Activity) {
             setOwnerActivity((Activity) context);
@@ -63,7 +63,23 @@ public class SearchCheckboxDialog extends BaseDialog{
         mGridView.setLayoutManager(new V7LinearLayoutManager(getContext(), 1, false));
         mGridView.setAdapter(checkboxSearchAdapter);
         checkboxSearchAdapter.setData(mSourceList, mCheckSourcees);
-
+        int pos = 0;
+        if (mSourceList != null && mCheckSourcees != null) {
+            for(int i=0; i<mSourceList.size(); i++) {
+                String key = mSourceList.get(i).getKey();
+                if (mCheckSourcees.containsKey(key)) {
+                    pos = i;
+                    break;
+                }
+            }
+        }
+        final int scrollPosition = pos;
+        mGridView.post(new Runnable() {
+            @Override
+            public void run() {
+                mGridView.smoothScrollToPosition(scrollPosition);
+            }
+        });
         checkAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -72,7 +88,7 @@ public class SearchCheckboxDialog extends BaseDialog{
                     if (mCheckSourcees.containsKey(sourceBean.getKey())) {
                         mCheckSourcees.remove(sourceBean.getKey());
                     } else {
-                        mCheckSourcees.put(sourceBean.getKey(), sourceBean);
+                        mCheckSourcees.put(sourceBean.getKey(), "1");
                     }
                 }
                 checkboxSearchAdapter.setData(mSourceList, mCheckSourcees);
