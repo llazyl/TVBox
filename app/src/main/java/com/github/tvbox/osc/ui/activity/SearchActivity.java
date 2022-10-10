@@ -291,7 +291,7 @@ public class SearchActivity extends BaseActivity {
                             JsonArray itemList = json.get("item").getAsJsonArray();
                             for (JsonElement ele : itemList) {
                                 JsonObject obj = (JsonObject) ele;
-                                hots.add(obj.get("word").getAsString().trim());
+                                hots.add(obj.get("word").getAsString().trim().replaceAll("<|>|《|》|-", "").split(" ")[0]);
                             }
                             wordAdapter.setNewData(hots);
                         } catch (Throwable th) {

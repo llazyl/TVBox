@@ -900,7 +900,6 @@ public class PlayActivity extends BaseActivity {
         } else {
             url = jsonPlayData.getString("url");
         }
-        String msg = jsonPlayData.optString("msg", "");
         if (url.startsWith("//")) {
             url = "http:" + url;
         }
@@ -945,6 +944,26 @@ public class PlayActivity extends BaseActivity {
             setTip("正在嗅探播放地址", true, false);
             mHandler.removeMessages(100);
             mHandler.sendEmptyMessageDelayed(100, 20 * 1000);
+            // 解析ext
+            try {
+                HashMap<String, String> reqHeaders = new HashMap<>();
+                JSONObject jsonObject = new JSONObject(pb.getExt());
+                if (jsonObject.has("header")) {
+                    JSONObject headerJson = jsonObject.optJSONObject("header");
+                    Iterator<String> keys = headerJson.keys();
+                    while (keys.hasNext()) {
+                        String key = keys.next();
+                        if (key.equalsIgnoreCase("user-agent")) {
+                            webUserAgent = headerJson.getString(key).trim();
+                        }else {
+                            reqHeaders.put(key, headerJson.optString(key, ""));
+                        }
+                    }
+                    if(reqHeaders.size()>0)webHeaderMap = reqHeaders;
+                }
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
             loadWebView(pb.getUrl() + webUrl);
         } else if (pb.getType() == 1) { // json 解析
             setTip("正在解析播放地址", true, false);
@@ -1088,6 +1107,9 @@ public class PlayActivity extends BaseActivity {
                         setTip("解析错误", false, true);
                     } else {
                         if (rs.has("parse") && rs.optInt("parse", 0) == 1) {
+                            if (rs.has("ua")) {
+                                webUserAgent = rs.optString("ua").trim();
+                            }
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {

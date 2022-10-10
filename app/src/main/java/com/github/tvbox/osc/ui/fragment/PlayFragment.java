@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.http.SslError;
 import android.os.Build;
@@ -919,7 +920,6 @@ public class PlayFragment extends BaseLazyFragment {
         } else {
             url = jsonPlayData.getString("url");
         }
-        String msg = jsonPlayData.optString("msg", "");
         if (url.startsWith("//")) {
             url = "http:" + url;
         }
@@ -964,7 +964,28 @@ public class PlayFragment extends BaseLazyFragment {
             setTip("正在嗅探播放地址", true, false);
             mHandler.removeMessages(100);
             mHandler.sendEmptyMessageDelayed(100, 20 * 1000);
+            // 解析ext
+            try {
+                HashMap<String, String> reqHeaders = new HashMap<>();
+                JSONObject jsonObject = new JSONObject(pb.getExt());
+                if (jsonObject.has("header")) {
+                    JSONObject headerJson = jsonObject.optJSONObject("header");
+                    Iterator<String> keys = headerJson.keys();
+                    while (keys.hasNext()) {
+                        String key = keys.next();
+                        if (key.equalsIgnoreCase("user-agent")) {
+                            webUserAgent = headerJson.getString(key).trim();
+                        }else {
+                            reqHeaders.put(key, headerJson.optString(key, ""));
+                        }
+                    }
+                    if(reqHeaders.size()>0)webHeaderMap = reqHeaders;
+                }
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
             loadWebView(pb.getUrl() + webUrl);
+
         } else if (pb.getType() == 1) { // json 解析
             setTip("正在解析播放地址", true, false);
             // 解析ext
@@ -1107,6 +1128,9 @@ public class PlayFragment extends BaseLazyFragment {
                         setTip("解析错误", false, true);
                     } else {
                         if (rs.has("parse") && rs.optInt("parse", 0) == 1) {
+                            if (rs.has("ua")) {
+                                webUserAgent = rs.optString("ua").trim();
+                            }
                             requireActivity().runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -1126,13 +1150,10 @@ public class PlayFragment extends BaseLazyFragment {
                                     Iterator<String> keys = hds.keys();
                                     while (keys.hasNext()) {
                                         String key = keys.next();
-                                        if (headers == null) {
-                                            headers = new HashMap<>();
-                                        }
                                         headers.put(key, hds.getString(key));
                                     }
                                 } catch (Throwable th) {
-
+                                    th.printStackTrace();
                                 }
                             }
                             if (rs.has("jxFrom")) {
@@ -1405,6 +1426,19 @@ public class PlayFragment extends BaseLazyFragment {
         public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
             return false;
         }
+        @Override
+        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            super.onPageStarted( view,  url, favicon);
+        }
+
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            super.onPageFinished(view,url);
+            String click=sourceBean.getClickSelector();
+            if(!click.isEmpty() && url.contains(click.split(";")[0])){
+                mSysWebView.loadUrl("javascript:$(\""+ click.split(";")[1]+"\").click();");
+            }
+        }
 
         WebResourceResponse checkIsVideo(String url, HashMap<String, String> headers) {
             if (url.endsWith("/favicon.ico")) {
@@ -1564,6 +1598,10 @@ public class PlayFragment extends BaseLazyFragment {
         @Override
         public void onLoadFinished(XWalkView view, String url) {
             super.onLoadFinished(view, url);
+            String click=sourceBean.getClickSelector();
+            if(!click.isEmpty() && url.contains(click.split(";")[0])){
+                mXwalkWebView.loadUrl("javascript:$(\""+ click.split(";")[1]+"\").click();");
+            }
         }
 
         @Override
@@ -1608,7 +1646,7 @@ public class PlayFragment extends BaseLazyFragment {
                     if (loadFoundCount.incrementAndGet() == 1) {
                         mHandler.removeMessages(100);
                         url = loadFoundVideoUrls.poll();
-                        if (webHeaders != null && !webHeaders.isEmpty()) {
+                        if (!webHeaders.isEmpty()) {
                             playUrl(url, webHeaders);
                         } else {
                             playUrl(url, null);
