@@ -256,7 +256,11 @@ public class ApiConfig {
             sb.setQuickSearch(DefaultConfig.safeJsonInt(obj, "quickSearch", 1));
             sb.setFilterable(DefaultConfig.safeJsonInt(obj, "filterable", 1));
             sb.setPlayerUrl(DefaultConfig.safeJsonString(obj, "playUrl", ""));
-            sb.setExt(DefaultConfig.safeJsonString(obj, "ext", ""));
+            if(obj.has("ext") && (obj.get("ext").isJsonArray() || obj.get("ext").isJsonObject())){
+                sb.setExt(obj.get("ext").toString());
+            }else {
+                sb.setExt(DefaultConfig.safeJsonString(obj, "ext", ""));
+            }
             sb.setJar(DefaultConfig.safeJsonString(obj, "jar", ""));
             sb.setPlayerType(DefaultConfig.safeJsonInt(obj, "playerType", -1));
             sb.setCategories(DefaultConfig.safeJsonStringList(obj, "categories"));

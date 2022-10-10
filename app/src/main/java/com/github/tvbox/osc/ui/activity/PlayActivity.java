@@ -1,9 +1,11 @@
 package com.github.tvbox.osc.ui.activity;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.http.SslError;
 import android.os.Build;
@@ -827,7 +829,7 @@ public class PlayActivity extends BaseActivity {
         //重新播放清除现有进度
         if (reset) {
             CacheManager.delete(MD5.string2MD5(progressKey), 0);
-            CacheManager.delete(MD5.string2MD5(subtitleCacheKey), "");
+            CacheManager.delete(MD5.string2MD5(subtitleCacheKey), 0);
         }
         if (Thunder.play(vs.url, new Thunder.ThunderCallback() {
             @Override
@@ -1171,7 +1173,7 @@ public class PlayActivity extends BaseActivity {
                 XWalkUtils.tryUseXWalk(mContext, new XWalkUtils.XWalkState() {
                     @Override
                     public void success() {
-                        initWebView(false);
+                        initWebView(!sourceBean.getClickSelector().isEmpty());
                         loadUrl(url);
                     }
 
@@ -1317,6 +1319,7 @@ public class PlayActivity extends BaseActivity {
         }
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     private void configWebViewSys(WebView webView) {
         if (webView == null) {
             return;
@@ -1404,6 +1407,29 @@ public class PlayActivity extends BaseActivity {
             return false;
         }
 
+        @Override
+        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            super.onPageStarted( view,  url, favicon);
+        }
+
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            super.onPageFinished(view,url);
+            String click=sourceBean.getClickSelector();
+            LOG.i("onPageFinished url:" + url);
+            if(!click.isEmpty()){
+                String selector;
+                if(click.contains(";")){
+                    if(!url.contains(click.split(";")[0]))return;
+                    selector=click.split(";")[1];
+                }else {
+                    selector=click.trim();
+                }
+                String js="$(\""+ selector+"\").click();";
+                mSysWebView.loadUrl("javascript:"+js);
+            }
+        }
+
         WebResourceResponse checkIsVideo(String url, HashMap<String, String> headers) {
             if (url.endsWith("/favicon.ico")) {
                 if (url.startsWith("http://127.0.0.1")) {
@@ -1476,6 +1502,7 @@ public class PlayActivity extends BaseActivity {
         }
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     private void configWebViewX5(XWalkView webView) {
         if (webView == null) {
             return;
@@ -1606,7 +1633,7 @@ public class PlayActivity extends BaseActivity {
                     if (loadFoundCount.incrementAndGet() == 1) {
                         mHandler.removeMessages(100);
                         url = loadFoundVideoUrls.poll();
-                        if (webHeaders != null && !webHeaders.isEmpty()) {
+                        if (!webHeaders.isEmpty()) {
                             playUrl(url, webHeaders);
                         } else {
                             playUrl(url, null);
