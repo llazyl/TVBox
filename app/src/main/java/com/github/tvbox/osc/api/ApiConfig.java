@@ -101,8 +101,10 @@ public class ApiConfig {
                 String key = AES.rightPadding(content.substring(content.indexOf("$#") + 2, content.indexOf("#$")), "0", 16);
                 String iv = AES.rightPadding(content.substring(content.length() - 13), "0", 16);
                 json = AES.CBC(data, key, iv);
-            } else {
+            } else if (configKey !=null) {
                 json = AES.ECB(content, configKey);
+            } else {
+                json = content;
             }
         } catch (Exception e) {
             e.printStackTrace();

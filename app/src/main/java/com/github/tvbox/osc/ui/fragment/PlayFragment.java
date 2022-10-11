@@ -960,25 +960,28 @@ public class PlayFragment extends BaseLazyFragment {
             setTip("正在嗅探播放地址", true, false);
             mHandler.removeMessages(100);
             mHandler.sendEmptyMessageDelayed(100, 20 * 1000);
-            // 解析ext
-            try {
-                HashMap<String, String> reqHeaders = new HashMap<>();
-                JSONObject jsonObject = new JSONObject(pb.getExt());
-                if (jsonObject.has("header")) {
-                    JSONObject headerJson = jsonObject.optJSONObject("header");
-                    Iterator<String> keys = headerJson.keys();
-                    while (keys.hasNext()) {
-                        String key = keys.next();
-                        if (key.equalsIgnoreCase("user-agent")) {
-                            webUserAgent = headerJson.getString(key).trim();
-                        }else {
-                            reqHeaders.put(key, headerJson.optString(key, ""));
+            if(pb.getExt()!=null){
+                // 解析ext
+                try {
+                    HashMap<String, String> reqHeaders = new HashMap<>();
+                    LOG.i("EXT:------------"+pb.getExt());
+                    JSONObject jsonObject = new JSONObject(pb.getExt());
+                    if (jsonObject.has("header")) {
+                        JSONObject headerJson = jsonObject.optJSONObject("header");
+                        Iterator<String> keys = headerJson.keys();
+                        while (keys.hasNext()) {
+                            String key = keys.next();
+                            if (key.equalsIgnoreCase("user-agent")) {
+                                webUserAgent = headerJson.getString(key).trim();
+                            }else {
+                                reqHeaders.put(key, headerJson.optString(key, ""));
+                            }
                         }
+                        if(reqHeaders.size()>0)webHeaderMap = reqHeaders;
                     }
-                    if(reqHeaders.size()>0)webHeaderMap = reqHeaders;
+                } catch (Throwable e) {
+                    e.printStackTrace();
                 }
-            } catch (Throwable e) {
-                e.printStackTrace();
             }
             loadWebView(pb.getUrl() + webUrl);
 
@@ -1443,6 +1446,7 @@ public class PlayFragment extends BaseLazyFragment {
                     selector=click.trim();
                 }
                 String js="$(\""+ selector+"\").click();";
+                LOG.i("javascript:" + js);
                 mSysWebView.loadUrl("javascript:"+js);
             }
         }

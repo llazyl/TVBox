@@ -946,25 +946,27 @@ public class PlayActivity extends BaseActivity {
             setTip("正在嗅探播放地址", true, false);
             mHandler.removeMessages(100);
             mHandler.sendEmptyMessageDelayed(100, 20 * 1000);
-            // 解析ext
-            try {
-                HashMap<String, String> reqHeaders = new HashMap<>();
-                JSONObject jsonObject = new JSONObject(pb.getExt());
-                if (jsonObject.has("header")) {
-                    JSONObject headerJson = jsonObject.optJSONObject("header");
-                    Iterator<String> keys = headerJson.keys();
-                    while (keys.hasNext()) {
-                        String key = keys.next();
-                        if (key.equalsIgnoreCase("user-agent")) {
-                            webUserAgent = headerJson.getString(key).trim();
-                        }else {
-                            reqHeaders.put(key, headerJson.optString(key, ""));
+            if(pb.getExt()!=null){
+                // 解析ext
+                try {
+                    HashMap<String, String> reqHeaders = new HashMap<>();
+                    JSONObject jsonObject = new JSONObject(pb.getExt());
+                    if (jsonObject.has("header")) {
+                        JSONObject headerJson = jsonObject.optJSONObject("header");
+                        Iterator<String> keys = headerJson.keys();
+                        while (keys.hasNext()) {
+                            String key = keys.next();
+                            if (key.equalsIgnoreCase("user-agent")) {
+                                webUserAgent = headerJson.getString(key).trim();
+                            }else {
+                                reqHeaders.put(key, headerJson.optString(key, ""));
+                            }
                         }
+                        if(reqHeaders.size()>0)webHeaderMap = reqHeaders;
                     }
-                    if(reqHeaders.size()>0)webHeaderMap = reqHeaders;
+                } catch (Throwable e) {
+                    e.printStackTrace();
                 }
-            } catch (Throwable e) {
-                e.printStackTrace();
             }
             loadWebView(pb.getUrl() + webUrl);
         } else if (pb.getType() == 1) { // json 解析
