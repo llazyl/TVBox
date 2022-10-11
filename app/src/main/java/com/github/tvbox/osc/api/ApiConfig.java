@@ -14,6 +14,7 @@ import com.github.tvbox.osc.bean.LiveChannelItem;
 import com.github.tvbox.osc.bean.ParseBean;
 import com.github.tvbox.osc.bean.SourceBean;
 import com.github.tvbox.osc.server.ControlManager;
+import com.github.tvbox.osc.util.AES;
 import com.github.tvbox.osc.util.AdBlocker;
 import com.github.tvbox.osc.util.DefaultConfig;
 import com.github.tvbox.osc.util.HawkConfig;
@@ -83,6 +84,32 @@ public class ApiConfig {
         return instance;
     }
 
+    public static String FindResult(String json, String configKey) {
+        try {
+            String content = "";
+            if (AES.isJson(json)) {
+                return json;
+            } else if (!json.startsWith("2423")) {
+                String[] data = json.split("\\*\\*");
+                content = new String(Base64.decode(data[1], Base64.DEFAULT));
+            } else {
+                content = json;
+            }
+            if (content.startsWith("2423")) {
+                String data = content.substring(content.indexOf("2324") + 4, content.length() - 26);
+                content = new String(AES.toBytes(content)).toLowerCase();
+                String key = AES.rightPadding(content.substring(content.indexOf("$#") + 2, content.indexOf("#$")), "0", 16);
+                String iv = AES.rightPadding(content.substring(content.length() - 13), "0", 16);
+                json = AES.CBC(data, key, iv);
+            } else {
+                json = AES.ECB(content, configKey);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return json;
+    }
+
     public void loadConfig(boolean useCache, LoadConfigCallback callback, Activity activity) {
         String apiUrl = Hawk.get(HawkConfig.API_URL, "");
         if (apiUrl.isEmpty()) {
@@ -99,13 +126,21 @@ public class ApiConfig {
                 th.printStackTrace();
             }
         }
-        String apiFix = apiUrl;
-        if (apiUrl.startsWith("clan://")) {
-            apiFix = clanToAddress(apiUrl);
-        }else if(!apiUrl.startsWith("http")){
-            apiFix = "http://" + apiFix;
+        String TempKey = null, configUrl = "", pk = ";pk;";
+        if (apiUrl.contains(pk)) {
+            String[] a = apiUrl.split(pk);
+            TempKey = a[1];
+            if (apiUrl.startsWith("clan")) configUrl = clanToAddress(a[0]);
+            if (apiUrl.startsWith("http")) configUrl = a[0];
+        } else if (apiUrl.startsWith("clan") && !apiUrl.contains(pk)) {
+            configUrl = clanToAddress(apiUrl);
+        } else if (!apiUrl.startsWith("http") && !apiUrl.contains(pk)) {
+            configUrl = "http://" + configUrl;
+        } else {
+            configUrl = apiUrl;
         }
-        OkGo.<String>get(apiFix)
+        String configKey = TempKey;
+        OkGo.<String>get(configUrl)
                 .headers("User-Agent", userAgent)
                 .headers("Accept", requestAccept)
                 .execute(new AbsCallback<String>() {
@@ -113,7 +148,8 @@ public class ApiConfig {
                     public void onSuccess(Response<String> response) {
                         try {
                             String json = response.body();
-                            parseJson(apiUrl, response.body());
+                            json = FindResult(json, configKey);
+                            parseJson(apiUrl, json);
                             try {
                                 File cacheDir = cache.getParentFile();
                                 if (!cacheDir.exists())
