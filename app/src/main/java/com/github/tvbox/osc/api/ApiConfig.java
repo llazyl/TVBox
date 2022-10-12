@@ -85,26 +85,21 @@ public class ApiConfig {
     }
 
     public static String FindResult(String json, String configKey) {
+        String content = json;
         try {
-            String content = "";
-            if (AES.isJson(json)) {
-                return json;
-            } else if (!json.startsWith("2423")) {
-                String[] data = json.split("\\*\\*");
-                content = new String(Base64.decode(data[1], Base64.DEFAULT));
-            } else {
-                content = json;
-            }
+            if (AES.isJson(content)) return content;
             if (content.startsWith("2423")) {
                 String data = content.substring(content.indexOf("2324") + 4, content.length() - 26);
                 content = new String(AES.toBytes(content)).toLowerCase();
                 String key = AES.rightPadding(content.substring(content.indexOf("$#") + 2, content.indexOf("#$")), "0", 16);
                 String iv = AES.rightPadding(content.substring(content.length() - 13), "0", 16);
                 json = AES.CBC(data, key, iv);
-            } else if (configKey !=null) {
+            }else if (content.startsWith("9864") && configKey !=null) {
                 json = AES.ECB(content, configKey);
-            } else {
-                json = content;
+            }
+            else{
+                String[] data = json.split("\\*\\*");
+                json = new String(Base64.decode(data[1], Base64.DEFAULT));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -132,11 +127,16 @@ public class ApiConfig {
         if (apiUrl.contains(pk)) {
             String[] a = apiUrl.split(pk);
             TempKey = a[1];
-            if (apiUrl.startsWith("clan")) configUrl = clanToAddress(a[0]);
-            if (apiUrl.startsWith("http")) configUrl = a[0];
-        } else if (apiUrl.startsWith("clan") && !apiUrl.contains(pk)) {
+            if (apiUrl.startsWith("clan")){
+                configUrl = clanToAddress(a[0]);
+            }else if (apiUrl.startsWith("http")){
+                configUrl = a[0];
+            }else {
+                configUrl = "http://" + a[0];
+            }
+        } else if (apiUrl.startsWith("clan")) {
             configUrl = clanToAddress(apiUrl);
-        } else if (!apiUrl.startsWith("http") && !apiUrl.contains(pk)) {
+        } else if (!apiUrl.startsWith("http")) {
             configUrl = "http://" + configUrl;
         } else {
             configUrl = apiUrl;
