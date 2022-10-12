@@ -964,7 +964,6 @@ public class PlayFragment extends BaseLazyFragment {
                 // 解析ext
                 try {
                     HashMap<String, String> reqHeaders = new HashMap<>();
-                    LOG.i("EXT:------------"+pb.getExt());
                     JSONObject jsonObject = new JSONObject(pb.getExt());
                     if (jsonObject.has("header")) {
                         JSONObject headerJson = jsonObject.optJSONObject("header");
