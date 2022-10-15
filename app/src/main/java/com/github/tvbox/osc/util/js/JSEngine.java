@@ -17,8 +17,14 @@ import com.github.tvbox.quickjs.QuickJSContext;
 import com.lzy.okgo.OkGo;
 
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -220,8 +226,8 @@ public class JSEngine {
                             }
                             if (body == null) {
                                 String dataBody = opt.optString("body", "").trim();
-                                if (!dataBody.isEmpty() && headers.get("content-type") != null) {
-                                    body = RequestBody.create(MediaType.parse(headers.get("content-type")), opt.optString("body", ""));
+                                if (!dataBody.isEmpty() && headers.get("Content-Type") != null) {
+                                    body = RequestBody.create(MediaType.parse(headers.get("Content-Type")), opt.optString("body", ""));
                                 }
                             }
                             if (body == null) {
@@ -252,13 +258,70 @@ public class JSEngine {
                         } else if (returnBuffer == 2) {
                             jsObject.setProperty("content", Base64.encodeToString(response.body().bytes(), Base64.DEFAULT));
                         } else {
-                            jsObject.setProperty("content", response.body().string());
+                            String res=response.body().string();
+                            if(headers.get("Content-Type")!=null && headers.get("Content-Type").contains("=")){
+                                res=new String(res.getBytes(),headers.get("Content-Type").split("=")[1].trim());
+                            }
+                            jsObject.setProperty("content", res);
                         }
                         return jsObject;
                     } catch (Throwable throwable) {
                         throwable.printStackTrace();
                     }
                     return "";
+                }
+            });
+            jsContext.getGlobalObject().setProperty("joinUrl", new JSCallFunction() {
+                @Override
+                public String call(Object... args) {
+                    URL url;
+                    String q="";
+                    try {
+                        String parent = args[0].toString();
+                        String child = args[1].toString();
+                    // TODO
+                        if(parent.isEmpty()){
+                            return child;
+                        }
+                        url = new URL(new URL(parent),child);
+                        q= url.toExternalForm();
+                    } catch (Throwable throwable) {
+                        throwable.printStackTrace();
+                    }
+                    return q;
+                }
+            });
+            jsContext.getGlobalObject().setProperty("pdfh", new JSCallFunction() {
+                @Override
+                public Element call(Object... args) {
+                    try {
+                    // TODO
+                        String html=args[0].toString();
+                        Document doc=Jsoup.parse(html);
+                        return doc.selectFirst(args[1].toString().trim());
+                    } catch (Throwable throwable) {
+                        throwable.printStackTrace();
+                    }
+                    return null;
+                }
+            });
+            jsContext.getGlobalObject().setProperty("pdfa", new JSCallFunction() {
+                @Override
+                public ArrayList<String> call(Object... args) {
+                    try {
+                    // TODO
+                        String html=args[0].toString();
+                        Document doc=Jsoup.parse(html);
+                        Elements list=doc.select(args[1].toString().trim());
+                        ArrayList<String> arraylist=new ArrayList<>();
+                        for (int i = 0; i < list.size(); i++) {
+                            arraylist.add(list.get(i).html());
+                        }
+                        return arraylist;
+                    } catch (Throwable throwable) {
+                        throwable.printStackTrace();
+                    }
+                    return null;
                 }
             });
         }

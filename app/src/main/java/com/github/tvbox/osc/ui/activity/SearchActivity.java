@@ -275,23 +275,49 @@ public class SearchActivity extends BaseActivity {
      * 拼音联想
      */
     private void loadRec(String key) {
-        OkGo.<String>get("https://s.video.qq.com/smartbox")
-                .params("plat", 2)
-                .params("ver", 0)
-                .params("num", 20)
-                .params("otype", "json")
-                .params("query", key)
+//        OkGo.<String>get("https://s.video.qq.com/smartbox")
+//                .params("plat", 2)
+//                .params("ver", 0)
+//                .params("num", 20)
+//                .params("otype", "json")
+//                .params("query", key)
+//                .execute(new AbsCallback<String>() {
+//                    @Override
+//                    public void onSuccess(Response<String> response) {
+//                        try {
+//                            ArrayList<String> hots = new ArrayList<>();
+//                            String result = response.body();
+//                            JsonObject json = JsonParser.parseString(result.substring(result.indexOf("{"), result.lastIndexOf("}") + 1)).getAsJsonObject();
+//                            JsonArray itemList = json.get("item").getAsJsonArray();
+//                            for (JsonElement ele : itemList) {
+//                                JsonObject obj = (JsonObject) ele;
+//                                hots.add(obj.get("word").getAsString().trim().replaceAll("<|>|《|》|-", "").split(" ")[0]);
+//                            }
+//                            wordAdapter.setNewData(hots);
+//                        } catch (Throwable th) {
+//                            th.printStackTrace();
+//                        }
+//                    }
+//
+//                    @Override
+//                    public String convertResponse(okhttp3.Response response) throws Throwable {
+//                        return response.body().string();
+//                    }
+//                });
+        OkGo.<String>get("https://suggest.video.iqiyi.com/")
+                .params("if", "mobile")
+                .params("key", key)
                 .execute(new AbsCallback<String>() {
                     @Override
                     public void onSuccess(Response<String> response) {
                         try {
                             ArrayList<String> hots = new ArrayList<>();
                             String result = response.body();
-                            JsonObject json = JsonParser.parseString(result.substring(result.indexOf("{"), result.lastIndexOf("}") + 1)).getAsJsonObject();
-                            JsonArray itemList = json.get("item").getAsJsonArray();
+                            JsonObject json = JsonParser.parseString(result).getAsJsonObject();
+                            JsonArray itemList = json.get("data").getAsJsonArray();
                             for (JsonElement ele : itemList) {
                                 JsonObject obj = (JsonObject) ele;
-                                hots.add(obj.get("word").getAsString().trim().replaceAll("<|>|《|》|-", "").split(" ")[0]);
+                                hots.add(obj.get("name").getAsString().trim().replaceAll("<|>|《|》|-", ""));
                             }
                             wordAdapter.setNewData(hots);
                         } catch (Throwable th) {
@@ -304,31 +330,6 @@ public class SearchActivity extends BaseActivity {
                         return response.body().string();
                     }
                 });
-//        OkGo.<String>get("https://suggest.video.iqiyi.com/")
-//                .params("if", "mobile")
-//                .params("key", key)
-//                .execute(new AbsCallback<String>() {
-//                    @Override
-//                    public void onSuccess(Response<String> response) {
-//                        try {
-//                            ArrayList<String> hots = new ArrayList<>();
-//                            String result = response.body();
-//                            JsonObject json = JsonParser.parseString(result).getAsJsonObject();
-//                            JsonArray itemList = json.get("data").getAsJsonArray();
-//                            for (JsonElement ele : itemList) {
-//                                JsonObject obj = (JsonObject) ele;
-//                                hots.add(obj.get("name").getAsString().trim());
-//                            }
-//                        } catch (Throwable th) {
-//                            th.printStackTrace();
-//                        }
-//                    }
-//
-//                    @Override
-//                    public String convertResponse(okhttp3.Response response) throws Throwable {
-//                        return response.body().string();
-//                    }
-//                });
     }
 
     private void initData() {
