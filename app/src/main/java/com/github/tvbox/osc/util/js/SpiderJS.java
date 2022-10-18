@@ -50,8 +50,13 @@ public class SpiderJS extends Spider {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    jsContent = jsContent.replace("export default {", "__JS_SPIDER__ ={");
-                    jsContent = jsContent.replace("__JS_SPIDER__", "globalThis." + moduleKey);
+                    if(jsContent.contains("export default{")){
+                        jsContent = jsContent.replace("export default{", "globalThis." + moduleKey+" ={");
+                    }else if(jsContent.contains("export default {")){
+                        jsContent = jsContent.replace("export default {", "globalThis." + moduleKey+" ={");
+                    }else {
+                        jsContent = jsContent.replace("__JS_SPIDER__", "globalThis." + moduleKey);
+                    }
                     ctx.evaluateModule(jsContent, js);
                     jsObject = (JSObject) ctx.getProperty(globalThis, moduleKey);
                     jsObject.getJSFunction("init").call(ext);

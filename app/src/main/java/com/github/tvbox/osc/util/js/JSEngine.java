@@ -258,9 +258,12 @@ public class JSEngine {
                         } else if (returnBuffer == 2) {
                             jsObject.setProperty("content", Base64.encodeToString(response.body().bytes(), Base64.DEFAULT));
                         } else {
-                            String res=response.body().string();
+                            String res;
                             if(headers.get("Content-Type")!=null && headers.get("Content-Type").contains("=")){
-                                res=new String(res.getBytes(),headers.get("Content-Type").split("=")[1].trim());
+                                byte[] responseBytes = UTF8BOMFighter.removeUTF8BOM(response.body().bytes());
+                                res=new String(responseBytes,headers.get("Content-Type").split("=")[1].trim());
+                            }else {
+                                res=response.body().string();
                             }
                             jsObject.setProperty("content", res);
                         }
