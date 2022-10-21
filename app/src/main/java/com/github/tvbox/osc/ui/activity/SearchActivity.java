@@ -36,6 +36,7 @@ import com.github.tvbox.osc.ui.tv.QRCodeGen;
 import com.github.tvbox.osc.ui.tv.widget.SearchKeyboard;
 import com.github.tvbox.osc.util.FastClickCheckUtil;
 import com.github.tvbox.osc.util.HawkConfig;
+import com.github.tvbox.osc.util.LOG;
 import com.github.tvbox.osc.util.SearchHelper;
 import com.github.tvbox.osc.util.js.JSEngine;
 import com.github.tvbox.osc.viewmodel.SourceViewModel;
@@ -95,7 +96,6 @@ public class SearchActivity extends BaseActivity {
     private static Boolean hasKeyBoard;
     @Override
     protected void init() {
-        disableKeyboard(SearchActivity.this);
         initView();
         initViewModel();
         initData();
@@ -212,15 +212,14 @@ public class SearchActivity extends BaseActivity {
                 etSearch.setText("");
             }
         });
-        etSearch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                Toast.makeText(mContext,"点击",Toast.LENGTH_SHORT).show();
-                if(!hasKeyBoard)enableKeyboard(SearchActivity.this);
-                openSystemKeyBoard();//再次尝试拉起键盘
-                SearchActivity.this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-            }
-        });
+//        etSearch.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                enableKeyboard(SearchActivity.this);
+//                openSystemKeyBoard();//再次尝试拉起键盘
+//                SearchActivity.this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+//            }
+//        });
 
 //        etSearch.setOnFocusChangeListener(tvSearchFocusChangeListener);
         keyboard.setOnSearchKeyListener(new SearchKeyboard.OnSearchKeyListener() {
@@ -505,18 +504,4 @@ public class SearchActivity extends BaseActivity {
         }
         EventBus.getDefault().unregister(this);
     }
-
-//    @Override
-//    public boolean dispatchKeyEvent(KeyEvent event) {
-//        if (event.getAction() == KeyEvent.ACTION_DOWN) {
-//            int keyCode = event.getKeyCode();
-//            if (keyCode == KeyEvent.KEYCODE_MENU) {
-//                if(!hasKeyBoard)enableKeyboard(SearchActivity.this);
-//                openSystemKeyBoard();//再次尝试拉起键盘
-//                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-//            }
-//        } else if (event.getAction() == KeyEvent.ACTION_UP) {
-//        }
-//        return super.dispatchKeyEvent(event);
-//    }
 }

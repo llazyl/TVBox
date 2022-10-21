@@ -94,6 +94,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:background="@drawable/input_dialog_api_input"
+                    android:imeOptions="actionDone"
                     android:hint="请输入配置地址"
                     android:inputType="text"
                     android:maxLines="1"

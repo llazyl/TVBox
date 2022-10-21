@@ -14,6 +14,7 @@ import com.github.tvbox.quickjs.JSCallFunction;
 import com.github.tvbox.quickjs.JSModule;
 import com.github.tvbox.quickjs.JSObject;
 import com.github.tvbox.quickjs.QuickJSContext;
+import com.google.gson.Gson;
 import com.lzy.okgo.OkGo;
 
 import org.json.JSONObject;
@@ -296,35 +297,41 @@ public class JSEngine {
             });
             jsContext.getGlobalObject().setProperty("pdfh", new JSCallFunction() {
                 @Override
-                public Element call(Object... args) {
+                public String call(Object... args) {
                     try {
-                    // TODO
+//                        LOG.i("pdfh----------------:"+args[1].toString().trim());
                         String html=args[0].toString();
-                        Document doc=Jsoup.parse(html);
-                        return doc.selectFirst(args[1].toString().trim());
+                        return HtmlParser.parseDomForUrl(html, args[1].toString().trim(), "");
+                    } catch (Throwable throwable) {
+                        throwable.printStackTrace();
+                    }
+                    return "";
+                }
+            });
+            jsContext.getGlobalObject().setProperty("pdfa", new JSCallFunction() {
+                @Override
+                public Object call(Object... args) {
+                    try {
+//                        LOG.i("pdfa----------------:"+args[1].toString().trim());
+                        String html=args[0].toString();
+                        return jsContext.parseJSON(new Gson().toJson(HtmlParser.parseDomForList(html, args[1].toString().trim())));
                     } catch (Throwable throwable) {
                         throwable.printStackTrace();
                     }
                     return null;
                 }
             });
-            jsContext.getGlobalObject().setProperty("pdfa", new JSCallFunction() {
+            jsContext.getGlobalObject().setProperty("pd", new JSCallFunction() {
                 @Override
-                public ArrayList<String> call(Object... args) {
+                public String call(Object... args) {
                     try {
-                    // TODO
+//                        LOG.i("pd----------------:"+args[2].toString().trim());
                         String html=args[0].toString();
-                        Document doc=Jsoup.parse(html);
-                        Elements list=doc.select(args[1].toString().trim());
-                        ArrayList<String> arraylist=new ArrayList<>();
-                        for (int i = 0; i < list.size(); i++) {
-                            arraylist.add(list.get(i).html());
-                        }
-                        return arraylist;
+                        return HtmlParser.parseDomForUrl(html, args[1].toString().trim(), args[2].toString());
                     } catch (Throwable throwable) {
                         throwable.printStackTrace();
                     }
-                    return null;
+                    return "";
                 }
             });
         }
