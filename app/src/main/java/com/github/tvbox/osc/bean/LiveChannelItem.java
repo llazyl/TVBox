@@ -23,6 +23,15 @@ public class LiveChannelItem {
     private ArrayList<String> channelUrls;
     public int sourceIndex = 0;
     public int sourceNum = 0;
+    public boolean include_back = false;
+
+    public void setinclude_back(boolean include_back) {
+        this.include_back = include_back;
+    }
+
+    public boolean getinclude_back() {
+        return include_back;
+    }
 
     public void setChannelIndex(int channelIndex) {
         this.channelIndex = channelIndex;
