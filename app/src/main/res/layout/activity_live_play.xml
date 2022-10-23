@@ -400,7 +400,7 @@
 		android:id="@+id/ll_epg"
 		android:paddingBottom="5dp"
 		android:layout_width="@dimen/vs_960"
-		android:layout_height="@dimen/vs_130">
+		android:layout_height="@dimen/vs_140">
 		<View
 			android:id="@+id/view_bg"
 			android:background="@drawable/shape_user_focus"
@@ -495,7 +495,6 @@
 			android:layout_marginEnd="5dp"
 			android:layout_marginRight="5dp"
 			android:layout_marginTop="@dimen/vs_0"
-			android:layout_marginBottom="10dp"
 			android:ellipsize="marquee"
 			android:gravity="center"
 			android:paddingTop="0dp"
