@@ -160,7 +160,7 @@ public class SubtitleLoader {
             throws IOException, FatalParsingException, Exception {
         Log.d(TAG, "parseRemote: remoteSubtitlePath = " + remoteSubtitlePath);
         String referer = "";
-        if (remoteSubtitlePath.contains("alicloud")) {
+        if (remoteSubtitlePath.contains("alicloud") || remoteSubtitlePath.contains("aliyundrive")) {
             referer = "https://www.aliyundrive.com/";
         } else if (remoteSubtitlePath.contains("assrt.net")) {
             referer = "https://secure.assrt.net/";

@@ -97,10 +97,6 @@
         android:paddingRight="@dimen/vs_20"
         android:paddingBottom="@dimen/vs_15"
         android:text=""
-        android:shadowColor="@color/color_CC000000"
-        android:shadowRadius="3"
-        android:shadowDx="2"
-        android:shadowDy="2"
         android:textColor="#ffffff"
         android:textSize="16sp"
         android:textStyle="bold"/>
