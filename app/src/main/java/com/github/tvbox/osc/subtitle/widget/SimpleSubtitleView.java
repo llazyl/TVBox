@@ -209,6 +209,12 @@ public class SimpleSubtitleView extends TextView
     }
 
     @Override
+    public void setTextSize(float size) {
+        super.setTextSize(size);
+        backGroundText.setTextSize(size);
+    }
+
+    @Override
     protected void onTextChanged(CharSequence text, int start, int lengthBefore, int lengthAfter) {
         if (backGroundText != null) {
             backGroundText.setText(text);

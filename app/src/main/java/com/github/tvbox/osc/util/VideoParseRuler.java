@@ -3,6 +3,7 @@ package com.github.tvbox.osc.util;
 import android.net.Uri;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 public class VideoParseRuler {
 
@@ -49,11 +50,17 @@ public class VideoParseRuler {
             boolean isVideoRuleCheck = false;
             for(int i=0; i<hostRules.size(); i++) {
                 boolean checkIsVideo = true;
-                for(int j=0; j<hostRules.get(i).size(); j++) {
-                    if (!url.contains(hostRules.get(i).get(j))) {
-                        checkIsVideo = false;
-                        break;
+                if (hostRules.get(i) != null && hostRules.get(i).size() > 0) {
+                    for(int j=0; j<hostRules.get(i).size(); j++) {
+                        Pattern onePattern = Pattern.compile("" + hostRules.get(i).get(j));
+                        if (!onePattern.matcher(url).find()) {
+                            checkIsVideo = false;
+                            break;
+                        }
+                        LOG.i("RULE:" + hostRules.get(i).get(j));
                     }
+                } else {
+                    checkIsVideo = false;
                 }
                 if (checkIsVideo) {
                     isVideoRuleCheck = true;
