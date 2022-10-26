@@ -85,9 +85,7 @@ public class SearchCheckboxDialog extends BaseDialog{
             public void onClick(View view) {
                 FastClickCheckUtil.check(view);
                 for(SourceBean sourceBean : mSourceList) {
-                    if (mCheckSourcees.containsKey(sourceBean.getKey())) {
-                        mCheckSourcees.remove(sourceBean.getKey());
-                    } else {
+                    if (!mCheckSourcees.containsKey(sourceBean.getKey())) {
                         mCheckSourcees.put(sourceBean.getKey(), "1");
                     }
                 }

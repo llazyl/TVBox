@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 public class VideoParseRuler {
 
     private static final HashMap<String, ArrayList<ArrayList<String>>> HOSTS_RULE = new HashMap<>();
+    private static final HashMap<String, ArrayList<ArrayList<String>>> HOSTS_FILTER = new HashMap<>();
 
     public static void addHostRule(String host, ArrayList<String> rule) {
         ArrayList<ArrayList<String>> rules = new ArrayList<>();
@@ -21,6 +22,22 @@ public class VideoParseRuler {
     public static ArrayList<ArrayList<String>> getHostRules(String host) {
         if (HOSTS_RULE.containsKey(host)) {
             return HOSTS_RULE.get(host);
+        }
+        return null;
+    }
+
+    public static void addHostFilter(String host, ArrayList<String> rule) {
+        ArrayList<ArrayList<String>> filters = new ArrayList<>();
+        if (HOSTS_FILTER.get(host) != null && HOSTS_FILTER.get(host).size() > 0) {
+            filters = HOSTS_FILTER.get(host);
+        }
+        filters.add(rule);
+        HOSTS_FILTER.put(host, filters);
+    }
+
+    public static ArrayList<ArrayList<String>> getHostFilters(String host) {
+        if (HOSTS_FILTER.containsKey(host)) {
+            return HOSTS_FILTER.get(host);
         }
         return null;
     }
@@ -57,7 +74,7 @@ public class VideoParseRuler {
                             checkIsVideo = false;
                             break;
                         }
-                        LOG.i("RULE:" + hostRules.get(i).get(j));
+                        LOG.i("VIDEO RULE:" + hostRules.get(i).get(j));
                     }
                 } else {
                     checkIsVideo = false;
@@ -73,5 +90,54 @@ public class VideoParseRuler {
         }
         return isVideo;
     }
+
+    public static boolean isFilter(String webUrl, String url) {
+        try {
+            boolean isFilter = false;
+            if (!HOSTS_FILTER.isEmpty() && webUrl != null) {
+                Uri uri = Uri.parse(webUrl);
+                if(getHostFilters(uri.getHost()) != null){
+                    isFilter = checkIsFilterForOneHostRules(uri.getHost(), url);
+                }
+            }
+            return isFilter;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private static boolean checkIsFilterForOneHostRules(String host, String url) {
+        boolean isFilter = false;
+        ArrayList<ArrayList<String>> hostFilters = getHostFilters(host);
+        if (hostFilters != null && hostFilters.size() > 0) {
+            boolean isFilterRuleCheck = false;
+            for(int i=0; i<hostFilters.size(); i++) {
+                boolean checkIsFilter = true;
+                if (hostFilters.get(i) != null && hostFilters.get(i).size() > 0) {
+                    for(int j=0; j<hostFilters.get(i).size(); j++) {
+                        Pattern onePattern = Pattern.compile("" + hostFilters.get(i).get(j));
+                        if (!onePattern.matcher(url).find()) {
+                            checkIsFilter = false;
+                            break;
+                        }
+                        LOG.i("FILTER RULE:" + hostFilters.get(i).get(j));
+                    }
+                } else {
+                    checkIsFilter = false;
+                }
+                if (checkIsFilter) {
+                    isFilterRuleCheck = true;
+                    break;
+                }
+            }
+            if (isFilterRuleCheck) {
+                isFilter = true;
+            }
+        }
+        return isFilter;
+    }
+
+
 
 }

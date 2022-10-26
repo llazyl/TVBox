@@ -47,6 +47,7 @@ public class CheckboxSearchAdapter extends ListAdapter<SourceBean, CheckboxSearc
         data.addAll(newData);
         setCheckedSource(checkedSources);
         notifyDataSetChanged();
+        SearchHelper.putCheckedSources(checkedSources);
     }
 
 
@@ -56,13 +57,13 @@ public class CheckboxSearchAdapter extends ListAdapter<SourceBean, CheckboxSearc
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, final int position) {
-        SourceBean sourceBean = data.get(position);
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        int pos = holder.getAdapterPosition();
+        SourceBean sourceBean = data.get(pos);
         holder.oneSearchSource.setOnCheckedChangeListener(null);
         holder.oneSearchSource.setText(sourceBean.getName());
         if (mCheckedSources != null) {
             holder.oneSearchSource.setChecked(mCheckedSources.containsKey(sourceBean.getKey()));
-            SearchHelper.putCheckedSources(mCheckedSources);
         }
         holder.oneSearchSource.setTag(sourceBean);
         holder.oneSearchSource.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -73,7 +74,8 @@ public class CheckboxSearchAdapter extends ListAdapter<SourceBean, CheckboxSearc
                 } else {
                     mCheckedSources.remove(sourceBean.getKey());
                 }
-                notifyItemChanged(position);
+                SearchHelper.putCheckedSource(sourceBean.getKey(), isChecked);
+                notifyItemChanged(pos);
             }
         });
     }
