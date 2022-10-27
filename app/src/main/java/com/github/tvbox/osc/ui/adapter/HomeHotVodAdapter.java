@@ -8,6 +8,7 @@ import android.widget.TextView;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.github.tvbox.osc.R;
+import com.github.tvbox.osc.api.ApiConfig;
 import com.github.tvbox.osc.bean.Movie;
 import com.github.tvbox.osc.picasso.RoundTransformation;
 import com.github.tvbox.osc.util.DefaultConfig;
@@ -26,12 +27,19 @@ public class HomeHotVodAdapter extends BaseQuickAdapter<Movie.Video, BaseViewHol
 
     @Override
     protected void convert(BaseViewHolder helper, Movie.Video item) {
-        TextView tvRate = helper.getView(R.id.tvNote);
-        if (item.note == null || item.note.isEmpty()) {
-            tvRate.setVisibility(View.GONE);
+        TextView tvRate = helper.getView(R.id.tvRate);
+        if (item.sourceKey!=null) {
+            tvRate.setText(ApiConfig.get().getSource(item.sourceKey).getName());
         } else {
-            tvRate.setText(item.note);
-            tvRate.setVisibility(View.VISIBLE);
+            tvRate.setText("豆瓣热播");
+        }
+
+        TextView tvNote = helper.getView(R.id.tvNote);
+        if (item.note == null || item.note.isEmpty()) {
+            tvNote.setVisibility(View.GONE);
+        } else {
+            tvNote.setText(item.note);
+            tvNote.setVisibility(View.VISIBLE);
         }
         helper.setText(R.id.tvName, item.name);
         ImageView ivThumb = helper.getView(R.id.ivThumb);
