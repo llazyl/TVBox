@@ -1524,9 +1524,6 @@ public class PlayFragment extends BaseLazyFragment {
         @Nullable
         @Override
         public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
-            CookieManager cookieManager = CookieManager.getInstance();
-            String CookieStr = cookieManager.getCookie(url);
-            if(CookieStr!=null)webCookieStr=CookieStr;
             WebResourceResponse response = checkIsVideo(url, null);
             return response;
         }
@@ -1536,6 +1533,9 @@ public class PlayFragment extends BaseLazyFragment {
         @TargetApi(Build.VERSION_CODES.LOLLIPOP)
         public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
             String url = request.getUrl().toString();
+            CookieManager cookieManager = CookieManager.getInstance();
+            String CookieStr = cookieManager.getCookie(url);
+            if(CookieStr!=null)webCookieStr=CookieStr;
             LOG.i("shouldInterceptRequest url:" + url);
             HashMap<String, String> webHeaders = new HashMap<>();
             Map<String, String> hds = request.getRequestHeaders();
