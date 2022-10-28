@@ -113,22 +113,19 @@ public class LiveEpgAdapter extends BaseQuickAdapter<Epginfo, BaseViewHolder> {
 
     public void setSelectedEpgIndex(int selectedEpgIndex) {
         if (selectedEpgIndex == this.selectedEpgIndex) return;
-        int preSelectedIndex = this.selectedEpgIndex;
         this.selectedEpgIndex = selectedEpgIndex;
-        if (preSelectedIndex != -1)
-            notifyItemChanged(preSelectedIndex);
         if (this.selectedEpgIndex != -1)
             notifyItemChanged(this.selectedEpgIndex);
     }
+
+
     public int getFocusedEpgIndex() {
         return focusedEpgIndex;
     }
+
     public void setFocusedEpgIndex(int focusedEpgIndex) {
-        int preSelectedIndex = this.selectedEpgIndex;
         this.focusedEpgIndex = focusedEpgIndex;
-        if (preSelectedIndex != -1)
-            notifyItemChanged(preSelectedIndex);
-        else if (this.focusedEpgIndex != -1)
+        if (this.focusedEpgIndex != -1)
             notifyItemChanged(this.focusedEpgIndex);
     }
 }
