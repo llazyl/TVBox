@@ -68,17 +68,21 @@ public class RemoteTVBox {
 
     private static int avalibleFailNum;
     private static int avalibleSuccessNum;
+    private static int avalibleIpNum;
 
     public static void searchAvalible(Callback callback) {
         avalibleFailNum = 0;
         avalibleSuccessNum = 0;
         String localIp = RemoteServer.getLocalIPAddress(App.getInstance());
         List<IpScanningVo> searchList = new IpScanning().search(localIp);
-        int ipNum = searchList.size();
+        avalibleIpNum = searchList.size();
         int port = 9978;
         for(IpScanningVo one : searchList) {
             String ip = one.getIp();
-            if (ip.equals(localIp)) continue;
+            if (ip.equals(localIp)) {
+                avalibleIpNum --;
+                continue;
+            }
             String actionUrl = "http://" + ip + ":" + port + "/action";
             String viewHost = "" + ip  + ":" + port;
             try {
@@ -86,7 +90,7 @@ public class RemoteTVBox {
                     @Override
                     public void onFailure(Call call, IOException e) {
                         avalibleFailNum++;
-                        callback.fail(avalibleFailNum == ipNum, avalibleSuccessNum + avalibleFailNum == ipNum);
+                        callback.fail(avalibleFailNum == avalibleIpNum, (avalibleSuccessNum + avalibleFailNum) == avalibleIpNum);
                     }
 
                     @Override
@@ -94,7 +98,7 @@ public class RemoteTVBox {
                         avalibleSuccessNum ++;
                         String result = response.body().string();
                         if (result.equals("ok")) {
-                            callback.found(viewHost, avalibleSuccessNum + avalibleFailNum == ipNum);
+                            callback.found(viewHost, (avalibleSuccessNum + avalibleFailNum) == avalibleIpNum);
                         }
                     }
                 });
