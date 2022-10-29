@@ -38,14 +38,21 @@ public class IpScanning {
      * 通过IP扫描对应网段中可以使用的网段
      * @param ips 输入的IP
      */
-    public List<IpScanningVo> search(String ips) {
+    public List<IpScanningVo> search(String ips, boolean all) {
         //清空缓存
         ipScanningVos.clear();
         int divisionIp = ips.lastIndexOf(".");
         String substring = ips.substring(0, divisionIp + 1);
+
+        String last = ips.substring(divisionIp + 1);
+        int end = Integer.parseInt(last) + 30; //搜索范围不是全部，缩小范围
+        end = end > 255 ? 255 : end;
+        if (all) end = 255;
+        int total = end;
+
         //扫描对应网段中的所有Ip
-        BlockingQueue<IpScanningVo> queue = new ArrayBlockingQueue<>(255);
-        for (int i = 1; i < 255; i++) {
+        BlockingQueue<IpScanningVo> queue = new ArrayBlockingQueue<>(total);
+        for (int i = 1; i < total; i++) {
             String iip = substring + i;
             threadPool.submit(new PingIp(iip, queue));
         }

@@ -106,31 +106,6 @@ public class DefaultConfig {
         return start > -1 ? fileName.substring(0, start) : fileName;
     }
 
-//    private static final String[] videoSuffix = {"m3u8","mp4","flv","avi","mkv","rm","wmv","mpg"};
-//    public static boolean isVideoFormat(String url) {
-//        if (url.contains("=http")) {
-//            return false;
-//        }
-//        Uri uri = Uri.parse(url);
-//        String path = uri.getPath();
-//        if (path == null || path.isEmpty()) {
-//            return false;
-//        }
-//        if (path.endsWith(".js") || path.endsWith(".css") || path.endsWith(".html")) {
-//            return false;
-//        }
-//        String query = uri.getQuery();
-//        if (query != null && query.startsWith("http")) {
-//            return false;
-//        }
-//        for(String oneSubfix : videoSuffix) {
-//            if (path.contains("." + oneSubfix)) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-
     private static final Pattern snifferMatch = Pattern.compile(
             "http((?!http).){20,}?\\.(m3u8|mp4|flv|avi|mkv|rm|wmv|mpg)\\?.*|" +
                     "http((?!http).){20,}\\.(m3u8|mp4|flv|avi|mkv|rm|wmv|mpg)|" +

@@ -74,7 +74,7 @@ public class RemoteTVBox {
         avalibleFailNum = 0;
         avalibleSuccessNum = 0;
         String localIp = RemoteServer.getLocalIPAddress(App.getInstance());
-        List<IpScanningVo> searchList = new IpScanning().search(localIp);
+        List<IpScanningVo> searchList = new IpScanning().search(localIp, false);
         avalibleIpNum = searchList.size();
         int port = 9978;
         for(IpScanningVo one : searchList) {
