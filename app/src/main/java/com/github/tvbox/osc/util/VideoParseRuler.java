@@ -10,6 +10,11 @@ public class VideoParseRuler {
     private static final HashMap<String, ArrayList<ArrayList<String>>> HOSTS_RULE = new HashMap<>();
     private static final HashMap<String, ArrayList<ArrayList<String>>> HOSTS_FILTER = new HashMap<>();
 
+    public static void clearRule() {
+        HOSTS_RULE.clear();
+        HOSTS_FILTER.clear();
+    }
+
     public static void addHostRule(String host, ArrayList<String> rule) {
         ArrayList<ArrayList<String>> rules = new ArrayList<>();
         if (HOSTS_RULE.get(host) != null && HOSTS_RULE.get(host).size() > 0) {

@@ -12,7 +12,9 @@ import com.github.tvbox.osc.api.ApiConfig;
 import com.github.tvbox.osc.bean.Movie;
 import com.github.tvbox.osc.picasso.RoundTransformation;
 import com.github.tvbox.osc.util.DefaultConfig;
+import com.github.tvbox.osc.util.HawkConfig;
 import com.github.tvbox.osc.util.MD5;
+import com.orhanobut.hawk.Hawk;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -28,10 +30,12 @@ public class HomeHotVodAdapter extends BaseQuickAdapter<Movie.Video, BaseViewHol
     @Override
     protected void convert(BaseViewHolder helper, Movie.Video item) {
         TextView tvRate = helper.getView(R.id.tvRate);
-        if (item.sourceKey!=null) {
+        if (Hawk.get(HawkConfig.HOME_REC, 0) == 2){
             tvRate.setText(ApiConfig.get().getSource(item.sourceKey).getName());
-        } else {
+        }else if(Hawk.get(HawkConfig.HOME_REC, 0) == 0){
             tvRate.setText("豆瓣热播");
+        }else {
+            tvRate.setVisibility(View.GONE);
         }
 
         TextView tvNote = helper.getView(R.id.tvNote);

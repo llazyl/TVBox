@@ -381,6 +381,7 @@ public class ApiConfig {
         }
         //video parse rule for host
         if (infoJson.has("rules")) {
+            VideoParseRuler.clearRule();
             for(JsonElement oneHostRule : infoJson.getAsJsonArray("rules")) {
                 JsonObject obj = (JsonObject) oneHostRule;
                 String host = obj.get("host").getAsString();

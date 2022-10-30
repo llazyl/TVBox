@@ -31,7 +31,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/vs_5"
                 android:layout_marginRight="@dimen/vs_5"
-                android:background="@drawable/shape_thumb_year"
+                android:background="@drawable/shape_thumb_bottom_name"
                 android:ellipsize="end"
                 android:gravity="center"
                 android:paddingLeft="@dimen/vs_5"
