@@ -80,12 +80,7 @@ public class ControlManager {
 
                 @Override
                 public void onPushReceived(String url) {
-                    Matcher m = Pattern.compile("(https?://[A-Za-z0-9:_@$#\\+\\|\\/\\.\\?\\=\\&\\%\\-]+)").matcher(url);
-                    String finalUrl = url;
-                    if (m.find()) {
-                        finalUrl = m.group(1);
-                    }
-                    EventBus.getDefault().post(new RefreshEvent(RefreshEvent.TYPE_PUSH_URL, finalUrl));
+                    EventBus.getDefault().post(new RefreshEvent(RefreshEvent.TYPE_PUSH_URL, url));
                 }
             });
             try {
