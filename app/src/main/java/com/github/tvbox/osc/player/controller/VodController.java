@@ -101,8 +101,10 @@ public class VodController extends BaseController {
     boolean mIsDragging;
     LinearLayout mProgressRoot;
     TextView mProgressText;
+    TextView seekTime;
     ImageView mProgressIcon;
     LinearLayout mBottomRoot;
+    LinearLayout bottomCenterContainer;
     LinearLayout mTopRoot1;
     LinearLayout mTopRoot2;
     LinearLayout mParseRoot;
@@ -134,6 +136,8 @@ public class VodController extends BaseController {
     Runnable myRunnable;
     int myHandleSeconds = 6000;//闲置多少毫秒秒关闭底栏  默认6秒
 
+    int videoPlayState = 0;
+
     private Runnable myRunnable2 = new Runnable() {
         @Override
         public void run() {
@@ -146,6 +150,9 @@ public class VodController extends BaseController {
             String width = Integer.toString(mControlWrapper.getVideoSize()[0]);
             String height = Integer.toString(mControlWrapper.getVideoSize()[1]);
             mVideoSize.setText("[ " + width + " X " + height +" ]");
+            int getCurrentPosition = (int) (mControlWrapper.getCurrentPosition() / 1000.0);
+            int getDuration = (int) (mControlWrapper.getDuration() / 1000.0);
+            seekTime.setText(String.format("%02d", getCurrentPosition / 60) + ":" + String.format("%02d", getCurrentPosition % 60) + " | " + String.format("%02d", getDuration / 60) + ":" + String.format("%02d", getDuration % 60));
 
             mHandler.postDelayed(this, 1000);
         }
@@ -191,6 +198,9 @@ public class VodController extends BaseController {
         mZimuBtn = findViewById(R.id.zimu_select);
         mAudioTrackBtn = findViewById(R.id.audio_track_select);
         mLandscapePortraitBtn = findViewById(R.id.landscape_portrait);
+        bottomCenterContainer = findViewById(R.id.tv_bottom_center_container);
+        seekTime = findViewById(R.id.tv_seek_time);
+
         initSubtitleInfo();
 
         myHandle = new Handler();
@@ -320,13 +330,14 @@ public class VodController extends BaseController {
                     mPlayerConfig.put("sp", speed);
                     updatePlayerCfgView();
                     listener.updatePlayerCfg();
+                    speed_old = speed;
                     mControlWrapper.setSpeed(speed);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
         });
-        // takagen99: Add long press to reset speed
+
         mPlayerSpeedBtn.setOnLongClickListener(new OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
@@ -334,6 +345,7 @@ public class VodController extends BaseController {
                     mPlayerConfig.put("sp", 1.0f);
                     updatePlayerCfgView();
                     listener.updatePlayerCfg();
+                    speed_old = 1.0f;
                     mControlWrapper.setSpeed(1.0f);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -607,7 +619,7 @@ public class VodController extends BaseController {
         initLandscapePortraitBtnInfo();
     }
 
-    void initLandscapePortraitBtnInfo() {
+    public void initLandscapePortraitBtnInfo() {
         double screenSqrt = ScreenUtils.getSqrt(mActivity);
         if (screenSqrt < 20.0) {
             mLandscapePortraitBtn.setVisibility(View.VISIBLE);
@@ -792,13 +804,16 @@ public class VodController extends BaseController {
     @Override
     protected void onPlayStateChanged(int playState) {
         super.onPlayStateChanged(playState);
+        videoPlayState = playState;
         switch (playState) {
             case VideoView.STATE_IDLE:
                 break;
             case VideoView.STATE_PLAYING:
+                bottomCenterContainer.setVisibility(VISIBLE);
                 startProgress();
                 break;
             case VideoView.STATE_PAUSED:
+                bottomCenterContainer.setVisibility(GONE);
                 mTopRoot1.setVisibility(GONE);
                 mTopRoot2.setVisibility(GONE);
                 mPlayTitle.setVisibility(VISIBLE);
@@ -828,11 +843,13 @@ public class VodController extends BaseController {
     }
 
     void showBottom() {
+        bottomCenterContainer.setVisibility(GONE);
         mHandler.removeMessages(1003);
         mHandler.sendEmptyMessage(1002);
     }
 
     void hideBottom() {
+        bottomCenterContainer.setVisibility(VISIBLE);
         mHandler.removeMessages(1002);
         mHandler.sendEmptyMessage(1003);
     }
@@ -878,6 +895,47 @@ public class VodController extends BaseController {
             }
         }
         return super.dispatchKeyEvent(event);
+    }
+
+
+    private boolean fromLongPress;
+    private float speed_old = 1.0f;
+    @Override
+    public void onLongPress(MotionEvent e) {
+        if (videoPlayState!=VideoView.STATE_PAUSED) {
+            fromLongPress = true;
+            try {
+                speed_old = (float) mPlayerConfig.getDouble("sp");
+                float speed = 3.0f;
+                mPlayerConfig.put("sp", speed);
+                updatePlayerCfgView();
+                mBottomRoot.setVisibility(VISIBLE);
+                listener.updatePlayerCfg();
+                mControlWrapper.setSpeed(speed);
+            } catch (JSONException f) {
+                f.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent e) {
+        if (e.getAction() == MotionEvent.ACTION_UP) {
+            if (fromLongPress) {
+                fromLongPress =false;
+                try {
+                    float speed = speed_old;
+                    mPlayerConfig.put("sp", speed);
+                    updatePlayerCfgView();
+                    mBottomRoot.setVisibility(GONE);
+                    listener.updatePlayerCfg();
+                    mControlWrapper.setSpeed(speed);
+                } catch (JSONException f) {
+                    f.printStackTrace();
+                }
+            }
+        }
+        return super.onTouchEvent(e);
     }
 
     @Override

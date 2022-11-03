@@ -85,6 +85,32 @@
             android:textColor="@android:color/white"
             android:textSize="@dimen/ts_20" />
     </LinearLayout>
+    <LinearLayout
+        android:id="@+id/tv_bottom_center_container"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:tag="tv_top_container"
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:layout_gravity="right"
+        android:layout_marginRight="@dimen/vs_20"
+        android:layout_marginTop="@dimen/vs_10"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_seek_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:paddingTop="@dimen/vs_20"
+            android:paddingRight="@dimen/vs_20"
+            android:tag="vod_control_pause_time"
+            android:text="00:00 | 00:00"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/ts_20" />
+    </LinearLayout>
 
     <com.github.tvbox.osc.subtitle.widget.SimpleSubtitleView
         android:id="@+id/subtitle_view"
