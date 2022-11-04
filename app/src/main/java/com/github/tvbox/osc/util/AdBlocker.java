@@ -9,6 +9,14 @@ import java.util.List;
 public class AdBlocker {
     private static final List<String> AD_HOSTS = new ArrayList<>();
 
+    public static void clear() {
+        AD_HOSTS.clear();
+    }
+
+    public static boolean isEmpty() {
+        return AD_HOSTS.isEmpty();
+    }
+
     public static void addAdHost(String host) {
         AD_HOSTS.add(host);
     }
