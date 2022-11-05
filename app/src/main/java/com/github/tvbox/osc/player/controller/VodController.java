@@ -70,7 +70,7 @@ public class VodController extends BaseController {
                         mTopRoot1.setVisibility(VISIBLE);
                         mTopRoot2.setVisibility(VISIBLE);
                         mPlayTitle.setVisibility(GONE);
-                        mBottomRoot.requestFocus();
+                        mNextBtn.requestFocus();
                         break;
                     }
                     case 1003: { // 隐藏底部菜单
