@@ -542,7 +542,6 @@ public class PlayFragment extends BaseLazyFragment {
                         }
                         mVideoView.start();
                         mController.resetSpeed();
-                        mController.initLandscapePortraitBtnInfo();
                     }
                 }
             }

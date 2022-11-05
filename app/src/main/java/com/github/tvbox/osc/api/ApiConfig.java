@@ -381,7 +381,22 @@ public class ApiConfig {
                 liveChannelGroup.setGroupName(url);
                 liveChannelGroupList.add(liveChannelGroup);
             } else {
-                if(lives.contains("group"))loadLives(infoJson.get("lives").getAsJsonArray());
+                if(lives.contains("group")){
+                    loadLives(infoJson.get("lives").getAsJsonArray());
+                }else {
+                    JsonObject fengMiLives = infoJson.get("lives").getAsJsonArray().get(0).getAsJsonObject();
+                    String type=fengMiLives.get("type").getAsString();
+                    if(type.equals("0")){
+                        String url =fengMiLives.get("url").getAsString();
+                        if(url.startsWith("http")){
+                            url = Base64.encodeToString(url.getBytes("UTF-8"), Base64.DEFAULT | Base64.URL_SAFE | Base64.NO_WRAP);
+                        }
+                        url ="http://127.0.0.1:9978/proxy?do=live&type=txt&ext="+url;
+                        LiveChannelGroup liveChannelGroup = new LiveChannelGroup();
+                        liveChannelGroup.setGroupName(url);
+                        liveChannelGroupList.add(liveChannelGroup);
+                    }
+                }
             }
         } catch (Throwable th) {
             th.printStackTrace();
