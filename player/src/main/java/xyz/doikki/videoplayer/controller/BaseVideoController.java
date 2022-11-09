@@ -616,7 +616,7 @@ public abstract class BaseVideoController extends FrameLayout
                     mOrientationHelper.disable();
                 }
                 if (hasCutout()) {
-                    CutoutUtil.adaptCutoutAboveAndroidP(getContext(), false);
+                    CutoutUtil.adaptCutoutAboveAndroidP(getContext(), true);
                 }
                 break;
             case VideoView.PLAYER_FULL_SCREEN:

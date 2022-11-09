@@ -31,6 +31,7 @@ import java.io.InputStreamReader;
 
 import me.jessyan.autosize.AutoSizeCompat;
 import me.jessyan.autosize.internal.CustomAdapt;
+import xyz.doikki.videoplayer.util.CutoutUtil;
 
 /**
  * @author pj567
@@ -59,6 +60,7 @@ public abstract class BaseActivity extends AppCompatActivity implements CustomAd
         super.onCreate(savedInstanceState);
         setContentView(getLayoutResID());
         mContext = this;
+        CutoutUtil.adaptCutoutAboveAndroidP(mContext, true);//设置刘海
         AppManager.getInstance().addActivity(this);
         init();
     }

@@ -2,6 +2,7 @@ package xyz.doikki.videoplayer.util;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Build;
@@ -143,4 +144,19 @@ public final class CutoutUtil {
         }
     }
 
+
+    /**
+     * 适配刘海屏，针对Android P以上系统
+     */
+    public static void adaptCutoutAboveAndroidP(Dialog dialog, boolean isAdapt) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
+            if (isAdapt) {
+                lp.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+            } else {
+                lp.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT;
+            }
+            dialog.getWindow().setAttributes(lp);
+        }
+    }
 }

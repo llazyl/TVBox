@@ -99,6 +99,7 @@ public class SearchActivity extends BaseActivity {
         initView();
         initViewModel();
         initData();
+        hasKeyBoard = true;
     }
 
     /*
@@ -137,6 +138,13 @@ public class SearchActivity extends BaseActivity {
             }
             pauseRunnable.clear();
             pauseRunnable = null;
+        }
+        if (hasKeyBoard) {
+            tvSearch.requestFocus();
+            tvSearch.requestFocusFromTouch();
+        }else {
+            etSearch.requestFocus();
+            etSearch.requestFocusFromTouch();
         }
     }
 
@@ -186,6 +194,7 @@ public class SearchActivity extends BaseActivity {
                     } catch (Throwable th) {
                         th.printStackTrace();
                     }
+                    hasKeyBoard = false;
                     Bundle bundle = new Bundle();
                     bundle.putString("id", video.id);
                     bundle.putString("sourceKey", video.sourceKey);
@@ -197,6 +206,7 @@ public class SearchActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 FastClickCheckUtil.check(v);
+                hasKeyBoard = true;
                 String wd = etSearch.getText().toString().trim();
                 if (!TextUtils.isEmpty(wd)) {
                     search(wd);
@@ -374,7 +384,7 @@ public class SearchActivity extends BaseActivity {
     private void refreshQRCode() {
         String address = ControlManager.get().getAddress(false);
         tvAddress.setText(String.format("远程搜索使用手机/电脑扫描下面二维码或者直接浏览器访问地址\n%s", address));
-        ivQRCode.setImageBitmap(QRCodeGen.generateBitmap(address, 300, 300));
+        ivQRCode.setImageBitmap(QRCodeGen.generateBitmap(address + "search.html", 300, 300));
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
