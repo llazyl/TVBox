@@ -11,11 +11,13 @@
         android:id="@+id/tvSeries"
         android:layout_width="match_parent"
         android:layout_height="@dimen/vs_50"
-        android:ellipsize="marquee"
-        android:gravity="center"
-        android:marqueeRepeatLimit="marquee_forever"
-        android:padding="@dimen/vs_10"
         android:singleLine="true"
+        android:ellipsize="marquee"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:gravity="center"
+        android:padding="@dimen/vs_10"
         android:textColor="@android:color/white"
         android:textSize="@dimen/ts_20" />
 </LinearLayout>

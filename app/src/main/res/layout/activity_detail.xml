@@ -254,6 +254,18 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/vs_45"
             android:layout_marginLeft="@dimen/vs_50"
+            android:layout_marginTop="@dimen/vs_0"
+            android:layout_marginRight="@dimen/vs_50"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            app:tv_horizontalSpacingWithMargins="@dimen/vs_10"
+            app:tv_selectedItemIsCentered="true" />
+
+        <com.owen.tvrecyclerview.widget.TvRecyclerView
+            android:id="@+id/mSeriesGroupView"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/vs_45"
+            android:layout_marginLeft="@dimen/vs_50"
             android:layout_marginTop="@dimen/vs_10"
             android:layout_marginRight="@dimen/vs_50"
             android:clipChildren="false"
@@ -268,7 +280,7 @@
             android:layout_marginLeft="@dimen/vs_50"
             android:layout_marginTop="@dimen/vs_10"
             android:layout_marginRight="@dimen/vs_50"
-            android:layout_marginBottom="@dimen/vs_30"
+            android:layout_marginBottom="@dimen/vs_10"
             android:clipChildren="false"
             android:clipToPadding="false"
             app:tv_horizontalSpacingWithMargins="@dimen/vs_10"

@@ -6,6 +6,7 @@
     android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_root"
         android:layout_width="@dimen/vs_480"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -41,6 +42,7 @@
             app:layout_constraintTop_toBottomOf="@+id/title"
             app:tv_layoutManager="V7LinearLayoutManager"
             app:tv_selectedItemIsCentered="true"
+            app:tv_horizontalSpacingWithMargins="@dimen/vs_10"
             app:tv_verticalSpacingWithMargins="@dimen/vs_10" />
 
         <View

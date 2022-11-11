@@ -2,6 +2,7 @@ package com.github.tvbox.osc.ui.activity;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -84,7 +85,7 @@ public class SearchActivity extends BaseActivity {
     private String searchTitle = "";
     private TextView tvSearchCheckboxBtn;
 
-    private HashMap<String, String> mCheckSources = null;
+    private static HashMap<String, String> mCheckSources = null;
     private SearchCheckboxDialog mSearchCheckboxDialog = null;
 
     @Override
@@ -271,6 +272,12 @@ public class SearchActivity extends BaseActivity {
                     }
                     mSearchCheckboxDialog = new SearchCheckboxDialog(SearchActivity.this, searchAbleSource, mCheckSources);
                 }
+                mSearchCheckboxDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        dialog.dismiss();
+                    }
+                });
                 mSearchCheckboxDialog.show();
             }
         });
@@ -409,6 +416,10 @@ public class SearchActivity extends BaseActivity {
 
     private void initCheckedSourcesForSearch() {
         mCheckSources = SearchHelper.getSourcesForSearch();
+    }
+
+    public static void setCheckedSourcesForSearch(HashMap<String,String> checkedSources) {
+        mCheckSources = checkedSources;
     }
 
     private void search(String title) {
