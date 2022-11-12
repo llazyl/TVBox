@@ -199,7 +199,7 @@ public class DetailActivity extends BaseActivity {
         seriesGroupAdapter = new BaseQuickAdapter<String, BaseViewHolder>(R.layout.item_series_group, seriesGroupOptions) {
             @Override
             protected void convert(BaseViewHolder helper, String item) {
-                TextView tvSeries = helper.getView(R.id.tvSeriesFlag);
+                TextView tvSeries = helper.getView(R.id.tvSeriesGroup);
                 tvSeries.setText(item);
             }
         };
@@ -391,18 +391,18 @@ public class DetailActivity extends BaseActivity {
         mSeriesGroupView.setOnItemListener(new TvRecyclerView.OnItemListener() {
             @Override
             public void onItemPreSelected(TvRecyclerView parent, View itemView, int position) {
-                TextView txtView = itemView.findViewById(R.id.tvSeriesFlag);
+                TextView txtView = itemView.findViewById(R.id.tvSeriesGroup);
                 txtView.setTextColor(Color.WHITE);
                 currentSeriesGroupView = null;
             }
 
             @Override
             public void onItemSelected(TvRecyclerView parent, View itemView, int position) {
-                TextView txtView = itemView.findViewById(R.id.tvSeriesFlag);
+                TextView txtView = itemView.findViewById(R.id.tvSeriesGroup);
                 txtView.setTextColor(mContext.getResources().getColor(R.color.color_02F8E1));
                 if (vodInfo != null && vodInfo.seriesMap.get(vodInfo.playFlag).size() > 0) {
                     int targetPos = position * GroupCount;
-                    mGridView.smoothScrollToPosition(targetPos);
+                    mGridView.scrollToPosition(targetPos);
                 }
                 currentSeriesGroupView = itemView;
                 currentSeriesGroupView.isSelected();
@@ -416,14 +416,14 @@ public class DetailActivity extends BaseActivity {
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 FastClickCheckUtil.check(view);
                 if(currentSeriesGroupView != null) {
-                    TextView txtView = currentSeriesGroupView.findViewById(R.id.tvSeriesFlag);
+                    TextView txtView = currentSeriesGroupView.findViewById(R.id.tvSeriesGroup);
                     txtView.setTextColor(Color.WHITE);
                 }
-                TextView newTxtView = view.findViewById(R.id.tvSeriesFlag);
+                TextView newTxtView = view.findViewById(R.id.tvSeriesGroup);
                 newTxtView.setTextColor(mContext.getResources().getColor(R.color.color_02F8E1));
                 if (vodInfo != null && vodInfo.seriesMap.get(vodInfo.playFlag).size() > 0) {
                     int targetPos =  position * GroupCount;
-                    mGridView.smoothScrollToPosition(targetPos);
+                    mGridView.scrollToPosition(targetPos);
                 }
                 currentSeriesGroupView = view;
                 currentSeriesGroupView.isSelected();
@@ -652,8 +652,8 @@ public class DetailActivity extends BaseActivity {
                         // startQuickSearch();
                     } else {
                         mGridViewFlag.setVisibility(View.GONE);
-                        mSeriesGroupView.setVisibility(View.GONE);
                         mGridView.setVisibility(View.GONE);
+                        mSeriesGroupView.setVisibility(View.GONE);
                         tvPlay.setVisibility(View.GONE);
                         mEmptyPlayList.setVisibility(View.VISIBLE);
                     }

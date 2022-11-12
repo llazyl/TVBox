@@ -13,13 +13,13 @@
     android:paddingBottom="@dimen/vs_1">
 
     <TextView
-        android:id="@+id/tvSeriesFlag"
+        android:id="@+id/tvSeriesGroup"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/vs_30"
         android:ellipsize="end"
         android:gravity="center"
         android:singleLine="true"
-        android:text="11111111111"
+        android:text=""
         android:textColor="@android:color/white"
         android:textSize="@dimen/ts_20" />
 </LinearLayout>
