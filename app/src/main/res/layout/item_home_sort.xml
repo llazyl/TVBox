@@ -29,4 +29,15 @@
         android:layout_marginLeft="@dimen/vs_3"
         android:src="@drawable/icon_filter"
         android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/tvFilterColor"
+        android:layout_width="@dimen/vs_30"
+        android:layout_height="@dimen/vs_30"
+        android:layout_gravity="center"
+        android:layout_marginStart="@dimen/vs_3"
+        android:layout_marginLeft="@dimen/vs_3"
+        android:src="@drawable/icon_filter_color"
+        android:visibility="gone" />
+
 </LinearLayout>
