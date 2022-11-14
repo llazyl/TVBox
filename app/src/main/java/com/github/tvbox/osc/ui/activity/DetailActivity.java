@@ -954,11 +954,9 @@ public class DetailActivity extends BaseActivity {
     }
 
     void toggleSubtitleTextSize() {
-        int subtitleTextSize;
-        if (fullWindows) {
-            subtitleTextSize = SubtitleHelper.getTextSize(this);
-        } else {
-            subtitleTextSize = SubtitleHelper.getSubtitleTextAutoSize(this);
+        int subtitleTextSize  = SubtitleHelper.getTextSize(this);
+        if (!fullWindows) {
+            subtitleTextSize *= 0.6;
         }
         EventBus.getDefault().post(new RefreshEvent(RefreshEvent.TYPE_SUBTITLE_SIZE_CHANGE, subtitleTextSize));
     }
