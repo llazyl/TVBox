@@ -69,7 +69,7 @@ public class GridFilterDialog extends BaseDialog {
                 public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                     selectChange = true;
                     String filterSelect = sortData.filterSelect.get(key);
-                    if (filterSelect == null || !filterSelect.equals(values.get(position))) {
+                    if (filterSelect == null || !filterSelect.equals(keys.get(position))) {
                         sortData.filterSelect.put(key, keys.get(position));
                         if (pre != null) {
                             TextView val = pre.findViewById(R.id.filterValue);
