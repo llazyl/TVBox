@@ -254,6 +254,7 @@ public class SourceViewModel extends ViewModel {
                     .params("ac", type == 0 ? "videolist" : "detail")
                     .params("t", sortData.id)
                     .params("pg", page)
+                    .params(sortData.filterSelect)
                     .execute(new AbsCallback<String>() {
 
                         @Override
