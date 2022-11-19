@@ -294,7 +294,7 @@
         android:layout_height="@dimen/vs_320"
         android:layout_marginStart="@dimen/vs_50"
         android:layout_marginLeft="@dimen/vs_50"
-        android:layout_marginTop="@dimen/vs_10"
+        android:layout_marginTop="@dimen/vs_20"
         android:layout_marginBottom="@dimen/vs_10"
         android:visibility="gone" />
 
@@ -306,7 +306,7 @@
         android:background="@drawable/preview_player_block"
         android:layout_marginStart="@dimen/vs_50"
         android:layout_marginLeft="@dimen/vs_50"
-        android:layout_marginTop="@dimen/vs_10"
+        android:layout_marginTop="@dimen/vs_20"
         android:layout_marginBottom="@dimen/vs_10"
         android:visibility="gone" />
 </FrameLayout>
