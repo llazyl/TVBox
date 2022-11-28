@@ -4,7 +4,6 @@ import android.content.Context;
 
 import com.github.tvbox.osc.base.App;
 import com.github.tvbox.osc.util.MD5;
-import com.github.tvbox.osc.util.js.SpiderJS;
 import com.lzy.okgo.OkGo;
 
 import org.json.JSONObject;
@@ -120,19 +119,6 @@ public class JarLoader {
     }
 
     public Spider getSpider(String key, String cls, String ext, String jar) {
-        if (cls.toLowerCase().endsWith(".js") || cls.toLowerCase().contains(".js?")) {
-            if (spiders.containsKey(key))
-                return spiders.get(key);
-            try {
-                SpiderJS sp = new SpiderJS(key, cls, ext);
-                sp.init(App.getInstance(), ext);
-                spiders.put(key, sp);
-                return sp;
-            } catch (Throwable th) {
-                th.printStackTrace();
-            }
-            return null;
-        }
         String clsKey = cls.replace("csp_", "");
         String jarUrl = "";
         String jarMd5 = "";

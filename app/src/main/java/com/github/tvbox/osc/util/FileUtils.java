@@ -1,5 +1,9 @@
 package com.github.tvbox.osc.util;
 
+import android.os.Environment;
+
+import com.github.tvbox.osc.base.App;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -93,5 +97,44 @@ public class FileUtils {
         }
         // 返回拼接好的JSON String
         return jsonString;
+    }
+
+    public static String getAssetFile(String assetName) throws IOException {
+        InputStream is = App.getInstance().getAssets().open(assetName);
+        byte[] data = new byte[is.available()];
+        is.read(data);
+        return new String(data, "UTF-8");
+    }
+
+    public static boolean isAssetFile(String name, String path) {
+        try {
+            for(String one : App.getInstance().getAssets().list(path)) {
+                if (one.equals(name)) return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static String getRootPath() {
+        return Environment.getExternalStorageDirectory().getAbsolutePath();
+    }
+
+    public static File getLocal(String path) {
+        return new File(path.replace("file:/", getRootPath()));
+    }
+
+    public static String read(String path) {
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(getLocal(path))));
+            StringBuilder sb = new StringBuilder();
+            String text;
+            while ((text = br.readLine()) != null) sb.append(text).append("\n");
+            br.close();
+            return sb.toString();
+        } catch (Exception e) {
+            return "";
+        }
     }
 }
