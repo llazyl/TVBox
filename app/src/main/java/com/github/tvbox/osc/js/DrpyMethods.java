@@ -44,7 +44,7 @@ public class DrpyMethods {
         try {
             JSONObject jsonObject = obj.toJSONObject();
             String method = jsonObject.optString("method", "get");
-            JSONObject headersJSONObject = jsonObject.getJSONObject("headers");
+            JSONObject headersJSONObject = jsonObject.optJSONObject("headers");
             Map<String, String> headers = Json.toMap(headersJSONObject);
             String contentType = null;
             for(String headerKey : headers.keySet()) {

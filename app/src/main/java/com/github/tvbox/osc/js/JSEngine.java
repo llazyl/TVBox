@@ -92,6 +92,7 @@ public class JSEngine {
         } else {
             moduleJsStr = moduleJsStr.replace("__JS_SPIDER__", "globalThis." + key);
         }
+        module.setModuleUrl(sourceBean.getApi());
         module.executeModuleScript(moduleJsStr, moduleName);
         JSSpider spider = new JSSpider(module, key);
         String extJs = sourceBean.getExt().startsWith("http") ?  sourceBean.getExt() : loadExt(sourceBean.getExt());
@@ -134,6 +135,8 @@ public class JSEngine {
             content = FileUtils.getAssetFile(name.substring(9));
         } else if (name.startsWith("file://")) {
             content = FileUtils.read(name);
+        } else {
+            content = name;
         }
         if (TextUtils.isEmpty(content)) return "";
         jsCache.put(name, content);
