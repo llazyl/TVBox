@@ -90,12 +90,9 @@ public class DrpyMethods {
             } else if (isBuffer == 2) {
                 result.set("content", Base64.encodeToString(response.body().bytes(), 0));
             } else {
-                String content = response.body().string();
-                byte[] bytes = content.getBytes();
+                byte[] bytes =  response.body().bytes();
                 Charset charset = CharsetUtils.detect(bytes);
-                if (!charset.name().toLowerCase().startsWith("utf")) {
-                    content = new String(bytes, charset.name());
-                }
+                String content = new String(bytes, charset.name());
                 result.set("content", content);
             }
             return result;

@@ -1,5 +1,6 @@
 package com.github.tvbox.osc.js;
 
+
 import android.text.TextUtils;
 
 import org.jsoup.Jsoup;
@@ -11,24 +12,16 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class HtmlParser {
-    private static Document pdfa_doc = null;
-    private static String pdfa_html = "";
-    private static Document pdfh_doc = null;
     private static String pdfh_html = "";
-    private static String SPACE = " ";
-    private static String TAG_STYLE = "style";
+    private static String pdfa_html = "";
 
-    public static class Painfo {
-        public List<String> excludes;
-        public int nparse_index;
-        public String nparse_rule;
-    }
+    private static Document pdfh_doc = null;
+    private static Document pdfa_doc = null;
 
     public static String joinUrl(String parent, String child) {
         if (TextUtils.isEmpty(parent)) {
@@ -42,160 +35,234 @@ public class HtmlParser {
         }
     }
 
+    public static class Painfo {
+        public String nparse_rule;
+        public int nparse_index;
+        public List<String> excludes;
+    }
+
     private static Painfo getParseInfo(String nparse) {
+        /*
+         根据传入的单规则获取 parse规则，索引位置,排除列表  -- 可以用于剔除元素,支持多个，按标签剔除，按id剔除等操作
+         :param nparse:
+         :return:*/
         Painfo painfo = new Painfo();
-        painfo.nparse_rule = nparse;
+        //List<String> excludes = new ArrayList<>();  //定义排除列表默认值为空
+        //int nparse_index;  //定义位置索引默认值为0
+        painfo.nparse_rule = nparse; //定义规则默认值为本身
         if (nparse.contains(":eq")) {
             painfo.nparse_rule = nparse.split(":")[0];
-            String str = nparse.split(":")[1];
+            String nparse_pos = nparse.split(":")[1];
+
             if (painfo.nparse_rule.contains("--")) {
-                String[] split = painfo.nparse_rule.split("--");
-                painfo.excludes = new ArrayList(Arrays.asList(split));
+                String[] rules = painfo.nparse_rule.split("--");
+                painfo.excludes = new ArrayList<>(Arrays.asList(rules));
                 painfo.excludes.remove(0);
-                painfo.nparse_rule = split[0];
-            } else if (str.contains("--")) {
-                String[] split2 = str.split("--");
-                painfo.excludes = new ArrayList(Arrays.asList(split2));
+                painfo.nparse_rule = rules[0];
+            } else if (nparse_pos.contains("--")) {
+                String[] rules = nparse_pos.split("--");
+                painfo.excludes = new ArrayList<>(Arrays.asList(rules));
                 painfo.excludes.remove(0);
-                str = split2[0];
+                nparse_pos = rules[0];
             }
+
             try {
-                painfo.nparse_index = Integer.parseInt(str.replace("eq(", "").replace(")", ""));
-            } catch (Exception unused) {
+                painfo.nparse_index = Integer.parseInt(nparse_pos.replace("eq(", "").replace(")", ""));
+            } catch (Exception e1) {
                 painfo.nparse_index = 0;
             }
-        } else if (nparse.contains("--")) {
-            String[] split3 = painfo.nparse_rule.split("--");
-            painfo.excludes = new ArrayList(Arrays.asList(split3));
-            painfo.excludes.remove(0);
-            painfo.nparse_rule = split3[0];
+        } else {
+            if (nparse.contains("--")) {
+                String[] rules = painfo.nparse_rule.split("--");
+                painfo.excludes = new ArrayList<>(Arrays.asList(rules));
+                painfo.excludes.remove(0);
+                painfo.nparse_rule = rules[0];
+            }
         }
-        if (painfo.nparse_index < 0) painfo.nparse_index = 0;
         return painfo;
     }
 
+    public static boolean isIndex(String str) {
+        if (TextUtils.isEmpty(str)) {
+            return false;
+        }
+        for (String str2 : new String[]{":eq", ":lt", ":gt", ":first", ":last", "body", "#"}) {
+            if (str.contains(str2)) {
+                if (str2.equals("body") || str2.equals("#")) {
+                    return str.startsWith(str2);
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isUrl(String str) {
+        if (TextUtils.isEmpty(str)) {
+            return false;
+        }
+        for (String str2 : new String[]{"url", "src", "href", "-original", "-play"}) {
+            if (str.contains(str2)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private static String parseHikerToJq(String parse, boolean first) {
+        /*
+         海阔解析表达式转原生表达式,自动补eq,如果传了first就最后一个也取eq(0)
+        :param parse:
+        :param first:
+        :return:
+        */
+        // 不自动加eq下标索引
         if (parse.contains("&&")) {
-            String[] split = parse.split("&&");
-            ArrayList arrayList = new ArrayList();
-            for (int i = 0; i < split.length; i++) {
-                String[] split2 = split[i].split(SPACE);
-                if (Pattern.compile(":eq|:lt|:gt|:first|:last|^body$|^#").matcher(split2[split2.length - 1]).find()) {
-                    arrayList.add(split[i]);
-                } else if (!first && i >= split.length - 1) {
-                    arrayList.add(split[i]);
-                } else {
-                    arrayList.add(split[i] + ":eq(0)");
-                }
-            }
-            return TextUtils.join(SPACE, arrayList);
-        }
-        String[] split3 = parse.split(SPACE);
-        if (Pattern.compile(":eq|:lt|:gt|:first|:last|^body$|^#").matcher(split3[split3.length - 1]).find() || !first) {
-            return parse;
-        }
-        return parse + ":eq(0)";
-    }
-
-    public static synchronized String parseDomForUrl(String html, String rule, String add_url) {
-        String outerHtml;
-        synchronized (HtmlParser.class) {
-            if (!pdfh_html.equals(html)) {
-                pdfh_html = html;
-                pdfh_doc = Jsoup.parse(html);
-            }
-            Document document = pdfh_doc;
-            if (!rule.equals("body&&Text") && !rule.equals("Text")) {
-                if (!rule.equals("body&&Html") && !rule.equals("Html")) {
-                    String str = "";
-                    if (rule.contains("&&")) {
-                        String[] split = rule.split("&&");
-                        str = split[split.length - 1];
-                        ArrayList arrayList = new ArrayList(Arrays.asList(split));
-                        arrayList.remove(split.length - 1);
-                        rule = TextUtils.join("&&", arrayList);
-                    }
-                    String[] split2 = parseHikerToJq(rule, true).split(SPACE);
-                    Elements elements = new Elements();
-                    for (String str2 : split2) {
-                        elements = parseOneRule(document, str2, elements);
-                    }
-                    if (!TextUtils.isEmpty(str)) {
-                        if (str.equals("Text")) {
-                            outerHtml = elements.text();
-                        } else if (str.equals("Html")) {
-                            outerHtml = elements.html();
-                        } else {
-                            outerHtml = elements.attr(str);
-                            if (str.toLowerCase().contains(TAG_STYLE) && outerHtml.contains("url(")) {
-                                Matcher matcher = Pattern.compile("url\\((.*?)\\)", 40).matcher(outerHtml);
-                                if (matcher.find()) {
-                                    outerHtml = matcher.group();
-                                }
-                            }
-                            if (!TextUtils.isEmpty(outerHtml) && !TextUtils.isEmpty(add_url) && Pattern.compile("(url|src|href|-original|-src|-play|-url)$", 10).matcher(str).find()) {
-                                if (outerHtml.contains("http")) {
-                                    outerHtml = outerHtml.substring(outerHtml.indexOf("http"));
-                                } else {
-                                    outerHtml = joinUrl(add_url, outerHtml);
-                                }
-                            }
-                        }
+            String[] parses = parse.split("&&");  //带&&的重新拼接
+            List<String> new_parses = new ArrayList<>();  //构造新的解析表达式列表
+            for (int i = 0; i < parses.length; i++) {
+                String[] pss = parses[i].split(" ");
+                String ps = pss[pss.length - 1];  //如果分割&&后带空格就取最后一个元素
+                if (!isIndex(ps)) {
+                    if (!first && i >= parses.length - 1) {  //不传first且遇到最后一个,不用补eq(0)
+                        new_parses.add(parses[i]);
                     } else {
-                        outerHtml = elements.outerHtml();
+                        new_parses.add(parses[i] + ":eq(0)");
                     }
-                    return outerHtml;
+                } else {
+                    new_parses.add(parses[i]);
                 }
-                return document.html();
             }
-            return document.text();
+            parse = TextUtils.join(" ", new_parses);
+        } else {
+            String[] pss = parse.split(" ");
+            String ps = pss[pss.length - 1];  //如果分割&&后带空格就取最后一个元素
+            if (!isIndex(ps) && first) {
+                parse = parse + ":eq(0)";
+            }
         }
+        return parse;
     }
 
-    public static synchronized List<String> parseDomForList(String html, String rule) {
-        synchronized (HtmlParser.class) {
-            if (!pdfa_html.equals(html)) {
-                pdfa_html = html;
-                pdfa_doc = Jsoup.parse(html);
+    public static String parseDomForUrl(String html, String rule, String add_url) {
+        if (!pdfh_html.equals(html)) {
+            pdfh_html = html;
+            pdfh_doc = Jsoup.parse(html);
+        }
+        Document doc = pdfh_doc;
+        if (rule.equals("body&&Text") || rule.equals("Text")) {
+            return doc.text();
+        } else if (rule.equals("body&&Html") || rule.equals("Html")) {
+            return doc.html();
+        }
+        String option = "";
+        if (rule.contains("&&")) {
+            String[] rs = rule.split("&&");
+            option = rs[rs.length - 1];
+            List<String> excludes = new ArrayList<>(Arrays.asList(rs));
+            excludes.remove(rs.length - 1);
+            rule = TextUtils.join("&&", excludes);
+        }
+        rule = parseHikerToJq(rule, true);
+        String[] parses = rule.split(" ");
+        Elements ret = new Elements();
+        for (String nparse : parses) {
+            ret = parseOneRule(doc, nparse, ret);
+            if (ret.isEmpty()) {
+                return "";
             }
-            Document document = pdfa_doc;
-            String[] split = parseHikerToJq(rule, false).split(SPACE);
-            Elements elements = new Elements();
-            for (String str : split) {
-                elements = parseOneRule(document, str, elements);
-                if (elements.isEmpty()) {
-                    return new ArrayList();
+        }
+        String result;
+        if (!TextUtils.isEmpty(option)) {
+            if (option.equals("Text")) {
+                result = ret.text();
+            } else if (option.equals("Html")) {
+                result = ret.html();
+            } else {
+                result = ret.attr(option);
+                if (option.toLowerCase().contains("style") && result.contains("url(")) {
+                    Matcher m = Pattern.compile("url\\((.*?)\\)", Pattern.MULTILINE | Pattern.DOTALL).matcher(result);
+                    if (m.find()) {
+                        result = m.group(1);
+                    }
+                }
+                if (!TextUtils.isEmpty(result) && !TextUtils.isEmpty(add_url)) {
+                    // 需要自动urljoin的属性
+                    if (isUrl(option)) {
+                        if (result.contains("http")) {
+                            result = result.substring(result.indexOf("http"));
+                        } else {
+                            result = joinUrl(add_url, result);
+                        }
+                    }
                 }
             }
-            ArrayList arrayList = new ArrayList();
-            Iterator<Element> it = elements.iterator();
-            while (it.hasNext()) {
-                arrayList.add(it.next().outerHtml());
-            }
-            return arrayList;
+        } else {
+            result = ret.outerHtml();
         }
+        return result;
+
+    }
+
+    public static List<String> parseDomForList(String html, String rule) {
+        if (!pdfa_html.equals(html)) {
+            pdfa_html = html;
+            pdfa_doc = Jsoup.parse(html);
+        }
+        Document doc = pdfa_doc;
+        rule = parseHikerToJq(rule, false);
+        String[] parses = rule.split(" ");
+        Elements ret = new Elements();
+        for (String nparse : parses) {
+            ret = parseOneRule(doc, nparse, ret);
+            if (ret.isEmpty()) {
+                return new ArrayList<>();
+            }
+        }
+
+        List<String> eleHtml = new ArrayList<>();
+        for (Element element1 : ret) {
+            eleHtml.add(element1.outerHtml());
+        }
+        return eleHtml;
     }
 
     private static Elements parseOneRule(Document doc, String nparse, Elements ret) {
-        Elements select;
-        Painfo parseInfo = getParseInfo(nparse);
+        Painfo painfo = getParseInfo(nparse);
         if (nparse.contains(":eq")) {
             if (ret.isEmpty()) {
-                select = doc.select(parseInfo.nparse_rule).eq(parseInfo.nparse_index);
+                if(painfo.nparse_index < 0){
+                    Elements r = doc.select(painfo.nparse_rule);
+                    ret = r.eq(r.size() + painfo.nparse_index);
+                } else {
+                    ret = doc.select(painfo.nparse_rule).eq(painfo.nparse_index);
+                }
             } else {
-                select = ret.select(parseInfo.nparse_rule).eq(parseInfo.nparse_index);
+                if(painfo.nparse_index < 0){
+                    Elements r = ret.select(painfo.nparse_rule);
+                    ret = r.eq(r.size() + painfo.nparse_index);
+                } else {
+                    ret = ret.select(painfo.nparse_rule).eq(painfo.nparse_index);
+                }
             }
-        } else if (ret.isEmpty()) {
-            select = doc.select(nparse);
         } else {
-            select = ret.select(nparse);
-        }
-        if (parseInfo.excludes != null && !select.isEmpty()) {
-            select = select.clone();
-            for (String str : parseInfo.excludes) {
-                select.select(str).remove();
+            if (ret.isEmpty()) {
+                ret = doc.select(nparse);
+            } else {
+                ret = ret.select(nparse);
             }
         }
-        return select;
+        if (painfo.excludes != null && !ret.isEmpty()) {
+            ret = ret.clone(); //克隆一个, 免得直接remove会影响doc的缓存
+            for (String exclude : painfo.excludes) {
+                ret.select(exclude).remove();
+                //ret = ret.not(exclude).remove();
+                //Elements selector = ret.select(exclude);
+                //for (Element element : selector) {
+                //    element.remove();
+                //}
+            }
+        }
+        return ret;
     }
 }
