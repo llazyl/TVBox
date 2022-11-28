@@ -194,7 +194,6 @@ public class FastSearchActivity extends BaseActivity {
                     try {
                         if (searchExecutorService != null) {
                             pauseRunnable = searchExecutorService.shutdownNow();
-                            JSEngine.getInstance().stopAll();
                             searchExecutorService = null;
                         }
                     } catch (Throwable th) {
@@ -221,7 +220,6 @@ public class FastSearchActivity extends BaseActivity {
                     try {
                         if (searchExecutorService != null) {
                             pauseRunnable = searchExecutorService.shutdownNow();
-                            JSEngine.getInstance().stopAll();
                             searchExecutorService = null;
                         }
                     } catch (Throwable th) {
@@ -380,7 +378,6 @@ public class FastSearchActivity extends BaseActivity {
         try {
             if (searchExecutorService != null) {
                 searchExecutorService.shutdownNow();
-                JSEngine.getInstance().stopAll();
                 searchExecutorService = null;
             }
         } catch (Throwable th) {
@@ -502,7 +499,6 @@ public class FastSearchActivity extends BaseActivity {
         try {
             if (searchExecutorService != null) {
                 searchExecutorService.shutdownNow();
-                JSEngine.getInstance().stopAll();
                 searchExecutorService = null;
             }
         } catch (Throwable th) {

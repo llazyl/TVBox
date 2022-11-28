@@ -70,6 +70,7 @@ public class HtmlParser {
             painfo.excludes.remove(0);
             painfo.nparse_rule = split3[0];
         }
+        if (painfo.nparse_index < 0) painfo.nparse_index = 0;
         return painfo;
     }
 

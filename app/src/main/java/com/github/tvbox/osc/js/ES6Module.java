@@ -3,7 +3,6 @@ package com.github.tvbox.osc.js;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import com.github.tvbox.osc.api.ApiConfig;
 import com.github.tvbox.osc.util.FileUtils;
 import com.github.tvbox.osc.util.OkGoHelper;
 import com.quickjs.QuickJS;
@@ -26,7 +25,6 @@ public class ES6Module extends com.quickjs.ES6Module {
     }
 
     public void setModuleUrl(String url) {
-        if (url.startsWith("clan://")) url = ApiConfig.get().clanToAddress(url);
         moduleUrl = url;
     }
 
