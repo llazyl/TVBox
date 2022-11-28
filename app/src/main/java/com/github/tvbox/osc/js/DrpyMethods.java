@@ -3,21 +3,12 @@ package com.github.tvbox.osc.js;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.webkit.JavascriptInterface;
-
+import com.github.tvbox.osc.util.CharsetUtils;
 import com.github.tvbox.osc.util.Json;
 import com.github.tvbox.osc.util.OkGoHelper;
-import com.github.tvbox.osc.util.UnicodeReader;
 import com.quickjs.JSArray;
 import com.quickjs.JSObject;
-
-import org.apache.commons.io.input.ReaderInputStream;
 import org.json.JSONObject;
-import org.mozilla.universalchardet.UniversalDetector;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
@@ -99,23 +90,13 @@ public class DrpyMethods {
             } else if (isBuffer == 2) {
                 result.set("content", Base64.encodeToString(response.body().bytes(), 0));
             } else {
-                byte[] bytes = response.body().bytes();
-                UniversalDetector detector = new UniversalDetector(null);
-                detector.handleData(bytes, 0, bytes.length);
-                detector.dataEnd();
-                String encoding = detector.getDetectedCharset();
-                encoding = encoding == null ? "UTF-8" : encoding;
-                String content = new String(bytes, encoding);
-                InputStream is = new ByteArrayInputStream(content.getBytes());
-                Reader reader = new UnicodeReader(is); //处理有BOM头的utf8
-                InputStream newInputStream = new ReaderInputStream(reader, Charset.defaultCharset());
-
-                ByteArrayOutputStream resultBs = new ByteArrayOutputStream();
-                byte[] buffer = new byte[1024];
-                for (int l; (l = newInputStream.read(buffer)) != -1; ) {
-                    resultBs.write(buffer, 0, l);
+                String content = response.body().string();
+                byte[] bytes = content.getBytes();
+                Charset charset = CharsetUtils.detect(bytes);
+                if (!charset.name().toLowerCase().startsWith("utf")) {
+                    content = new String(bytes, charset.name());
                 }
-                result.set("content", resultBs.toString("UTF-8"));
+                result.set("content", content);
             }
             return result;
         } catch (Exception e) {
