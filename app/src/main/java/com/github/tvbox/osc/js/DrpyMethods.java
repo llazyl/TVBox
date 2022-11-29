@@ -13,6 +13,7 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Headers;
 import okhttp3.MediaType;
@@ -70,7 +71,15 @@ public class DrpyMethods {
             } else {
                 client  = OkGoHelper.getNoRedirectClient();
             }
-            Response response = client.newCall(request).execute();
+            OkHttpClient.Builder clientBuilder = client.newBuilder();
+            int timeout = 5000;
+            if (jsonObject.has("timeout")) {
+                timeout = jsonObject.optInt("timeout");
+            }
+            clientBuilder.readTimeout(timeout, TimeUnit.MILLISECONDS);
+            clientBuilder.writeTimeout(timeout, TimeUnit.MILLISECONDS);
+            clientBuilder.connectTimeout(timeout, TimeUnit.MILLISECONDS);
+            Response response = clientBuilder.build().newCall(request).execute();
             JSObject result = new JSObject(module);
             JSObject resultHeaders = new JSObject(module);
             Set<String> names = response.headers().names();
