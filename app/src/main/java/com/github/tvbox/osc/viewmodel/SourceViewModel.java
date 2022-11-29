@@ -485,9 +485,12 @@ public class SourceViewModel extends ViewModel {
                 String search = sp.searchContent(wd, false);
                 if(!TextUtils.isEmpty(search)){
                     json(searchResult, search, sourceBean.getKey());
+                } else {
+                    json(searchResult, "", sourceBean.getKey());
                 }
             } catch (Throwable th) {
                 th.printStackTrace();
+                json(searchResult, "", sourceBean.getKey());
             }
         } else if (type == 0 || type == 1) {
             OkGo.<String>get(sourceBean.getApi())

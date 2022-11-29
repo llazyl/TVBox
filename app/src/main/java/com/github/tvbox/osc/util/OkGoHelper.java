@@ -1,13 +1,15 @@
 package com.github.tvbox.osc.util;
 
+import android.graphics.Bitmap;
+
 import com.github.tvbox.osc.base.App;
+import com.github.tvbox.osc.picasso.MyOkhttpDownLoader;
 import com.github.tvbox.osc.util.SSL.SSLSocketFactoryCompat;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.https.HttpsUtils;
 import com.lzy.okgo.interceptor.HttpLoggingInterceptor;
 import com.lzy.okgo.model.HttpHeaders;
 import com.orhanobut.hawk.Hawk;
-import com.squareup.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -160,8 +162,12 @@ public class OkGoHelper {
     }
 
     static void initPicasso(OkHttpClient client) {
-        OkHttp3Downloader downloader = new OkHttp3Downloader(client);
-        Picasso picasso = new Picasso.Builder(App.getInstance()).downloader(downloader).build();
+        client.dispatcher().setMaxRequestsPerHost(10);
+        MyOkhttpDownLoader downloader = new MyOkhttpDownLoader(client);
+        Picasso picasso = new Picasso.Builder(App.getInstance())
+                .downloader(downloader)
+                .defaultBitmapConfig(Bitmap.Config.RGB_565)
+                .build();
         Picasso.setSingletonInstance(picasso);
     }
 

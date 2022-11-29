@@ -44,7 +44,7 @@ public class JSEngine {
         return instance;
     }
 
-    private void init() {
+    public void init() {
         try {
             quickJS = QuickJS.createRuntimeWithEventQueue();
             module = new ES6Module(quickJS);
@@ -60,7 +60,6 @@ public class JSEngine {
 
     public Spider getSpider(SourceBean sourceBean) {
         if (sourceBean.getExt().length() == 0) return new SpiderNull();
-        if (quickJS == null) init();
         if (spiders.containsKey(sourceBean.getKey())) return spiders.get(sourceBean.getKey());
         String key = "J" + MD5.string2MD5(sourceBean.getKey() + System.currentTimeMillis());
         String moduleJsStr = "";
@@ -165,17 +164,21 @@ public class JSEngine {
 
     public void stopAll() {
         OkGo.getInstance().cancelTag("js_okhttp_tag");
+        clearAll();
+    }
+
+    public void clearAll() {
+        if (quickJS == null) return;
         clear();
+        module.close();
+        quickJS.close();
+        module = null;
+        quickJS = null;
     }
 
     public void clear() {
-        if (quickJS == null) return;
         spiders.clear();
-        module.close();
-        quickJS.close();
         jsCache.clear();
-        module = null;
-        quickJS = null;
     }
 
 }
