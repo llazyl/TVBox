@@ -39,7 +39,6 @@ import com.github.tvbox.osc.util.FastClickCheckUtil;
 import com.github.tvbox.osc.util.HawkConfig;
 import com.github.tvbox.osc.util.LOG;
 import com.github.tvbox.osc.util.SearchHelper;
-import com.github.tvbox.osc.js.JSEngine;
 import com.github.tvbox.osc.viewmodel.SourceViewModel;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -192,7 +191,6 @@ public class SearchActivity extends BaseActivity {
                 if (video != null) {
                     try {
                         if (searchExecutorService != null) {
-                            JSEngine.getInstance().stopAll();
                             pauseRunnable = searchExecutorService.shutdownNow();
                             searchExecutorService = null;
                         }

@@ -54,6 +54,10 @@ public class JSEngine {
         }
     }
 
+    public ES6Module getModule() {
+        return module;
+    }
+
     public Spider getSpider(SourceBean sourceBean) {
         if (sourceBean.getExt().length() == 0) return new SpiderNull();
         if (quickJS == null) init();
@@ -94,7 +98,7 @@ public class JSEngine {
         }
         module.setModuleUrl(sourceBean.getApi());
         module.executeModuleScript(moduleJsStr, moduleName);
-        JSSpider spider = new JSSpider(module, key);
+        JSSpider spider = new JSSpider(key);
         String extJs = sourceBean.getExt().startsWith("http") ?  sourceBean.getExt() : loadExt(sourceBean.getExt());
         spider.init(App.getInstance(), extJs);
         spiders.put(sourceBean.getKey(), spider);

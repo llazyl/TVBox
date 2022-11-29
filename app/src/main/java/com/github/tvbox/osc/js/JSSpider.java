@@ -15,20 +15,18 @@ import java.util.List;
 public class JSSpider extends Spider {
 
     public String key;
-    private ES6Module module;
 
-    public JSSpider(ES6Module module, String key) {
-        this.module = module;
+    public JSSpider(String key) {
         this.key = key;
     }
 
     public final String jsEval(String str) {
         String jsStr = str.replace("__JS_SPIDER__", "globalThis." + this.key);
         if (str.startsWith("__JS_SPIDER__.init")) {
-            module.executeVoidScript(jsStr, null);
+            JSEngine.getInstance().getModule().executeVoidScript(jsStr, null);
             return "";
         }
-        return module.executeStringScript(jsStr, null);
+        return JSEngine.getInstance().getModule().executeStringScript(jsStr, null);
     }
 
     @Override
