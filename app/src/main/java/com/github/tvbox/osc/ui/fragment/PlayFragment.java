@@ -1155,13 +1155,16 @@ public class PlayFragment extends BaseLazyFragment {
                                 }
                             });
                         } else {
-                            HashMap<String, String> headers = new HashMap<>();
+                            HashMap<String, String> headers = null;
                             if (rs.has("header")) {
                                 try {
                                     JSONObject hds = rs.getJSONObject("header");
                                     Iterator<String> keys = hds.keys();
                                     while (keys.hasNext()) {
                                         String key = keys.next();
+                                        if (headers == null) {
+                                            headers = new HashMap<>();
+                                        }
                                         headers.put(key, hds.getString(key));
                                     }
                                 } catch (Throwable th) {
