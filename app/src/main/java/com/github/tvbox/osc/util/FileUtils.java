@@ -137,6 +137,23 @@ public class FileUtils {
         org.apache.commons.io.FileUtils.cleanDirectory(dir);
     }
 
+    public static void cleanPlayerCache() {
+        String ijkCachePath = getCachePath() + "/ijkcaches/";
+        String thunderCachePath = getCachePath() + "/thunder/";
+        File ijkCacheDir = new File(ijkCachePath);
+        File thunderCacheDir = new File(thunderCachePath);
+        try {
+            if (ijkCacheDir.exists()) cleanDirectory(ijkCacheDir);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            if (thunderCacheDir.exists()) cleanDirectory(thunderCacheDir);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public static String read(String path) {
         try {
             BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(getLocal(path))));
