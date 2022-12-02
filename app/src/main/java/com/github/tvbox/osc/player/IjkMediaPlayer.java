@@ -59,7 +59,7 @@ public class IjkMediaPlayer extends IjkPlayer {
                 mMediaPlayer.setOption(1, "infbuf", 1);
                 mMediaPlayer.setOption(1, "rtsp_transport", "tcp");
                 mMediaPlayer.setOption(1, "rtsp_flags", "prefer_tcp");
-            } else if (!TextUtils.isEmpty(path) && (path.contains(".mp4") || path.contains(".mkv") || path.contains(".avi"))) {
+            } else if (!TextUtils.isEmpty(path) && !path.contains(".m3u8") && (path.contains(".mp4") || path.contains(".mkv") || path.contains(".avi"))) {
                 String cachePath = FileUtils.getExternalCachePath() + "/ijkcaches/";
                 String cacheMapPath = cachePath;
                 File cacheFile = new File(cachePath);
