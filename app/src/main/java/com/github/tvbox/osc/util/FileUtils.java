@@ -125,12 +125,16 @@ public class FileUtils {
         return new File(path.replace("file:/", getRootPath()));
     }
 
-    public static File getExternalCacheDir() {
-        return App.getInstance().getExternalCacheDir();
+    public static File getCacheDir() {
+        return App.getInstance().getCacheDir();
     }
 
-    public static String getExternalCachePath() {
-        return getExternalCacheDir().getAbsolutePath();
+    public static String getCachePath() {
+        return getCacheDir().getAbsolutePath();
+    }
+
+    public static void cleanDirectory(File dir) throws IOException {
+        org.apache.commons.io.FileUtils.cleanDirectory(dir);
     }
 
     public static String read(String path) {

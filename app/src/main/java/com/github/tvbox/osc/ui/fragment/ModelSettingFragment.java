@@ -656,27 +656,26 @@ public class ModelSettingFragment extends BaseLazyFragment {
             }
         });
 
-        findViewById(R.id.llClearIjkCache).setOnClickListener((view -> onClickClearIjkCache()));
+        findViewById(R.id.llClearCache).setOnClickListener((view -> onClickClearCache(view)));
     }
 
-    private void onClickClearIjkCache() {
-        String cachePath = FileUtils.getExternalCachePath() + "/ijkcaches/";
+    private void onClickClearCache(View v) {
+        FastClickCheckUtil.check(v);
+        String cachePath = FileUtils.getCachePath();
         File cacheDir = new File(cachePath);
-        if (!cacheDir.exists()) return;
-        File[] files = cacheDir.listFiles();
-        if (files != null && files.length > 0) {
-            try {
-                for(File one : files) {
-                    LOG.i("ijkplayer cache:" + one.getAbsolutePath());
-                    one.delete();
-                }
-                Toast.makeText(getContext(), "ijk缓存已清空", Toast.LENGTH_LONG).show();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else {
-            Toast.makeText(getContext(), "暂无ijk缓存", Toast.LENGTH_LONG).show();
+        if (!cacheDir.exists()) {
+            Toast.makeText(getContext(), "暂无缓存", Toast.LENGTH_LONG).show();
+            return;
         }
+        try {
+            FileUtils.cleanDirectory(cacheDir);
+            Toast.makeText(getContext(), "缓存已清空", Toast.LENGTH_LONG).show();
+            return;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Toast.makeText(getContext(), "缓存清空出错", Toast.LENGTH_LONG).show();
+        return;
     }
 
 
