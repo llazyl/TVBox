@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <LinearLayout
+        android:id="@+id/root"
         android:layout_width="@dimen/vs_420"
         android:layout_height="match_parent"
         android:layout_gravity="center"
@@ -14,12 +15,14 @@
 
         <LinearLayout
             android:orientation="horizontal"
+            android:weightSum="2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <TextView
                 android:id="@+id/checkAll"
-                android:layout_width="@dimen/vs_200"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:background="@drawable/button_dialog_main"
@@ -32,11 +35,12 @@
 
             <TextView
                 android:id="@+id/clearAll"
-                android:layout_width="@dimen/vs_200"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/vs_10"
+                android:layout_weight="1"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:layout_marginLeft="@dimen/vs_20"
                 android:background="@drawable/button_dialog_main"
                 android:clickable="true"
                 android:focusable="true"

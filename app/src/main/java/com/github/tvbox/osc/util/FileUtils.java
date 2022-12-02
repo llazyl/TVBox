@@ -125,6 +125,14 @@ public class FileUtils {
         return new File(path.replace("file:/", getRootPath()));
     }
 
+    public static File getExternalCacheDir() {
+        return App.getInstance().getExternalCacheDir();
+    }
+
+    public static String getExternalCachePath() {
+        return getExternalCacheDir().getAbsolutePath();
+    }
+
     public static String read(String path) {
         try {
             BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(getLocal(path))));
