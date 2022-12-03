@@ -71,6 +71,7 @@ public class ModelSettingFragment extends BaseLazyFragment {
     private TextView tvShowPreviewText;
     private TextView tvFastSearchText;
     private TextView tvRecStyleText;
+    private TextView tvIjkCachePlay;
 
     public static ModelSettingFragment newInstance() {
         return new ModelSettingFragment().setArguments();
@@ -105,6 +106,7 @@ public class ModelSettingFragment extends BaseLazyFragment {
         tvHomeRec = findViewById(R.id.tvHomeRec);
         tvHistoryNum = findViewById(R.id.tvHistoryNum);
         tvSearchView = findViewById(R.id.tvSearchView);
+        tvIjkCachePlay = findViewById(R.id.tvIjkCachePlay);
         tvMediaCodec.setText(Hawk.get(HawkConfig.IJK_CODEC, ""));
         tvDebugOpen.setText(Hawk.get(HawkConfig.DEBUG_OPEN, false) ? "已打开" : "已关闭");
         tvParseWebView.setText(Hawk.get(HawkConfig.PARSE_WEBVIEW, true) ? "系统自带" : "XWalkView");
@@ -118,6 +120,7 @@ public class ModelSettingFragment extends BaseLazyFragment {
         tvScale.setText(PlayerHelper.getScaleName(Hawk.get(HawkConfig.PLAY_SCALE, 0)));
         tvPlay.setText(PlayerHelper.getPlayerName(Hawk.get(HawkConfig.PLAY_TYPE, 0)));
         tvRender.setText(PlayerHelper.getRenderName(Hawk.get(HawkConfig.PLAY_RENDER, 0)));
+        tvIjkCachePlay.setText(Hawk.get(HawkConfig.IJK_CACHE_PLAY, false) ? "开启" : "关闭");
         findViewById(R.id.llDebug).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -656,31 +659,29 @@ public class ModelSettingFragment extends BaseLazyFragment {
             }
         });
 
+        findViewById(R.id.llIjkCachePlay).setOnClickListener((view -> onClickIjkCachePlay(view)));
         findViewById(R.id.llClearCache).setOnClickListener((view -> onClickClearCache(view)));
+    }
+
+    private void onClickIjkCachePlay(View v) {
+        FastClickCheckUtil.check(v);
+        Hawk.put(HawkConfig.IJK_CACHE_PLAY, !Hawk.get(HawkConfig.IJK_CACHE_PLAY, false));
+        tvIjkCachePlay.setText(Hawk.get(HawkConfig.IJK_CACHE_PLAY, false) ? "开启" : "关闭");
     }
 
     private void onClickClearCache(View v) {
         FastClickCheckUtil.check(v);
         String cachePath = FileUtils.getCachePath();
         File cacheDir = new File(cachePath);
-        if (!cacheDir.exists()) {
-            Toast.makeText(getContext(), "暂无缓存", Toast.LENGTH_LONG).show();
-            return;
-        }
-        try {
-            new Thread(() -> {
-                try {
-                    FileUtils.cleanDirectory(cacheDir);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }).start();
-            Toast.makeText(getContext(), "缓存已清空", Toast.LENGTH_LONG).show();
-            return;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        Toast.makeText(getContext(), "缓存清空出错", Toast.LENGTH_LONG).show();
+        if (!cacheDir.exists()) return;
+        new Thread(() -> {
+            try {
+                FileUtils.cleanDirectory(cacheDir);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+        Toast.makeText(getContext(), "缓存已清空", Toast.LENGTH_LONG).show();
         return;
     }
 
