@@ -668,7 +668,13 @@ public class ModelSettingFragment extends BaseLazyFragment {
             return;
         }
         try {
-            FileUtils.cleanDirectory(cacheDir);
+            new Thread(() -> {
+                try {
+                    FileUtils.cleanDirectory(cacheDir);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }).start();
             Toast.makeText(getContext(), "缓存已清空", Toast.LENGTH_LONG).show();
             return;
         } catch (Exception e) {

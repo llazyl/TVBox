@@ -133,8 +133,36 @@ public class FileUtils {
         return getCacheDir().getAbsolutePath();
     }
 
-    public static void cleanDirectory(File dir) throws IOException {
-        org.apache.commons.io.FileUtils.cleanDirectory(dir);
+    public static void cleanDirectory(File dir) {
+        if (!dir.exists()) return;
+        File[] files = dir.listFiles();
+        if (files == null || files.length == 0) return;
+        for(File one : files) {
+            try {
+                deleteFile(one);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void deleteFile(File file) {
+        if (!file.exists()) return;
+        if (file.isFile()) {
+            if (file.canWrite()) file.delete();
+            return;
+        }
+        if (file.isDirectory()) {
+            File[] files = file.listFiles();
+            if (files == null || files.length == 0) {
+                if (file.canWrite()) file.delete();
+                return;
+            }
+            for(File one : files) {
+                deleteFile(one);
+            }
+        }
+        return;
     }
 
     public static void cleanPlayerCache() {
