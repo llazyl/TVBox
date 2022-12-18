@@ -44,7 +44,9 @@
         <entry key="app/src/main/res/layout/dialog_checkbox_search.xml" value="0.5786666666666667" />
         <entry key="app/src/main/res/layout/dialog_select.xml" value="0.5786666666666667" />
         <entry key="app/src/main/res/layout/fragment_model.xml" value="0.5786666666666667" />
+        <entry key="app/src/main/res/layout/fragment_user.xml" value="0.5786666666666667" />
         <entry key="app/src/main/res/layout/item_dialog_checkbox_search.xml" value="0.5786666666666667" />
+        <entry key="app/src/main/res/layout/player_vod_control_view.xml" value="0.5786666666666667" />
       </map>
     </option>
   </component>
