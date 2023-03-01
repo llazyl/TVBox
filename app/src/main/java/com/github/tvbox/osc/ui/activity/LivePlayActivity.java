@@ -1185,7 +1185,8 @@ public class LivePlayActivity extends BaseActivity {
                     case VideoView.STATE_ERROR:
                     case VideoView.STATE_PLAYBACK_COMPLETED:
                         mHandler.removeCallbacks(mConnectTimeoutChangeSourceRun);
-                        mHandler.post(mConnectTimeoutChangeSourceRun);
+//                        mHandler.post(mConnectTimeoutChangeSourceRun);
+                        mHandler.postDelayed(mConnectTimeoutChangeSourceRun, 1500);
                         break;
                     case VideoView.STATE_PREPARING:
                     case VideoView.STATE_BUFFERING:
