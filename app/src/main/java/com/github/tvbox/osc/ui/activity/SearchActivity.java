@@ -74,12 +74,11 @@ public class SearchActivity extends BaseActivity {
     private TvRecyclerView mGridView;
     private TvRecyclerView mGridViewWord;
     SourceViewModel sourceViewModel;
+    private RemoteDialog remoteDialog;
     private EditText etSearch;
     private TextView tvSearch;
     private TextView tvClear;
     private SearchKeyboard keyboard;
-    private TextView tvAddress;
-    private ImageView ivQRCode;
     private SearchAdapter searchAdapter;
     private PinyinAdapter wordAdapter;
     private String searchTitle = "";
@@ -160,8 +159,6 @@ public class SearchActivity extends BaseActivity {
         tvSearch = findViewById(R.id.tvSearch);
         tvSearchCheckboxBtn = findViewById(R.id.tvSearchCheckboxBtn);
         tvClear = findViewById(R.id.tvClear);
-        tvAddress = findViewById(R.id.tvAddress);
-        ivQRCode = findViewById(R.id.ivQRCode);
         mGridView = findViewById(R.id.mGridView);
         keyboard = findViewById(R.id.keyBoardRoot);
         mGridViewWord = findViewById(R.id.mGridViewWord);
@@ -258,7 +255,7 @@ public class SearchActivity extends BaseActivity {
                         loadRec(text);
                     }
                 } else if (pos == 0) {
-                    RemoteDialog remoteDialog = new RemoteDialog(mContext);
+                    remoteDialog = new RemoteDialog(mContext);
                     remoteDialog.show();
                 }
             }
@@ -354,7 +351,6 @@ public class SearchActivity extends BaseActivity {
     }
 
     private void initData() {
-        refreshQRCode();
         initCheckedSourcesForSearch();
         Intent intent = getIntent();
         if (intent != null && intent.hasExtra("title")) {
@@ -393,12 +389,6 @@ public class SearchActivity extends BaseActivity {
 
     }
 
-    private void refreshQRCode() {
-        String address = ControlManager.get().getAddress(false);
-        tvAddress.setText(String.format("远程搜索使用手机/电脑扫描下面二维码或者直接浏览器访问地址\n%s", address));
-        ivQRCode.setImageBitmap(QRCodeGen.generateBitmap(address + "search.html", 300, 300));
-    }
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void server(ServerEvent event) {
         if (event.type == ServerEvent.SERVER_SEARCH) {
@@ -429,7 +419,12 @@ public class SearchActivity extends BaseActivity {
 
     private void search(String title) {
         cancel();
+        if (remoteDialog != null) {
+            remoteDialog.dismiss();
+            remoteDialog = null;
+        }
         showLoading();
+        etSearch.setText(title);
         this.searchTitle = title;
         mGridView.setVisibility(View.INVISIBLE);
         searchAdapter.setNewData(new ArrayList<>());
