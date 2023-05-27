@@ -465,7 +465,7 @@ public class ApiConfig {
                         }
                     }
                 }
-                if (obj.has("hosts")) {
+                if (obj.has("hosts") && obj.has("regex")) {
                     ArrayList<String> rule = new ArrayList<>();
                     JsonArray regexArray = obj.getAsJsonArray("regex");
                     for (JsonElement one : regexArray) {
