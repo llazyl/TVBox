@@ -59,12 +59,34 @@ public class MovieSort implements Serializable {
         public int compareTo(SortData o) {
             return this.sort - o.sort;
         }
+
+        @Override
+        public String toString() {
+            return "SortData{" +
+                    "id='" + id + '\'' +
+                    ", name='" + name + '\'' +
+                    ", sort=" + sort +
+                    ", select=" + select +
+                    ", filters=" + filters +
+                    ", filterSelect=" + filterSelect +
+                    ", flag='" + flag + '\'' +
+                    '}';
+        }
     }
 
     public static class SortFilter {
         public String key;
         public String name;
         public LinkedHashMap<String, String> values;
+
+        @Override
+        public String toString() {
+            return "SortFilter{" +
+                    "key='" + key + '\'' +
+                    ", name='" + name + '\'' +
+                    ", values=" + values +
+                    '}';
+        }
     }
 
 }

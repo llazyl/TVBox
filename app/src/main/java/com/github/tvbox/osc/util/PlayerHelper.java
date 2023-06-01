@@ -11,6 +11,7 @@ import com.github.tvbox.osc.player.thirdparty.Kodi;
 import com.github.tvbox.osc.player.thirdparty.MXPlayer;
 import com.github.tvbox.osc.player.thirdparty.ReexPlayer;
 import com.github.tvbox.osc.player.thirdparty.RemoteTVBox;
+import com.github.tvbox.osc.player.thirdparty.VlcPlayer;
 import com.orhanobut.hawk.Hawk;
 
 import org.json.JSONException;
@@ -167,6 +168,7 @@ public class PlayerHelper {
             playersInfo.put(11, "Reex播放器");
             playersInfo.put(12, "Kodi播放器");
             playersInfo.put(13, "附近TVBox");
+            playersInfo.put(14, "VLC播放器");
             mPlayersInfo = playersInfo;
         }
         return mPlayersInfo;
@@ -183,6 +185,7 @@ public class PlayerHelper {
             playersExist.put(11, ReexPlayer.getPackageInfo() != null);
             playersExist.put(12, Kodi.getPackageInfo() != null);
             playersExist.put(13, RemoteTVBox.getAvalible() != null);
+            playersExist.put(14, VlcPlayer.getPackageInfo() != null);
             mPlayersExistInfo = playersExist;
         }
         return mPlayersExistInfo;
@@ -209,6 +212,10 @@ public class PlayerHelper {
     }
 
     public static Boolean runExternalPlayer(int playerType, Activity activity, String url, String title, String subtitle, HashMap<String, String> headers) {
+        return runExternalPlayer(playerType, activity, url, title, subtitle, headers);
+    }
+
+    public static Boolean runExternalPlayer(int playerType, Activity activity, String url, String title, String subtitle, HashMap<String, String> headers, long progress) {
         boolean callResult = false;
         switch (playerType) {
             case 10: {
@@ -225,6 +232,10 @@ public class PlayerHelper {
             }
             case 13: {
                 callResult = RemoteTVBox.run(activity, url, title, subtitle, headers);
+                break;
+            }
+            case 14: {
+                callResult = VlcPlayer.run(activity, url, title, subtitle, progress);
                 break;
             }
         }
