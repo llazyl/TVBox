@@ -25,6 +25,7 @@ import com.google.gson.JsonObject;
 import com.squareup.picasso.Downloader;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 
 import okhttp3.Cache;
 import okhttp3.Call;
@@ -62,6 +63,7 @@ public final class MyOkhttpDownLoader implements Downloader {
     @Override
     public Response load(@NonNull Request request) throws IOException {
         String url = request.url().toString();
+        url= URLDecoder.decode(url);
         String header = null;
         String cookie = null;
         String ua = null;
