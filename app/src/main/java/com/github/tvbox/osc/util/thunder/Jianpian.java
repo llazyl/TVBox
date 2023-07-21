@@ -50,4 +50,8 @@ public class Jianpian {
             }
         }
     }
+
+    public static Boolean isJpUrl(String url) {
+        return url.startsWith("tvbox-xg:") || (Thunder.isFtp(url) && url.contains("gbl.114s"));
+    }
 }
