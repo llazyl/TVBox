@@ -284,15 +284,17 @@ public class SourceViewModel extends ViewModel {
                         }
                     });
         }else if (type == 4) {
-            String ext="";
+            String ext= "";
             if (sortData.filterSelect != null && sortData.filterSelect.size() > 0) {
                 try {
-                    LOG.i(new JSONObject(sortData.filterSelect).toString());
-                    ext = Base64.encodeToString(new JSONObject(sortData.filterSelect).toString().getBytes("UTF-8"), Base64.DEFAULT |  Base64.NO_WRAP);
+                    String selectExt = new JSONObject(sortData.filterSelect).toString();
+                    ext = Base64.encodeToString(selectExt.getBytes("UTF-8"), Base64.DEFAULT |  Base64.NO_WRAP);
                     LOG.i(ext);
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
+            }else {
+                ext = Base64.encodeToString("{}".getBytes(), Base64.DEFAULT |  Base64.NO_WRAP);
             }
             OkGo.<String>get(homeSourceBean.getApi())
                 .tag(homeSourceBean.getApi())

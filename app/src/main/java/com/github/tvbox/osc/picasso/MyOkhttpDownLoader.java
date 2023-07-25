@@ -76,7 +76,7 @@ public final class MyOkhttpDownLoader implements Downloader {
         if (url.contains("@Referer=")) referer= url.split("@Referer=")[1].split("@")[0];
 
         url = url.split("@")[0];
-        Request.Builder mRequestBuilder = new Request.Builder().url(url);
+        Request.Builder mRequestBuilder = request.newBuilder().url(url);
         if(!TextUtils.isEmpty(header)) {
             JsonObject jsonInfo = new Gson().fromJson(header, JsonObject.class);
             for (String key : jsonInfo.keySet()) {

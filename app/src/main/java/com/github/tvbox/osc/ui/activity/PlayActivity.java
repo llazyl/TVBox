@@ -828,7 +828,6 @@ public class PlayActivity extends BaseActivity {
             String jp_url= vs.url;
             mController.showParse(false);
             if(vs.url.startsWith("tvbox-xg:")){
-                jp_url = jp_url.replace("tvbox-xg://","tvbox-xg:");
                 playUrl(Jianpian.JPUrlDec(jp_url.substring(9)), null);
             }else {
                 playUrl(Jianpian.JPUrlDec(jp_url), null);
