@@ -20,11 +20,13 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import com.github.tvbox.osc.util.UA;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.squareup.picasso.Downloader;
 
 import java.io.IOException;
+import java.net.URL;
 import java.net.URLDecoder;
 
 import okhttp3.Cache;
@@ -63,14 +65,16 @@ public final class MyOkhttpDownLoader implements Downloader {
     @Override
     public Response load(@NonNull Request request) throws IOException {
         String url = request.url().toString();
-        url= URLDecoder.decode(url);
         String header = null;
         String cookie = null;
         String ua = null;
         String referer = null;
 
         //检查链接里面是否有自定义header
-        if (url.contains("@Headers=")) header =url.split("@Headers=")[1].split("@")[0];
+        if (url.contains("@Headers=")){
+            header =url.split("@Headers=")[1].split("@")[0];
+            header =URLDecoder.decode(header,"UTF-8");
+        }
         if (url.contains("@Cookie=")) cookie= url.split("@Cookie=")[1].split("@")[0];
         if (url.contains("@User-Agent=")) ua =url.split("@User-Agent=")[1].split("@")[0];
         if (url.contains("@Referer=")) referer= url.split("@Referer=")[1].split("@")[0];
@@ -81,17 +85,33 @@ public final class MyOkhttpDownLoader implements Downloader {
             JsonObject jsonInfo = new Gson().fromJson(header, JsonObject.class);
             for (String key : jsonInfo.keySet()) {
                 String val = jsonInfo.get(key).getAsString();
-                mRequestBuilder.addHeader(key, val);
+                mRequestBuilder.addHeader(key.toUpperCase(), removeDuplicateSlashes(val));
             }
         }else {
-            if(!TextUtils.isEmpty(cookie))mRequestBuilder.addHeader("Cookie", cookie);
-            if(!TextUtils.isEmpty(ua))mRequestBuilder.addHeader("User-Agent", ua);
-            if(!TextUtils.isEmpty(referer))mRequestBuilder.addHeader("Referer", referer);
+            if(!TextUtils.isEmpty(cookie)) {
+                assert cookie != null;
+                mRequestBuilder.addHeader("Cookie", cookie);
+            }
+            if(!TextUtils.isEmpty(ua)){
+                assert ua != null;
+                mRequestBuilder.addHeader("User-Agent", ua);
+            }else {
+                mRequestBuilder.addHeader("User-Agent", UA.randomOne());
+            }
+            if(!TextUtils.isEmpty(referer)){
+                assert referer != null;
+                mRequestBuilder.addHeader("Referer", referer);
+            }
         }
-
+        URL imgUrl = new URL(url);
+        String host = imgUrl.getHost();
+        mRequestBuilder.addHeader("Host", host);
         return client.newCall(mRequestBuilder.build()).execute();
     }
 
+    private static String removeDuplicateSlashes(String paramValue) {
+        return paramValue.replaceAll("//", "/");
+    }
     @Override
     public void shutdown() {
         if (!sharedClient && cache != null) {

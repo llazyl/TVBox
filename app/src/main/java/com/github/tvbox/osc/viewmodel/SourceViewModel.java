@@ -845,9 +845,13 @@ public class SourceViewModel extends ViewModel {
             Movie.Video video = data.movie.videoList.get(0);
             if (video != null && video.urlBean != null && video.urlBean.infoList != null && video.urlBean.infoList.size() == 1) {
                 Movie.Video.UrlBean.UrlInfo urlInfo = video.urlBean.infoList.get(0);
-                if (urlInfo != null && urlInfo.beanList.size() == 1 && Thunder.isSupportUrl(urlInfo.beanList.get(0).url)) {
+                if (urlInfo != null && Thunder.isSupportUrl(urlInfo.beanList.get(0).url)) {
                     thunderParse = true;
-                    Thunder.parse(App.getInstance(), urlInfo.beanList.get(0).url, new Thunder.ThunderCallback() {
+                    List<String> urlList = new ArrayList<>();
+                    for (Movie.Video.UrlBean.UrlInfo.InfoBean infoBean : urlInfo.beanList) {
+                        urlList.add(infoBean.url);
+                    }
+                    Thunder.parse(App.getInstance(), urlList, new Thunder.ThunderCallback() {
                         @Override
                         public void status(int code, String info) {
                             if (code >= 0) {

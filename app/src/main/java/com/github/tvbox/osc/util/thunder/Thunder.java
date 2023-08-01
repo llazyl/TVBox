@@ -15,6 +15,7 @@ import com.xunlei.downloadlib.parameter.XLTaskInfo;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -89,93 +90,86 @@ public class Thunder {
         void play(String url);
     }
 
-    public static void parse(Context context, String url, ThunderCallback callback) {
+    public static void parse(Context context, List<String> urlList, ThunderCallback callback) {
         init(context);
         stop(true);
         threadPool = Executors.newSingleThreadExecutor();
-        if (isMagnet(url) || isThunder(url)) {
-            String link = isThunder(url) ? XLDownloadManager.getInstance().parserThunderUrl(url) : url;
-            Uri p = Uri.parse(link);
-            if (p == null) {
-                callback.status(-1, "链接错误");
-                return;
-            }
-            String fileName = XLTaskHelper.instance().getFileName(link);
-            File cache = new File(cacheRoot + File.separator + fileName);
-            threadPool.execute(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        currentTask = isMagnet(url) ?
-                                XLTaskHelper.instance().addMagentTask(url, cacheRoot, fileName) :
-                                XLTaskHelper.instance().addThunderTask(url, cacheRoot, fileName);
-                    } catch (Exception exception) {
-                        exception.printStackTrace();
-                        currentTask = 0;
-                    }
-                    if (currentTask <= 0) {
-                        callback.status(-1, "链接错误");
-                        return;
-                    }
-                    int count = 30;
-                    while (true) {
-                        count--;
-                        if (count <= 0) {
-                            callback.status(-1, "解析超时");
-                            break;
+        ArrayList<String> playList = new ArrayList<>();
+        torrentFileInfoArrayList=new ArrayList<>();
+        threadPool.execute(new Runnable() {
+            @Override
+            public void run() {
+                for (String url : urlList) {
+                    if (isMagnet(url) || isThunder(url) || isTorrent(url)) {
+                        String link = isThunder(url) ? XLDownloadManager.getInstance().parserThunderUrl(url) : url;
+                        Uri p = Uri.parse(link);
+                        if (p == null) {
+                            continue;
                         }
-                        XLTaskInfo taskInfo = XLTaskHelper.instance().getTaskInfo(currentTask);
-                        switch (taskInfo.mTaskStatus) {
-                            case 2: {
-                                callback.status(0, "正在获取文件列表...");
-                                try {
-                                    TorrentInfo torrentInfo = XLTaskHelper.instance().getTorrentInfo(cache.getAbsolutePath());
-                                    if (torrentInfo == null || TextUtils.isEmpty(torrentInfo.mInfoHash)) {
-                                        callback.status(-1, "解析失败");
-                                    } else {
-                                        TorrentFileInfo[] mSubFileInfo = torrentInfo.mSubFileInfo;
-                                        ArrayList<String> playList = new ArrayList<>();
-                                        ArrayList<TorrentFileInfo> list = new ArrayList<>();
-                                        if (mSubFileInfo != null && mSubFileInfo.length >= 0) {
-                                            for (TorrentFileInfo sub : mSubFileInfo) {
-                                                if (isMedia(sub.mFileName)) {
-                                                    sub.torrentPath = cache.getAbsolutePath();
-                                                    playList.add(sub.mFileName + "$tvbox-torrent:" + list.size());
-                                                    list.add(sub);
+                        String fileName = XLTaskHelper.instance().getFileName(link);
+                        File cache = new File(cacheRoot + File.separator + fileName);
+                        try {
+                            currentTask = isMagnet(url) ?
+                                    XLTaskHelper.instance().addMagentTask(url, cacheRoot, fileName) :
+                                    XLTaskHelper.instance().addThunderTask(url, cacheRoot, fileName);
+                        } catch (Exception exception) {
+                            exception.printStackTrace();
+                            currentTask = 0;
+                        }
+                        if (currentTask <= 0) {
+                            continue;
+                        }
+                        int count = 20;
+                        Boolean conti=true;
+                        while (conti) {
+                            count--;
+                            if (count <= 0) {
+                                conti=false;
+                            }
+                            XLTaskInfo taskInfo = XLTaskHelper.instance().getTaskInfo(currentTask);
+                            switch (taskInfo.mTaskStatus) {
+                                case 2: {
+                                    try {
+                                        TorrentInfo torrentInfo = XLTaskHelper.instance().getTorrentInfo(cache.getAbsolutePath());
+                                        if (torrentInfo == null || TextUtils.isEmpty(torrentInfo.mInfoHash)) {
+                                        } else {
+                                            TorrentFileInfo[] mSubFileInfo = torrentInfo.mSubFileInfo;
+                                            if (mSubFileInfo != null && mSubFileInfo.length >= 0) {
+
+                                                for (TorrentFileInfo sub : mSubFileInfo) {
+                                                    if (isMedia(sub.mFileName)) {
+                                                        sub.torrentPath = cache.getAbsolutePath();
+                                                        playList.add(sub.mFileName + "$tvbox-torrent:" + torrentFileInfoArrayList.size());
+                                                        torrentFileInfoArrayList.add(sub);
+                                                    }
                                                 }
+                                                conti=false;
                                             }
                                         }
-                                        if (list.size() > 0) {
-                                            torrentFileInfoArrayList = list;
-                                            callback.list(TextUtils.join("#", playList));
-                                        } else {
-                                            callback.status(-1, "文件列表为空!");
-                                        }
+                                    } catch (Throwable throwable) {
+                                        throwable.printStackTrace();
                                     }
-                                } catch (Throwable throwable) {
-                                    throwable.printStackTrace();
-                                    callback.status(-1, "解析失败");
                                 }
-                                return;
+                                default: {
+                                }
                             }
-                            case 3: {
-                                callback.status(-1, "解析失败");
-                                return;
+                            try {
+                                Thread.sleep(100);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
                             }
-                            default: {
-                                callback.status(0, "解析中...");
-                                break;
-                            }
-                        }
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
                         }
                     }
                 }
-            });
-        }
+                if (playList.size() > 0) {
+                    callback.list(TextUtils.join("#", playList));
+                } else {
+                    callback.status(-1, "文件列表为空!");
+                }
+            }});
+
+
+
 //        if(isEd2k(url) || isFtp(url)){
 //            task_url= url;
 //            System.out.println("startTask:");
@@ -333,7 +327,7 @@ public class Thunder {
 
     public static boolean isSupportUrl(String url) {
 //        return isMagnet(url) || isThunder(url) || isEd2k(url) || isFtp(url);
-        return isMagnet(url) || isThunder(url);
+        return isMagnet(url) || isThunder(url) || isTorrent(url);
     }
 
     private static boolean isMagnet(String url) {
@@ -415,7 +409,7 @@ public class Thunder {
 
     public static boolean isNetworkDownloadTask(String url){
         if(TextUtils.isEmpty(url)) return false;
-        if(isThunder(url)|| isFtp(url) || isEd2k(url)){
+        if(isFtp(url) || isEd2k(url)){
             return true;
         }else{
             return false;
