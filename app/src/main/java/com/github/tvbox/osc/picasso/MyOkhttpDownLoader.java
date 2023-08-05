@@ -103,9 +103,6 @@ public final class MyOkhttpDownLoader implements Downloader {
                 mRequestBuilder.addHeader("Referer", referer);
             }
         }
-        URL imgUrl = new URL(url);
-        String host = imgUrl.getHost();
-        mRequestBuilder.addHeader("Host", host);
         return client.newCall(mRequestBuilder.build()).execute();
     }
 
