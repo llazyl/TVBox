@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.github.tvbox.osc.base.App;
 import com.github.tvbox.osc.util.FileUtils;
 import com.xunlei.downloadlib.XLDownloadManager;
 import com.xunlei.downloadlib.XLTaskHelper;
@@ -273,12 +274,13 @@ public class Thunder {
             return true;
         }
         if (isEd2k(url) || isFtp(url)) {
+            if(threadPool==null){
+                init(App.getInstance());
+                threadPool = Executors.newSingleThreadExecutor();
+            }
             if (currentTask > 0) {
                 XLTaskHelper.instance().stopTask(currentTask);
                 currentTask = 0L;
-            }
-            if(threadPool==null){
-                threadPool = Executors.newSingleThreadExecutor();
             }
             task_url=url;
             name = XLTaskHelper.instance().getFileName(task_url);
