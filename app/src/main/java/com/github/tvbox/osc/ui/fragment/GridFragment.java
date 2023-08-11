@@ -87,7 +87,7 @@ public class GridFragment extends BaseLazyFragment {
         if(isFolder){
             this.sortData.flag ="1"; // 修改sortData.flag
         }else {
-            this.sortData.flag =null; // 修改sortData.flag
+            this.sortData.flag ="2"; // 修改sortData.flag
         }
         initView();
         this.sortData.id =id; // 修改sortData.id为新的ID
