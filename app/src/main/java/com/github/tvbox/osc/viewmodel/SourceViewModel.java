@@ -38,6 +38,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -427,7 +428,23 @@ public class SourceViewModel extends ViewModel {
         }
     }
     // detailContent
-    public void getDetail(String sourceKey, String id) {
+    public void getDetail(String sourceKey, String urlid) {
+    	if (urlid.startsWith("push://") && ApiConfig.get().getSource("push_agent") != null) {           
+            String pushUrl = urlid.substring(7);
+            if (pushUrl.startsWith("b64:")) {
+                try {
+                    pushUrl = new String(Base64.decode(pushUrl.substring(4), Base64.DEFAULT | Base64.URL_SAFE | Base64.NO_WRAP), "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                pushUrl = URLDecoder.decode(pushUrl);
+            }
+            sourceKey = "push_agent";
+            urlid = pushUrl;
+        }
+        String id = urlid;
+    
         SourceBean sourceBean = ApiConfig.get().getSource(sourceKey);
         int type = sourceBean.getType();
         if (type == 3) {
