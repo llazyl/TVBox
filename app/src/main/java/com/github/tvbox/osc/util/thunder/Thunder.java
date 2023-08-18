@@ -264,6 +264,7 @@ public class Thunder {
             return true;
         }
         if (url.startsWith("tvbox-oth:")) {
+            stop(false);
             int idx = Integer.parseInt(url.substring(10));
             task_url=ed2kList.get(idx);
             name = XLTaskHelper.instance().getFileName(task_url);
@@ -282,7 +283,7 @@ public class Thunder {
                             break;
                         }
                         String playUrl=getPlayUrl();
-                        if(!playUrl.isEmpty()){
+                        if(playUrl != null && !playUrl.isEmpty()){
                             callback.play(playUrl);
                             return;
                         }
