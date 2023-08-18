@@ -464,6 +464,7 @@ public class HomeActivity extends BaseActivity {
         } else {
             mExitTime = System.currentTimeMillis();
             Toast.makeText(mContext, "再按一次返回键退出应用", Toast.LENGTH_SHORT).show();
+            showEmpty();
         }
     }
 
