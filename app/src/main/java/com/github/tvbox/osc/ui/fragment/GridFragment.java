@@ -206,16 +206,17 @@ public class GridFragment extends BaseLazyFragment {
                     bundle.putString("id", video.id);
                     bundle.putString("sourceKey", video.sourceKey);
                     bundle.putString("title", video.name);
-                    SourceBean homeSourceBean = ApiConfig.get().getHomeSourceBean();
                     if(("12".indexOf(getUITag()) != -1) && (video.tag.equals("folder") || video.tag.equals("cover"))){
                         focusedView = view;
                         changeView(video.id,video.tag.equals("folder"));
                     }
-                    else if(homeSourceBean.isQuickSearch() && Hawk.get(HawkConfig.FAST_SEARCH_MODE, false) && enableFastSearch()){
-                        jumpActivity(FastSearchActivity.class, bundle);
-                    }else{
+                    else{
                         if(video.id == null || video.id.isEmpty() || video.id.startsWith("msearch:")){
-                            jumpActivity(SearchActivity.class, bundle);
+                            if(Hawk.get(HawkConfig.FAST_SEARCH_MODE, false) && enableFastSearch()){
+                                jumpActivity(FastSearchActivity.class, bundle);
+                            }else {
+                                jumpActivity(SearchActivity.class, bundle);
+                            }
                         }else {
                             jumpActivity(DetailActivity.class, bundle);
                         }
@@ -264,7 +265,7 @@ public class GridFragment extends BaseLazyFragment {
                     if (maxPage>0 && page > maxPage) {
                         gridAdapter.loadMoreEnd();
                         gridAdapter.setEnableLoadMore(false);
-                        if(page>2)Toast.makeText(getContext(), "到底啦", Toast.LENGTH_SHORT).show();
+                        if(page>2)Toast.makeText(getContext(), "最后一页啦", Toast.LENGTH_SHORT).show();
                     } else {
                         gridAdapter.loadMoreComplete();
                         gridAdapter.setEnableLoadMore(true);
@@ -273,7 +274,7 @@ public class GridFragment extends BaseLazyFragment {
                     if(page == 1){
                         showEmpty();
                     }else{
-                        Toast.makeText(getContext(), "到底啦", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "最后一页啦", Toast.LENGTH_SHORT).show();
                         gridAdapter.loadMoreEnd();
                     }
                     gridAdapter.setEnableLoadMore(false);

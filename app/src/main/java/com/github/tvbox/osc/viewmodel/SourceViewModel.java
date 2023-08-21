@@ -3,6 +3,8 @@ package com.github.tvbox.osc.viewmodel;
 import android.text.TextUtils;
 
 import android.util.Base64;
+
+import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -17,7 +19,9 @@ import com.github.tvbox.osc.bean.Movie;
 import com.github.tvbox.osc.bean.MovieSort;
 import com.github.tvbox.osc.bean.SourceBean;
 import com.github.tvbox.osc.event.RefreshEvent;
+import com.github.tvbox.osc.player.thirdparty.RemoteTVBox;
 import com.github.tvbox.osc.util.DefaultConfig;
+import com.github.tvbox.osc.util.FileUtils;
 import com.github.tvbox.osc.util.HawkConfig;
 import com.github.tvbox.osc.util.LOG;
 import com.github.tvbox.osc.util.thunder.Thunder;
@@ -37,9 +41,14 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
 
+
+import java.io.IOException;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,6 +61,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import okhttp3.Call;
 
 /**
  * @author pj567
@@ -186,26 +197,70 @@ public class SourceViewModel extends ViewModel {
                     });
         }else if (type == 4) {
             String extend=sourceBean.getExt();
-            String apiUrl = Hawk.get(HawkConfig.API_URL, "");
-            extend=getFixUrl(apiUrl,extend);
-            OkGo.<String>get(sourceBean.getApi())
-                .tag(sourceBean.getKey() + "_sort")
-                .params("filter", "true")
-                .params("extend", extend)
-                .execute(new AbsCallback<String>() {
-                    @Override
-                    public String convertResponse(okhttp3.Response response) throws Throwable {
-                        if (response.body() != null) {
-                            return response.body().string();
-                        } else {
-                            throw new IllegalStateException("网络请求错误");
-                        }
-                    }
+            extend=getFixUrl(extend);
+            if(URLEncoder.encode(extend).length()<1000){
+                OkGo.<String>get(sourceBean.getApi())
+                        .tag(sourceBean.getKey() + "_sort")
+                        .params("filter", "true")
+                        .params("extend", extend)
+                        .execute(new AbsCallback<String>() {
+                            @Override
+                            public String convertResponse(okhttp3.Response response) throws Throwable {
+                                if (response.body() != null) {
+                                    return response.body().string();
+                                } else {
+                                    throw new IllegalStateException("网络请求错误");
+                                }
+                            }
 
-                    @Override
-                    public void onSuccess(Response<String> response) {
-                        String sortJson  = response.body();
-                        if (sortJson != null) {
+                            @Override
+                            public void onSuccess(Response<String> response) {
+                                String sortJson  = response.body();
+                                if (sortJson != null) {
+                                    AbsSortXml sortXml = sortJson(sortResult, sortJson);
+                                    if (sortXml != null && Hawk.get(HawkConfig.HOME_REC, 0) == 1) {
+                                        AbsXml absXml = json(null, sortJson, sourceBean.getKey());
+                                        if (absXml != null && absXml.movie != null && absXml.movie.videoList != null && absXml.movie.videoList.size() > 0) {
+                                            sortXml.videoList = absXml.movie.videoList;
+                                            sortResult.postValue(sortXml);
+                                        } else {
+                                            getHomeRecList(sourceBean, null, new HomeRecCallback() {
+                                                @Override
+                                                public void done(List<Movie.Video> videos) {
+                                                    sortXml.videoList = videos;
+                                                    sortResult.postValue(sortXml);
+                                                }
+                                            });
+                                        }
+                                    } else {
+                                        sortResult.postValue(sortXml);
+                                    }
+                                } else {
+                                    sortResult.postValue(null);
+                                }
+                            }
+
+                            @Override
+                            public void onError(Response<String> response) {
+                                super.onError(response);
+                                sortResult.postValue(null);
+                            }
+                        });
+            }else {
+                try {
+                    Map<String, String> params = new HashMap<>();
+                    params.put("filter","true");
+                    params.put("extend",extend);
+                    RemoteTVBox.post(sourceBean.getApi(), params, new okhttp3.Callback() {
+                        @Override
+                        public void onFailure(@NonNull Call call, IOException e) {
+                            sortResult.postValue(null);
+                        }
+
+                        @Override
+                        public void onResponse(@NonNull Call call, @NonNull okhttp3.Response response) throws IOException {
+                            assert response.body() != null;
+                            String sortJson  = response.body().string();
                             AbsSortXml sortXml = sortJson(sortResult, sortJson);
                             if (sortXml != null && Hawk.get(HawkConfig.HOME_REC, 0) == 1) {
                                 AbsXml absXml = json(null, sortJson, sourceBean.getKey());
@@ -224,17 +279,12 @@ public class SourceViewModel extends ViewModel {
                             } else {
                                 sortResult.postValue(sortXml);
                             }
-                        } else {
-                            sortResult.postValue(null);
                         }
-                    }
-
-                    @Override
-                    public void onError(Response<String> response) {
-                        super.onError(response);
-                        sortResult.postValue(null);
-                    }
-                });
+                    });
+                } catch (Exception ignored) {
+                    sortResult.postValue(null);
+                }
+            }
         } else {
             sortResult.postValue(null);
         }
@@ -671,6 +721,7 @@ public class SourceViewModel extends ViewModel {
                 @Override
                 public void run() {
                     Spider sp = ApiConfig.get().getCSP(sourceBean);
+                    if(TextUtils.isEmpty(url))return;
                     String json = sp.playerContent(playFlag, url, ApiConfig.get().getVipParseFlags());
                     try {
                         JSONObject result = new JSONObject(json);
@@ -709,8 +760,8 @@ public class SourceViewModel extends ViewModel {
             }
         } else if (type == 4) {
             String extend=sourceBean.getExt();
-            String apiUrl = Hawk.get(HawkConfig.API_URL, "");
-            extend=getFixUrl(apiUrl,extend);
+            extend=getFixUrl(extend);
+            if(URLEncoder.encode(extend).length()>1000)extend="";
             OkGo.<String>get(sourceBean.getApi())
                 .params("play", url)
                 .params("flag" ,playFlag)
@@ -755,12 +806,11 @@ public class SourceViewModel extends ViewModel {
         }
     }
 
-    private String getFixUrl(String url,String content){
-        if (content.contains("\"./")) {
-            if(!url.startsWith("http") && !url.startsWith("clan://")){
-                url = "http://" + url;
-            }
-            content = content.replace("./", url.substring(0,url.lastIndexOf("/") + 1));
+    private String getFixUrl(String content){
+        if (content.startsWith("http://127.0.0.1")) {
+            String path = content.replaceAll("^http.+/file/", FileUtils.getRootPath()+"/");
+            path = path.replaceAll("localhost/", "/");
+            content = FileUtils.readFileToString(path,"UTF-8");
         }
         return content;
     }
