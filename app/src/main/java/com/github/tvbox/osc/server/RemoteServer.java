@@ -8,6 +8,7 @@ import android.util.Base64;
 
 import com.github.tvbox.osc.R;
 import com.github.tvbox.osc.api.ApiConfig;
+import com.github.tvbox.osc.base.App;
 import com.github.tvbox.osc.event.RefreshEvent;
 import com.github.tvbox.osc.event.ServerEvent;
 import com.github.tvbox.osc.util.FileUtils;
@@ -166,7 +167,19 @@ public class RemoteServer extends NanoHTTPD {
                     }
                     EventBus.getDefault().post(new RefreshEvent(RefreshEvent.TYPE_PUSH_URL, url));
                     return NanoHTTPD.newFixedLengthResponse(NanoHTTPD.Response.Status.OK, NanoHTTPD.MIME_PLAINTEXT, "ok");    
-                }               
+                }  else if (fileName.startsWith("/dash/")) {
+                    String dashData = App.getInstance().getDashData();
+                    try {
+                        String data = new String(Base64.decode(dashData, Base64.DEFAULT | Base64.NO_WRAP), "UTF-8");
+                        return NanoHTTPD.newFixedLengthResponse(
+                                Response.Status.OK,
+                                "application/dash+xml",
+                                data
+                        );
+                    } catch (Throwable th) {
+                        return NanoHTTPD.newFixedLengthResponse(NanoHTTPD.Response.Status.INTERNAL_ERROR, NanoHTTPD.MIME_PLAINTEXT, dashData);
+                    }
+                }
             } else if (session.getMethod() == Method.POST) {
                 Map<String, String> files = new HashMap<String, String>();
                 try {
