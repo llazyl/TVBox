@@ -71,6 +71,8 @@ public class VodController extends BaseController {
                         mTopRoot2.setVisibility(VISIBLE);
                         mPlayTitle.setVisibility(GONE);
                         mNextBtn.requestFocus();
+                        backBtn.setVisibility(ScreenUtils.isTv(context) ? INVISIBLE : VISIBLE);
+                        showLockView();
                         break;
                     }
                     case 1003: { // 隐藏底部菜单
@@ -103,6 +105,7 @@ public class VodController extends BaseController {
     LinearLayout mProgressRoot;
     TextView mProgressText;
     ImageView mProgressIcon;
+    ImageView mLockView;
     LinearLayout mBottomRoot;
     LinearLayout mTopRoot1;
     LinearLayout mTopRoot2;
@@ -130,7 +133,8 @@ public class VodController extends BaseController {
     TextView mZimuBtn;
     TextView mAudioTrackBtn;
     public TextView mLandscapePortraitBtn;
-
+    LockRunnable lockRunnable = new LockRunnable();
+    private boolean isLock = false;
     Handler myHandle;
     Runnable myRunnable;
     int myHandleSeconds = 10000;//闲置多少毫秒秒关闭底栏  默认6秒
@@ -153,10 +157,12 @@ public class VodController extends BaseController {
             mHandler.postDelayed(this, 1000);
         }
     };
-
-
-
-
+    
+    private void showLockView() {
+        mLockView.setVisibility(ScreenUtils.isTv(getContext()) ? INVISIBLE : VISIBLE);
+        mHandler.removeCallbacks(lockRunnable);
+        mHandler.postDelayed(lockRunnable, 3000);
+    }
 
     @Override
     protected void initView() {
@@ -194,6 +200,32 @@ public class VodController extends BaseController {
         mZimuBtn = findViewById(R.id.zimu_select);
         mAudioTrackBtn = findViewById(R.id.audio_track_select);
         mLandscapePortraitBtn = findViewById(R.id.landscape_portrait);
+        mLockView = findViewById(R.id.tv_lock);
+        mLockView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                isLock = !isLock;
+                mLockView.setImageResource(isLock ? R.drawable.icon_lock : R.drawable.icon_unlock);
+                if (isLock) {
+                    Message obtain = Message.obtain();
+                    obtain.what = 1003;//隐藏底部菜单
+                    mHandler.sendMessage(obtain);
+                }
+                showLockView();
+            }
+        });
+        View rootView = findViewById(R.id.rootView);
+        rootView.setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (isLock) {
+                    if (event.getAction() == MotionEvent.ACTION_UP) {
+                        showLockView();
+                    }
+                }
+                return isLock;
+            }
+        });
 
         initSubtitleInfo();
 
@@ -938,6 +970,13 @@ public class VodController extends BaseController {
             hideBottom();
         }
         return true;
+    }
+    
+    private class LockRunnable implements Runnable {
+        @Override
+        public void run() {
+            mLockView.setVisibility(INVISIBLE);
+        }
     }
 
     @Override
