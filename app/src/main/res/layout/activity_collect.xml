@@ -45,19 +45,31 @@
             android:textSize="@dimen/ts_24"
             android:visibility="gone" />
 
-        <TextView
-            android:id="@+id/tvDel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:background="@drawable/shape_user_focus"
+        <ImageView
+            android:id="@+id/tvDelete"
+            android:layout_width="@dimen/vs_50"
+            android:layout_height="@dimen/vs_50"
+            android:layout_marginStart="@dimen/vs_10"
+            android:layout_marginEnd="@dimen/vs_10"
+            android:gravity="center"
+            android:background="@drawable/button_dialog_vod"
             android:focusable="false"
             android:focusableInTouchMode="false"
+            android:padding="@dimen/vs_5"
+            android:src="@drawable/icon_delete" />
+
+        <ImageView
+            android:id="@+id/tvClear"
+            android:layout_width="@dimen/vs_50"
+            android:layout_height="@dimen/vs_50"
+            android:layout_marginStart="@dimen/vs_10"
+            android:layout_marginEnd="@dimen/vs_10"
             android:gravity="center"
-            android:padding="@dimen/vs_10"
-            android:text="删除收藏"
-            android:textColor="@android:color/white"
-            android:textSize="@dimen/ts_24" />
+            android:background="@drawable/button_dialog_vod"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:padding="@dimen/vs_5"
+            android:src="@drawable/icon_clear" />
     </LinearLayout>
 
     <com.owen.tvrecyclerview.widget.TvRecyclerView
