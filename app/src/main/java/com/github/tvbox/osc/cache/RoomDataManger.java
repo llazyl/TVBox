@@ -136,6 +136,14 @@ public class RoomDataManger {
             AppDataManager.get().getVodCollectDao().delete(record);
         }
     }
+    
+    public static void deleteVodCollectAll() {
+        AppDataManager.get().getVodCollectDao().deleteAll();
+    }
+
+    public static void deleteVodRecordAll() {
+        AppDataManager.get().getVodRecordDao().deleteAll();
+    }
 
     public static boolean isVodCollect(String sourceKey, String vodId) {
         VodCollect record = AppDataManager.get().getVodCollectDao().getVodCollect(sourceKey, vodId);
