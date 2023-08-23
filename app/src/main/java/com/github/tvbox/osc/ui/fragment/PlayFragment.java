@@ -524,6 +524,7 @@ public class PlayFragment extends BaseLazyFragment {
 
         String finalUrl = url;
         if (mActivity == null) return;
+        if (!isAdded()) return;
         requireActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
