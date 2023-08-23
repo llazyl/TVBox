@@ -267,14 +267,6 @@ public class SourceViewModel extends ViewModel {
                                 if (absXml != null && absXml.movie != null && absXml.movie.videoList != null && absXml.movie.videoList.size() > 0) {
                                     sortXml.videoList = absXml.movie.videoList;
                                     sortResult.postValue(sortXml);
-                                } else {
-                                    getHomeRecList(sourceBean, null, new HomeRecCallback() {
-                                        @Override
-                                        public void done(List<Movie.Video> videos) {
-                                            sortXml.videoList = videos;
-                                            sortResult.postValue(sortXml);
-                                        }
-                                    });
                                 }
                             } else {
                                 sortResult.postValue(sortXml);
