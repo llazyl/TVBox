@@ -1054,11 +1054,14 @@ public class SourceViewModel extends ViewModel {
             Movie.Video video = data.movie.videoList.get(0);
             if (video != null && video.urlBean != null && video.urlBean.infoList != null) {
                 boolean hasThunder=false;
+                thunderLoop:
                 for (int idx=0;idx<video.urlBean.infoList.size();idx++) {
                     Movie.Video.UrlBean.UrlInfo urlInfo = video.urlBean.infoList.get(idx);
-                    if(Thunder.isSupportUrl(urlInfo.beanList.get(0).url)){
-                        hasThunder=true;
-                        break;
+                    for (Movie.Video.UrlBean.UrlInfo.InfoBean infoBean : urlInfo.beanList) {
+                        if(Thunder.isSupportUrl(infoBean.url)){
+                            hasThunder=true;
+                            break thunderLoop;
+                        }
                     }
                 }
                 if (hasThunder) {

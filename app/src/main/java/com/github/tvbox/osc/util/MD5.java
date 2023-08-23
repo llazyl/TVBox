@@ -110,10 +110,10 @@ public class MD5 {
     public static String string2MD5(String inStr) {
         if (sDigest == null) {
             Log.e("MD5", "MD5信息摘要初始化失败");
-            return "";
+            return null;
         } else if (TextUtils.isEmpty(inStr)) {
             Log.e("MD5", "参数strSource不能为空");
-            return "";
+            return null;
         }
         char[] charArray = inStr.toCharArray();
         byte[] byteArray = new byte[charArray.length];
@@ -141,10 +141,10 @@ public class MD5 {
     public static String encrypt(final String strSource) {
         if (sDigest == null) {
             Log.e("MD5", "MD5信息摘要初始化失败");
-            return "";
+            return null;
         } else if (TextUtils.isEmpty(strSource)) {
             Log.e("MD5", "参数strSource不能为空");
-            return "";
+            return null;
         }
         try {
             byte[] md5Bytes = sDigest.digest(strSource
@@ -155,7 +155,7 @@ public class MD5 {
         } catch (UnsupportedEncodingException e) {
             Log.e("MD5", "加密模块暂不支持此字符集合" + e);
         }
-        return "";
+        return null;
     }
 
     public static String encrypt4login(final String strSource, String appSecert) {
