@@ -501,23 +501,13 @@ public class PlayActivity extends BaseActivity {
         if(autoRetryCount>1 && url.contains(".m3u8")){
             url="http://home.jundie.top:666/unBom.php?m3u8="+url;//尝试去bom头再次播放
         }
-        if (url.startsWith("data:application/dash+xml;base64,")) {
-            PlayerHelper.updateCfg(mVideoView, mVodPlayerCfg, 2);
-            App.getInstance().setDashData(url.split("base64,")[1]);
-            url = ControlManager.get().getAddress(true) + "dash/proxy.mpd";
-        } else if (url.contains(".mpd") || url.contains("type=mpd")) {
-            PlayerHelper.updateCfg(mVideoView, mVodPlayerCfg, 2);
-        } else {
-            PlayerHelper.updateCfg(mVideoView, mVodPlayerCfg);
-        }
-        String finalUrl = url;
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 stopParse();
                 if (mVideoView != null) {
                     mVideoView.release();
-                    if (finalUrl != null) {
+                    if (url != null) {
                         try {
                             int playerType = mVodPlayerCfg.getInt("pl");
                             if (playerType >= 10) {
@@ -534,6 +524,16 @@ public class PlayActivity extends BaseActivity {
                             e.printStackTrace();
                         }
                         hideTip();
+                        String finalUrl = url;
+                        if (finalUrl.startsWith("data:application/dash+xml;base64,")) {
+                            PlayerHelper.updateCfg(mVideoView, mVodPlayerCfg, 2);
+                            App.getInstance().setDashData(finalUrl.split("base64,")[1]);
+                            finalUrl = ControlManager.get().getAddress(true) + "dash/proxy.mpd";
+                        } else if (finalUrl.contains(".mpd") || finalUrl.contains("type=mpd")) {
+                            PlayerHelper.updateCfg(mVideoView, mVodPlayerCfg, 2);
+                        } else {
+                            PlayerHelper.updateCfg(mVideoView, mVodPlayerCfg);
+                        }
                         mVideoView.setProgressKey(progressKey);
                         if (headers != null) {
                             mVideoView.setUrl(finalUrl, headers);
