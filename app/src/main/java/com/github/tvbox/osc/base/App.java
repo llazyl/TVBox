@@ -20,6 +20,8 @@ import com.kingja.loadsir.core.LoadSir;
 import com.orhanobut.hawk.Hawk;
 import com.p2p.P2PClass;
 
+import com.whl.quickjs.android.QuickJSLoader;
+
 import me.jessyan.autosize.AutoSizeConfig;
 import me.jessyan.autosize.unit.Subunits;
 
@@ -41,7 +43,8 @@ public class App extends MultiDexApplication {
         instance = this;
         initParams();
         // OKGo
-        OkGoHelper.init(); //台标获取
+        OkGoHelper.init(); 
+        //台标获取
         EpgUtil.init();
         // 初始化Web服务器
         ControlManager.init(this);
@@ -56,7 +59,7 @@ public class App extends MultiDexApplication {
                 .setSupportSP(false)
                 .setSupportSubunits(Subunits.MM);
         PlayerHelper.init();
-        JSEngine.getInstance().create();
+        QuickJSLoader.init();        
         FileUtils.cleanPlayerCache();
     }
 
@@ -76,9 +79,8 @@ public class App extends MultiDexApplication {
     @Override
     public void onTerminate() {
         super.onTerminate();
-        JSEngine.getInstance().destroy();
+        JSEngine.getInstance().destroy();        
     }
-
 
     private VodInfo vodInfo;
     public void setVodInfo(VodInfo vodinfo){
