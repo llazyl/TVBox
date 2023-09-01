@@ -24,8 +24,7 @@
             android:layout_marginLeft="@dimen/vs_5"
             android:layout_marginTop="@dimen/vs_5"
             android:layout_marginRight="@dimen/vs_5"
-            android:orientation="horizontal"
-            android:visibility="gone">
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/tvRate"

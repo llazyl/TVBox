@@ -15,6 +15,8 @@ import com.squareup.picasso.Picasso;
 import java.io.File;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
+import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
