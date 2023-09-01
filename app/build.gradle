@@ -87,7 +87,7 @@ dependencies {
     implementation 'com.orhanobut:hawk:2.0.1'
 
     implementation project(":player")
-    implementation 'wang.harlon.quickjs:wrapper-android:0.21.1'
+    implementation 'wang.harlon.quickjs:wrapper-android:0.20.2'
     implementation('org.xwalk:xwalk_shared_library:23.53.589.4') {
         exclude group: 'com.android.support'
     }
